@@ -1,36 +1,132 @@
+import { ApolloProvider } from '@apollo/client';
 import {
   OpenSans_400Regular,
   OpenSans_700Bold,
 } from '@expo-google-fonts/open-sans';
+import { Ionicons } from '@expo/vector-icons';
+import {
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
 import React from 'react';
 import { LogBox, StyleSheet } from 'react-native';
 import 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
-import BaseScreen from './screens/BaseScreen';
+import client from './apollo';
+import colors from './constants/colors';
+import fonts from './constants/fonts';
+import isAndroid from './constants/isAndroid';
+import Move from './screens/Move';
+import Overview from './screens/Overview';
+import OverviewDetails from './screens/OverviewDetails';
+import Scanner from './screens/Scanner';
+import Supply from './screens/Supply';
 import store from './store';
 
 if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
 }
 
+const getTabBarIcon =
+  ({ name }: { name: any }) =>
+  ({ color }: { color: string }) =>
+    <Ionicons name={name} size={23} color={color} />;
+
 const App = () => {
   const [fontsLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_700Bold,
+    'Avenir-Black': require('./assets/fonts/Avenir-Black.otf'),
+    'Avenir-Book': require('./assets/fonts/Avenir-Book.otf'),
   });
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
+  const defaultScreenOptions: BottomTabNavigationOptions = {
+    headerStyle: {
+      backgroundColor: isAndroid ? colors.primary : '',
+    },
+    headerTintColor: isAndroid ? 'white' : colors.primary,
+    headerShadowVisible: true,
+    headerTitleStyle: {
+      fontFamily: fonts.defaultFontFamilyBold,
+    },
+    tabBarActiveTintColor: colors.primary,
+  };
+  const defaultScreenOptionsStack: NativeStackNavigationOptions = {
+    headerStyle: {
+      backgroundColor: isAndroid ? colors.primary : '',
+    },
+    headerTintColor: isAndroid ? 'white' : colors.primary,
+    headerShadowVisible: true,
+    headerTitleStyle: {
+      fontFamily: fonts.defaultFontFamilyBold,
+    },
+  };
+
+  const OverviewStack = createNativeStackNavigator();
+  const OverviewStackNavigator = () => (
+    <OverviewStack.Navigator screenOptions={defaultScreenOptionsStack}>
+      <OverviewStack.Screen name="Overview" component={Overview} />
+      <OverviewStack.Screen name="Details" component={OverviewDetails} />
+    </OverviewStack.Navigator>
+  );
+
+  const AppTabs = createBottomTabNavigator();
+  const AppTabNavigator = () => (
+    <AppTabs.Navigator
+      screenOptions={defaultScreenOptions}
+      initialRouteName="Overview"
+    >
+      <AppTabs.Screen
+        name="Overview Stack"
+        component={OverviewStackNavigator}
+        options={{
+          tabBarIcon: getTabBarIcon({ name: 'ios-list-outline' }),
+          headerShown: false,
+          headerTitle: 'Overview',
+        }}
+      />
+      <AppTabs.Screen
+        name="Move"
+        component={Move}
+        options={{
+          tabBarIcon: getTabBarIcon({ name: 'ios-log-out-outline' }),
+        }}
+      />
+      <AppTabs.Screen
+        name="Supply"
+        component={Supply}
+        options={{
+          tabBarIcon: getTabBarIcon({ name: 'ios-log-in-outline' }),
+        }}
+      />
+      <AppTabs.Screen
+        name="Scanner"
+        component={Scanner}
+        options={{
+          tabBarIcon: getTabBarIcon({ name: 'ios-qr-code-outline' }),
+        }}
+      />
+    </AppTabs.Navigator>
+  );
+
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <BaseScreen />
-      </NavigationContainer>
+      <ApolloProvider client={client}>
+        <NavigationContainer>
+          <AppTabNavigator />
+        </NavigationContainer>
+      </ApolloProvider>
     </Provider>
   );
 };

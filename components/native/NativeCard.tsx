@@ -1,5 +1,6 @@
 import { FC, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import colors from '../../constants/colors';
 
 interface NativeCardProps {
   children?: ReactNode;
@@ -12,7 +13,7 @@ const NativeCard: FC<NativeCardProps> = ({ children, style }) => {
 
 const styles = StyleSheet.create({
   card: {
-    shadowColor: 'black',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 2,

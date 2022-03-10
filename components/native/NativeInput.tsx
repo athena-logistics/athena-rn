@@ -10,12 +10,7 @@ const NativeInput: FC<NativeInput> = ({ style, ...rest }) => {
 
 const styles = StyleSheet.create({
   input: {
-    height: 30,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    marginVertical: 10,
     fontFamily: fonts.defaultFontFamily,
-    fontSize: 18,
   },
 });
 

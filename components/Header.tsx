@@ -2,7 +2,7 @@ import { FC, ReactNode } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import colors from '../constants/colors';
 import { useOrientation } from '../hooks/useOrientation';
-import NativeTitleText from './native/NativeTitleText';
+import NativeTitle from './native/NativeTitle';
 
 interface HeaderProps {
   children: ReactNode;
@@ -22,7 +22,7 @@ const Header: FC<HeaderProps> = ({ children }) => {
         }),
       }}
     >
-      <NativeTitleText style={style.text}>{children}</NativeTitleText>
+      <NativeTitle style={style.text}>{children}</NativeTitle>
     </View>
   );
 };

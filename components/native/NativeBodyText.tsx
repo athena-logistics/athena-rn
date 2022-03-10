@@ -1,5 +1,6 @@
 import { FC, ReactNode } from 'react';
 import { StyleSheet, Text } from 'react-native';
+import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 
 interface NativeBodyTextProps {
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: fonts.defaultFontFamily,
     fontSize: 16,
-    color: 'black',
+    color: colors.secondary,
   },
 });
 
