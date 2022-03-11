@@ -21,6 +21,11 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
   const isPressing = useRef(false);
   const timer = useRef<any>();
   const [currentValue, setCurrentValue] = useState(value);
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
   const add = (offset: number) => () => {
     setCurrentValue((cur) => Number(cur) + offset + '');
   };

@@ -20,10 +20,11 @@ import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
 import { getNodes } from '../helpers/apollo';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
 
-interface ItemState {
+export interface ItemState {
   stock: string;
   item: string;
 }
@@ -32,18 +33,19 @@ interface MoveState {
   stuff: ItemState[];
 }
 
-enum ActionType {
+export enum MoveActionType {
   Add,
   Change,
   Delete,
+  Initialize,
 }
 
 export type AddStuffAction = {
-  type: ActionType.Add;
+  type: MoveActionType.Add;
 };
 
 export type ChangeStuffAction = {
-  type: ActionType.Change;
+  type: MoveActionType.Change;
   payload: {
     item: ItemState;
     index: number;
@@ -51,7 +53,7 @@ export type ChangeStuffAction = {
 };
 
 export type DeleteStuffAction = {
-  type: ActionType.Delete;
+  type: MoveActionType.Delete;
   payload: {
     index: number;
   };
@@ -59,23 +61,27 @@ export type DeleteStuffAction = {
 
 export type MoveAction = AddStuffAction | ChangeStuffAction | DeleteStuffAction;
 
-const defaultItem = { item: '', stock: '1' };
+export const defaultItem = { item: '', stock: '1' };
 
-const moveReducer = (state: MoveState, action: MoveAction): MoveState => {
+export const moveReducer = (
+  state: MoveState,
+  action: MoveAction
+): MoveState => {
   switch (action.type) {
-    case ActionType.Add:
+    case MoveActionType.Add:
       return {
         ...state,
         stuff: state.stuff.concat(defaultItem),
       };
-    case ActionType.Change:
+
+    case MoveActionType.Change:
       const stuffs1 = [...state.stuff];
       stuffs1.splice(action.payload.index, 1, action.payload.item);
       return {
         ...state,
         stuff: stuffs1,
       };
-    case ActionType.Delete:
+    case MoveActionType.Delete:
       const stuffs2 = [...state.stuff];
       stuffs2.splice(action.payload.index, 1);
       return {
@@ -151,7 +157,7 @@ const Move = ({}: {}) => {
   }, [data, error, loading]);
 
   let itemById: { [key: string]: Item } = {};
-  let availableItems: any[] = [];
+  let availableItems: AvailableItemGroup[] = [];
   if (locationStock) {
     itemById = locationStock.itemById;
     availableItems = locationStock.availableItems;
@@ -208,24 +214,24 @@ const Move = ({}: {}) => {
 
   const handleDelete = (index: number) => () => {
     dispatch({
-      type: ActionType.Delete,
+      type: MoveActionType.Delete,
       payload: { index },
     });
   };
 
   const setStuffItem = (stuff: ItemState, index: number) => (item: string) => {
     dispatch({
-      type: ActionType.Change,
+      type: MoveActionType.Change,
       payload: { item: { ...stuff, item }, index },
     });
   };
   const handleAdd = () => {
-    dispatch({ type: ActionType.Add });
+    dispatch({ type: MoveActionType.Add });
   };
   const setStuffStock =
     (stuff: ItemState, index: number) => (stock: string) => {
       dispatch({
-        type: ActionType.Change,
+        type: MoveActionType.Change,
         payload: { item: { ...stuff, stock }, index },
       });
     };

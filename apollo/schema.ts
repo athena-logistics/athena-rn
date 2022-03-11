@@ -513,19 +513,19 @@ export type ValidationOption = {
   value: Scalars['String'];
 };
 
-export type GetEventQueryVariables = Exact<{
+export type GetEventLocationsQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetEventQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, locations?: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node?: { __typename?: 'Location', id: string, name: string } | null }> } | null, itemGroups?: { __typename?: 'ItemGroupConnection', edges: Array<{ __typename?: 'ItemGroupEdge', node?: { __typename?: 'ItemGroup', name: string, id: string, items?: { __typename?: 'ItemConnection', edges: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string, name: string } | null }> } | null } | null }> } | null } | null };
+export type GetEventLocationsQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, locations?: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node?: { __typename?: 'Location', id: string, name: string } | null }> } | null } | null };
 
 export type GetLocationStockQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, item: { __typename?: 'Item', id: string, name: string, unit: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
+export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
 
 export type GetAllLocationStockQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -535,8 +535,8 @@ export type GetAllLocationStockQueryVariables = Exact<{
 export type GetAllLocationStockQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | null };
 
 
-export const GetEvent = gql`
-    query GetEvent($id: ID!) {
+export const GetEventLocations = gql`
+    query GetEventLocations($id: ID!) {
   event(id: $id) {
     name
     id
@@ -545,22 +545,6 @@ export const GetEvent = gql`
         node {
           id
           name
-        }
-      }
-    }
-    itemGroups(first: 1000) {
-      edges {
-        node {
-          name
-          id
-          items(first: 1000) {
-            edges {
-              node {
-                id
-                name
-              }
-            }
-          }
         }
       }
     }
@@ -586,6 +570,7 @@ export const GetLocationStock = gql`
               id
               name
             }
+            status
           }
         }
       }

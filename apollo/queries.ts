@@ -36,6 +36,7 @@ export const GET_LOCATION_STOCK = gql`
                 id
                 name
               }
+              status
             }
           }
         }

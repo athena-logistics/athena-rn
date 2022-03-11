@@ -28,13 +28,14 @@ const Scanner = ({}: {}) => {
     const overviewRegexp = new RegExp(
       `^${API_URL}/logistics/events/((\\d|[a-z]|-)+)/overview$`
     );
-    console.log('regexp', overviewRegexp);
     const matches = data.match(overviewRegexp);
     if (matches) {
-      console.log('match', matches, matches[1]);
       dispatch(setEventId(matches[1]));
       // @ts-ignore
       navigation.navigate('Overview Stack', { eventId: matches[1] });
+      alert('got it');
+    } else {
+      alert('no luck');
     }
   };
 

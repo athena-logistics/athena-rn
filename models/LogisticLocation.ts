@@ -1,6 +1,6 @@
 import { StockEntryStatus } from '../apollo/schema';
 
-interface LogisticLocation {
+export interface LogisticLocation {
   id: string;
   name: string;
   status: StockEntryStatus;

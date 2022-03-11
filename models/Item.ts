@@ -5,4 +5,5 @@ interface Item {
   stock: number;
   requiredStock: string;
   itemGroupId: string;
+  status: string;
 }

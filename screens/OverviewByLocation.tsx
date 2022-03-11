@@ -4,12 +4,12 @@ import { FlatList, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useAllLocationStockQuery } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import NativeScreen from '../components/native/NativeScreen';
-import OverviewRow from '../components/OverviewRow';
+import LocationRow from '../components/LocationRow';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { LogisticLocation } from '../models/LogisticLocation';
 import { RootState } from '../store';
 
-const Overview = ({}: {}) => {
+const OverviewByLocation = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -23,30 +23,32 @@ const Overview = ({}: {}) => {
   } else {
     eventId = useSelector((state: RootState) => state.global.eventId);
   }
-  const allLocationData = useSelector(
-    (state: RootState) => state.global.allLocationData
+  const allLocationDataByLocation = useSelector(
+    (state: RootState) => state.global.allLocationDataByLocation
   );
   const [fetch, { loading }] = useAllLocationStockQuery(eventId);
-  useMovementSubscription({ onSubscriptionData: () => fetch() });
+  useMovementSubscription({
+    onSubscriptionData: () => {
+      fetch();
+    },
+  });
 
   useEffect(() => {
     fetch();
   }, [eventId]);
 
-  const renderRow = ({ item }: { item: OverviewRow }) => {
-    return <OverviewRow row={item} key={item.id} />;
+  const renderRow = ({ item }: { item: LogisticLocation }) => {
+    return <LocationRow row={item} key={item.id} />;
   };
 
   return (
-    <NativeScreen style={style.screen}>
-      <FlatList
-        data={allLocationData}
-        onRefresh={fetch}
-        refreshing={loading}
-        renderItem={renderRow}
-        keyExtractor={(row) => row.id + row.stock}
-      />
-    </NativeScreen>
+    <FlatList
+      data={allLocationDataByLocation}
+      onRefresh={fetch}
+      refreshing={loading}
+      renderItem={renderRow}
+      keyExtractor={(row) => row.id}
+    />
   );
 };
 
@@ -55,4 +57,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     screen: { alignItems: 'stretch' },
   });
 
-export default Overview;
+export default OverviewByLocation;

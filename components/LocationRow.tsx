@@ -6,9 +6,10 @@ import { StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { LogisticLocation } from '../models/LogisticLocation';
 import NativeText from './native/NativeText';
 
-const OverviewRow = ({ row }: { row: OverviewRow }) => {
+const LocationRow = ({ row }: { row: LogisticLocation }) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -29,23 +30,16 @@ const OverviewRow = ({ row }: { row: OverviewRow }) => {
   const navigation = useNavigation();
   const handlePress = () => {
     // @ts-ignore
-    navigation.navigate('Overview Details', { row });
+    navigation.navigate('Location Tabs', { location: row });
   };
 
   return (
     <Pressable onPress={handlePress}>
       <View style={style.row}>
         <View style={style.title}>
-          <NativeText style={style.titleText}>
-            {row.itemName} ({row.itemGroupName})
-          </NativeText>
-          <NativeText style={style.subtitleText}>{row.locationName}</NativeText>
+          <NativeText style={style.titleText}>{row.name}</NativeText>
         </View>
         <View style={style.leftContainer}>
-          <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.stock}</NativeText>
-            <NativeText style={style.numberText}>in stock</NativeText>
-          </View>
           <View style={style.status}>
             <Ionicons name={iconName} size={23} color={iconColor} />
           </View>
@@ -88,4 +82,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     status: { marginLeft: 20 },
   });
 
-export default OverviewRow;
+export default LocationRow;
