@@ -136,7 +136,11 @@ const Move = ({}: {}) => {
 
   const navigation = useNavigation();
   const { data, loading, error } = useLocationQuery(eventId);
-  const { refetch } = useLocationStockQuery(from);
+  const [refetch] = useLocationStockQuery(from);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   useEffect(() => {
     if (!error && !loading) {
