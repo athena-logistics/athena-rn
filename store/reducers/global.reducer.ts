@@ -1,4 +1,5 @@
 import { AnyAction } from 'redux';
+import { DEFAULT_EVENT_ID } from '../../constants/app';
 import { LogisticLocation } from '../../models/LogisticLocation';
 import { ActionType } from '../actions/global.actions';
 
@@ -11,7 +12,7 @@ interface GlobalState {
 }
 
 const initialState: GlobalState = {
-  eventId: '',
+  eventId: DEFAULT_EVENT_ID,
   allLocationDataByStuff: [],
   allLocationDataByLocation: [],
   locations: [],
