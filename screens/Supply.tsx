@@ -120,7 +120,7 @@ const Supply = ({}: {}) => {
     }
   }, [data, error, loading]);
 
-  const { refetch } = useLocationStockQuery(to);
+  const [refetch] = useLocationStockQuery(to);
 
   const locationStock = useSelector(
     (state: RootState) => state.global.locationStock[to]
@@ -139,6 +139,10 @@ const Supply = ({}: {}) => {
       refetch();
     },
   });
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const [createSupplyMutation] = useMutation<SupplyInput>(DO_SUPPLY);
   const save = useCallback(() => {
