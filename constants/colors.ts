@@ -7,6 +7,7 @@ export default {
   pink: '#c2185b',
   grey: '#919191',
   black: '#202124',
+  white: '#ffffff',
 };
 
 //efbb35

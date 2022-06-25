@@ -1,6 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInputProps, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  TextInputProps,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import NativeInput from './NativeInput';
@@ -27,10 +33,12 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
   }, [value]);
 
   const add = (offset: number) => () => {
+    // console.log('add', offset, currentValue, Number(currentValue) + offset);
     setCurrentValue((cur) => Number(cur) + offset + '');
   };
 
   const handleChangeText = (text: string) => {
+    console.log('handle change text', text);
     setCurrentValue(text);
     onChangeText && onChangeText(text);
   };
@@ -45,6 +53,7 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
       isPressing.current = false;
     }
   };
+
   const onLongPress = (onPress: any) => () => {
     isPressing.current = true;
     timer.current = setInterval(onPress, 50);
@@ -52,13 +61,13 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
 
   return (
     <View style={styles.numberContainer}>
-      <Pressable
+      <TouchableOpacity
         onPress={add(-1)}
         onLongPress={onLongPress(add(-1))}
         onPressOut={cancelLongPress}
       >
         <Ionicons size={44} name={'ios-remove-circle'} color={colors.primary} />
-      </Pressable>
+      </TouchableOpacity>
       <View style={styles.number}>
         <NativeInput
           keyboardType="number-pad"
@@ -70,13 +79,13 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
         />
         {max !== undefined && <NativeText>/ {max} </NativeText>}
       </View>
-      <Pressable
+      <TouchableOpacity
         onPress={add(1)}
         onLongPress={onLongPress(add(1))}
         onPressOut={cancelLongPress}
       >
         <Ionicons size={44} name={'ios-add-circle'} color={colors.primary} />
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };

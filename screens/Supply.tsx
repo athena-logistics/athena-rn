@@ -120,7 +120,7 @@ const Supply = ({}: {}) => {
     }
   }, [data, error, loading]);
 
-  const [refetch] = useLocationStockQuery(to);
+  const [fetch] = useLocationStockQuery(to);
 
   const locationStock = useSelector(
     (state: RootState) => state.global.locationStock[to]
@@ -136,12 +136,12 @@ const Supply = ({}: {}) => {
   useMovementSubscription({
     locationId: to,
     onSubscriptionData: (data: any) => {
-      refetch();
+      fetch();
     },
   });
 
   useEffect(() => {
-    refetch();
+    fetch();
   }, []);
 
   const [createSupplyMutation] = useMutation<SupplyInput>(DO_SUPPLY);
@@ -160,7 +160,7 @@ const Supply = ({}: {}) => {
           await createSupplyMutation({ variables });
         }
       })
-    ).then(() => refetch());
+    ).then(() => fetch());
   }, [moveState]);
 
   const navigation = useNavigation();

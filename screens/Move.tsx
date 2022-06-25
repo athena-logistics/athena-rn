@@ -130,16 +130,16 @@ const Move = ({}: {}) => {
   useMovementSubscription({
     locationId: from,
     onSubscriptionData: (data: any) => {
-      refetch();
+      fetch();
     },
   });
 
   const navigation = useNavigation();
   const { data, loading, error } = useLocationQuery(eventId);
-  const [refetch] = useLocationStockQuery(from);
+  const [fetch] = useLocationStockQuery(from);
 
   useEffect(() => {
-    refetch();
+    fetch();
   }, []);
 
   useEffect(() => {

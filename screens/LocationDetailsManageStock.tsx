@@ -31,7 +31,10 @@ const LocationDetailsManageStock = ({}: {}) => {
   const locationStock = useSelector(
     (state: RootState) => state.global.locationStock[location?.id]
   );
-  const [createConsumeMutation] = useMutation<ConsumeInput>(DO_CONSUME);
+  const [createConsumeMutation] = useMutation<ConsumeInput>(DO_CONSUME, {
+    // onError: (error) => console.log('error', error),
+    // onCompleted: (data) => console.log('completed'),
+  });
 
   const [itemById, setitemById] = useState<{ [key: string]: Item }>({});
   const [availableItemGroups, setAvailableItemGroups] =
@@ -39,11 +42,14 @@ const LocationDetailsManageStock = ({}: {}) => {
 
   useEffect(() => {
     fetch();
+    // setInterval(fetch, 1000);
   }, []);
 
   useMovementSubscription({
     locationId: location?.id,
     onSubscriptionData: (data: any) => {
+      // console.log('sub changed');
+      // console.log('sub changed', data);
       fetch();
     },
   });
@@ -62,7 +68,7 @@ const LocationDetailsManageStock = ({}: {}) => {
       const locationId = location.id;
       const itemId = item.id;
       if (!Number.isNaN(amount) && locationId && itemId) {
-        console.log('good', amount);
+        console.log('consume changed', amount);
         const variables: ConsumeInput = {
           amount,
           locationId,
@@ -106,9 +112,9 @@ const LocationDetailsManageStock = ({}: {}) => {
         sections={sectionData}
         refreshing={loading}
         onRefresh={fetch}
-        keyExtractor={(item) => item.id + item.stock}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={style.row} key={item.id + item.stock}>
+          <View style={style.row} key={item.id}>
             <View style={style.title}>
               <NativeText style={style.titleText}>{item.name}</NativeText>
             </View>

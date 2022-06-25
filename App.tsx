@@ -133,7 +133,14 @@ const App = () => {
         name="Overview Details"
         component={OverviewDetails}
       />
-      <OverviewStack.Screen name="Location Tabs" component={LocationTabs} />
+      <OverviewStack.Screen
+        name="Location Tabs"
+        component={LocationTabs}
+        options={(props) => ({
+          // @ts-ignore
+          title: props.route.params?.location?.name,
+        })}
+      />
     </OverviewStack.Navigator>
   );
 

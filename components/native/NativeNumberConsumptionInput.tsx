@@ -1,6 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInputProps, View } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import NativeInput from './NativeInput';
@@ -17,35 +23,49 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
 }) => {
   const isPressing = useRef(false);
   const timer = useRef<any>();
-  const changeTimer = useRef<any>();
 
   const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
-    console.log('new value', value);
+    console.log('new value', value, currentValue);
     if (value !== currentValue) {
       setCurrentValue(value);
     }
   }, [value]);
 
   const add = (offset: number) => () => {
-    onChangeText(undefined, offset);
-    handleChangeText(Number(currentValue) + offset + '');
+    console.log('add', offset);
+    if (!isPressing.current) {
+      onChangeText(undefined, offset);
+    }
+    setCurrentValue((currentValue) => Number(currentValue) + offset + '');
   };
 
   const handleChangeText = (text: string) => {
+    console.log('handle change text', text);
     setCurrentValue(text);
+    // onChangeText && onChangeText(currentValue);
   };
 
-  const cancelLongPress = () => {
+  const cancelLongPress = async () => {
+    console.log('cancelling long press start');
     if (isPressing.current) {
+      console.log('cancelling long press actual', currentValue);
       clearInterval(timer.current);
+      onChangeText(currentValue);
       isPressing.current = false;
     }
   };
+
   const onLongPress = (onPress: any) => () => {
+    console.log('long press start');
     isPressing.current = true;
     timer.current = setInterval(onPress, 50);
+  };
+
+  const handleBlur = (props: any) => {
+    console.log('blur');
+    onChangeText && onChangeText(currentValue);
   };
 
   return (
@@ -56,16 +76,18 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
           keyboardType="number-pad"
           {...rest}
           value={currentValue}
+          onChangeText={handleChangeText}
+          onBlur={handleBlur}
         />
         <NativeText style={styles.numberText}>in stock</NativeText>
       </View>
-      <Pressable
+      <TouchableOpacity
         onPress={add(-1)}
         onLongPress={onLongPress(add(-1))}
         onPressOut={cancelLongPress}
       >
         <Ionicons size={44} name={'ios-remove-circle'} color={colors.primary} />
-      </Pressable>
+      </TouchableOpacity>
       {/* <Pressable
         onPress={add(-2)}
         onLongPress={onLongPress(add(-2))}

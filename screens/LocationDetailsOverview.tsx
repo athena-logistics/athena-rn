@@ -2,7 +2,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useLocationStockQuery } from '../apolloActions/useQueries';
 import NativeScreen from '../components/native/NativeScreen';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
@@ -16,7 +15,6 @@ const LocationDetailsOverview = ({}: {}) => {
   const route = useRoute();
   // @ts-ignore
   const location: LogisticLocation = route.params?.location;
-  const { refetch } = useLocationStockQuery(location?.id);
   const locationStock = useSelector(
     (state: RootState) => state.global.locationStock[location?.id]
   );

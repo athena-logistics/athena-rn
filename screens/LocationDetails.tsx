@@ -26,7 +26,7 @@ const LocationDetails = ({}: {}) => {
     const route = useRoute();
     // @ts-ignore
     const location: LogisticLocation = route.params?.location;
-    const { refetch } = useLocationStockQuery(location?.id);
+    const [refetch] = useLocationStockQuery(location?.id);
     const locationStock = useSelector(
       (state: RootState) => state.global.locationStock[location?.id]
     );
