@@ -1,8 +1,15 @@
-import { ApolloClient, HttpLink, InMemoryCache, split } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+  split,
+} from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
 import { HTTP_URL, WS_URL } from '../constants/app';
+// import apolloLogger from 'apollo-link-logger';
 
 const wsLink = new GraphQLWsLink(
   createClient({
@@ -27,7 +34,10 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  link: splitLink,
+  link: ApolloLink.from([
+    // apolloLogger,
+    splitLink,
+  ]),
   cache: new InMemoryCache(),
   connectToDevTools: true,
 });

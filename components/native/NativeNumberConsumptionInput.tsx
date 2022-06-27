@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   StyleSheet,
   TextInputProps,
@@ -19,10 +20,12 @@ interface NativeNumberConsumptionInputProps extends TextInputProps {
 const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   onChangeText,
   value,
+  editable,
   ...rest
 }) => {
   const isPressing = useRef(false);
   const timer = useRef<any>();
+  const timer2 = useRef<any>();
 
   const [currentValue, setCurrentValue] = useState(value);
 
@@ -35,10 +38,15 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
 
   const add = (offset: number) => () => {
     console.log('add', offset);
-    if (!isPressing.current) {
-      onChangeText(undefined, offset);
-    }
+    const newNumber = Number(currentValue) + offset + '';
+
     setCurrentValue((currentValue) => Number(currentValue) + offset + '');
+    if (!isPressing.current) {
+      if (timer2.current) {
+        clearTimeout(timer2.current);
+      }
+      timer2.current = setTimeout(() => onChangeText(newNumber), 1000);
+    }
   };
 
   const handleChangeText = (text: string) => {
@@ -68,6 +76,8 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
     onChangeText && onChangeText(currentValue);
   };
 
+  // console.log('editable', editable);
+
   return (
     <View style={styles.numberContainer}>
       <View style={styles.numberColumn}>
@@ -85,8 +95,18 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         onPress={add(-1)}
         onLongPress={onLongPress(add(-1))}
         onPressOut={cancelLongPress}
+        // disabled={!editable}
       >
-        <Ionicons size={44} name={'ios-remove-circle'} color={colors.primary} />
+        {!editable && (
+          <ActivityIndicator color={colors.primary} size={'large'} />
+        )}
+        {editable && (
+          <Ionicons
+            size={44}
+            name={'ios-remove-circle'}
+            color={colors.primary}
+          />
+        )}
       </TouchableOpacity>
       {/* <Pressable
         onPress={add(-2)}
