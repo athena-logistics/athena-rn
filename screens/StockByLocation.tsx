@@ -2,13 +2,15 @@ import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useAllLocationStockQuery } from '../apolloActions/useQueries';
+import { useAllStockQuery } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import OverviewRow from '../components/OverviewRow';
+import LocationRow from '../components/LocationRow';
+import { getLocationData } from '../helpers/getLocationData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { LogisticLocation } from '../models/LogisticLocation';
 import { RootState } from '../store';
 
-const OverviewByItem = ({ locationId }: { locationId: string | undefined }) => {
+const StockByLocation = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -22,10 +24,12 @@ const OverviewByItem = ({ locationId }: { locationId: string | undefined }) => {
   } else {
     eventId = useSelector((state: RootState) => state.global.eventId);
   }
-  const allLocationDataByStuff = useSelector(
-    (state: RootState) => state.global.allLocationDataByStuff
-  );
-  const [fetch, { loading }] = useAllLocationStockQuery(eventId);
+
+  const [fetch, { loading }] = useAllStockQuery(eventId);
+
+  const allStock = useSelector((state: RootState) => state.global.allStock);
+  const locationData = getLocationData(allStock);
+
   useMovementSubscription({
     onSubscriptionData: () => {
       fetch();
@@ -34,23 +38,19 @@ const OverviewByItem = ({ locationId }: { locationId: string | undefined }) => {
 
   useEffect(() => {
     fetch();
-  }, [eventId, locationId]);
+  }, [eventId]);
 
-  const renderRow = ({ item }: { item: OverviewRow }) => {
-    return <OverviewRow row={item} key={item.id} />;
+  const renderRow = ({ item }: { item: LogisticLocation }) => {
+    return <LocationRow row={item} key={item.id} />;
   };
 
   return (
     <FlatList
-      data={
-        locationId
-          ? allLocationDataByStuff.filter((s) => s.locationId === locationId)
-          : allLocationDataByStuff
-      }
+      data={locationData}
       onRefresh={fetch}
       refreshing={loading}
       renderItem={renderRow}
-      keyExtractor={(row) => row.id + row.stock}
+      keyExtractor={(row) => row.id}
     />
   );
 };
@@ -60,4 +60,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     screen: { alignItems: 'stretch' },
   });
 
-export default OverviewByItem;
+export default StockByLocation;

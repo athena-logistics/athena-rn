@@ -1,21 +1,21 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useAllLocationStockQuery } from '../apolloActions/useQueries';
+import { useAllStockQuery } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import LocationRow from '../components/LocationRow';
+import NativeScreen from '../components/native/NativeScreen';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
-import { LogisticLocation } from '../models/LogisticLocation';
 import { RootState } from '../store';
+import StockByItem from './StockByItem';
 
-const OverviewByLocation = ({}: {}) => {
+const AllStockByItem = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
+  const route = useRoute();
 
   let eventId: string;
 
-  const route = useRoute();
   // @ts-ignore
   const eventIdFromParams: string | undefined = route.params?.eventId;
   if (eventIdFromParams) {
@@ -23,10 +23,9 @@ const OverviewByLocation = ({}: {}) => {
   } else {
     eventId = useSelector((state: RootState) => state.global.eventId);
   }
-  const allLocationDataByLocation = useSelector(
-    (state: RootState) => state.global.allLocationDataByLocation
-  );
-  const [fetch, { loading }] = useAllLocationStockQuery(eventId);
+
+  const [fetch, { loading }] = useAllStockQuery(eventId);
+
   useMovementSubscription({
     onSubscriptionData: () => {
       fetch();
@@ -37,24 +36,26 @@ const OverviewByLocation = ({}: {}) => {
     fetch();
   }, [eventId]);
 
-  const renderRow = ({ item }: { item: LogisticLocation }) => {
-    return <LocationRow row={item} key={item.id} />;
+  const getData = () => {
+    return useSelector((state: RootState) => state.global.allStock);
   };
 
   return (
-    <FlatList
-      data={allLocationDataByLocation}
-      onRefresh={fetch}
-      refreshing={loading}
-      renderItem={renderRow}
-      keyExtractor={(row) => row.id}
-    />
+    <NativeScreen style={style.screen}>
+      <StockByItem itemList={getData()} fetch={fetch} loading={loading} />
+    </NativeScreen>
   );
 };
 
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: { alignItems: 'stretch' },
+    actions: {
+      alignContent: 'flex-end',
+      justifyContent: 'flex-end',
+      flexDirection: 'row',
+      width: '100%',
+    },
   });
 
-export default OverviewByLocation;
+export default AllStockByItem;

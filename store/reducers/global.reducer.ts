@@ -1,20 +1,21 @@
 import { AnyAction } from 'redux';
 import { DEFAULT_EVENT_ID } from '../../constants/app';
-import { LogisticLocation } from '../../models/LogisticLocation';
 import { ActionType } from '../actions/global.actions';
 
 interface GlobalState {
   eventId: string;
-  allLocationDataByStuff: OverviewRow[];
-  allLocationDataByLocation: LogisticLocation[];
+  allStock: StockItem[];
   locations: any[];
-  locationStock: any;
+  locationStock: {
+    [key: string]: {
+      itemById: { [key: string]: StockItem };
+    };
+  };
 }
 
 const initialState: GlobalState = {
   eventId: DEFAULT_EVENT_ID,
-  allLocationDataByStuff: [],
-  allLocationDataByLocation: [],
+  allStock: [],
   locations: [],
   locationStock: {},
 };
@@ -29,15 +30,10 @@ const globalReducer = (
         ...state,
         eventId: action.payload.eventId,
       };
-    case ActionType.SET_ALL_LOCATION_DATA_BY_STUFF:
+    case ActionType.SET_ALL_STOCK:
       return {
         ...state,
-        allLocationDataByStuff: action.payload.rows,
-      };
-    case ActionType.SET_ALL_LOCATION_DATA_BY_LOCATION:
-      return {
-        ...state,
-        allLocationDataByLocation: action.payload.rows,
+        allStock: action.payload.rows,
       };
     case ActionType.SET_LOCATIONS:
       return {

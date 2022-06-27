@@ -19,6 +19,7 @@ import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
 import { getNodes } from '../helpers/apollo';
+import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
@@ -94,15 +95,6 @@ export const moveReducer = (
   }
 };
 
-interface Item {
-  id: string;
-  name: string;
-  unit: string;
-  stock: number;
-  requiredStock: string;
-  itemGroupId: string;
-}
-
 export interface ItemGroup {
   id: string;
   name: string;
@@ -160,11 +152,11 @@ const Move = ({}: {}) => {
     }
   }, [data, error, loading]);
 
-  let itemById: { [key: string]: Item } = {};
+  let itemById: { [key: string]: StockItem } = {};
   let availableItems: AvailableItemGroup[] = [];
   if (locationStock) {
     itemById = locationStock.itemById;
-    availableItems = locationStock.availableItems;
+    availableItems = getGroupedData(Object.values(locationStock.itemById));
   }
 
   const save = useCallback(() => {

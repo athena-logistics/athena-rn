@@ -71,7 +71,6 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
       <View style={styles.number}>
         <NativeInput
           keyboardType="number-pad"
-          maxLength={2}
           {...rest}
           value={currentValue}
           onChangeText={handleChangeText}

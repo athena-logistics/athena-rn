@@ -1,13 +1,15 @@
-interface OverviewRow {
+interface StockItem {
+  consumption: number;
   id: string;
-  itemName: string;
+  name: string;
+  itemGroupId: string;
   itemGroupName: string;
   locationId: string;
   locationName: string;
-  stock: number;
-  supply: number;
-  consumption: number;
   movementIn: number;
   movementOut: number;
   status: string;
+  stock: number;
+  supply: number;
+  unit: string;
 }

@@ -1,14 +1,23 @@
+import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { StockEntryStatus } from '../apollo/schema';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { DO_CONSUME } from '../apollo/mutations';
+import { ConsumeInput, StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import NativeNumberConsumptionInput from './native/NativeNumberConsumptionInput';
 import NativeText from './native/NativeText';
 
-const OverviewRow = ({ row }: { row: OverviewRow }) => {
+const StockItemRow = ({
+  row,
+  isEditing,
+}: {
+  row: StockItem;
+  isEditing: boolean;
+}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -29,29 +38,55 @@ const OverviewRow = ({ row }: { row: OverviewRow }) => {
   const navigation = useNavigation();
   const handlePress = () => {
     // @ts-ignore
-    navigation.navigate('Overview Details', { row });
+    navigation.navigate('Stock Item Details', { row });
   };
 
+  const [createConsumeMutation] = useMutation<ConsumeInput>(DO_CONSUME, {
+    // onError: (error) => console.log('error', error),
+    // onCompleted: (data) => console.log('completed', data),
+  });
+
+  const consume =
+    (item: StockItem) => async (newValue?: string, change?: number) => {
+      console.log('consume', item.stock, newValue, change);
+      const amount = change ? -change : Number(item.stock) - Number(newValue);
+      const locationId = item.locationId;
+      const itemId = item.id;
+      if (!Number.isNaN(amount) && locationId && itemId) {
+        console.log('consume changed', amount);
+        const variables: ConsumeInput = {
+          amount,
+          locationId,
+          itemId,
+        };
+        await createConsumeMutation({ variables });
+      }
+    };
+
   return (
-    <Pressable onPress={handlePress}>
+    <TouchableOpacity onPress={handlePress}>
       <View style={style.row}>
         <View style={style.title}>
           <NativeText style={style.titleText}>
-            {row.itemName} ({row.itemGroupName})
+            {row.name} ({row.itemGroupName})
           </NativeText>
           <NativeText style={style.subtitleText}>{row.locationName}</NativeText>
         </View>
         <View style={style.leftContainer}>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.stock}</NativeText>
-            <NativeText style={style.numberText}>in stock</NativeText>
+            <NativeNumberConsumptionInput
+              value={row.stock.toString()}
+              onChangeText={consume(row)}
+              loading={false}
+              editable={isEditing}
+            />
           </View>
           <View style={style.status}>
             <Ionicons name={iconName} size={23} color={iconColor} />
           </View>
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
@@ -88,4 +123,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     status: { marginLeft: 20 },
   });
 
-export default OverviewRow;
+export default StockItemRow;

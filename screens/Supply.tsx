@@ -19,6 +19,7 @@ import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
 import { getNodes } from '../helpers/apollo';
+import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
@@ -126,11 +127,11 @@ const Supply = ({}: {}) => {
     (state: RootState) => state.global.locationStock[to]
   );
 
-  let itemById: { [key: string]: Item } = {};
+  let itemById: { [key: string]: StockItem } = {};
   let availableItems: any[] = [];
   if (locationStock) {
     itemById = locationStock.itemById;
-    availableItems = locationStock.availableItems;
+    availableItems = getGroupedData(Object.values(locationStock.itemById));
   }
 
   useMovementSubscription({

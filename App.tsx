@@ -27,13 +27,12 @@ import client from './apollo';
 import colors from './constants/colors';
 import fonts from './constants/fonts';
 import isAndroid from './constants/isAndroid';
-import LocationDetailsManageStock from './screens/LocationDetailsManageStock';
-import LocationDetailsOverview from './screens/LocationDetailsOverview';
+import AllStockByItem from './screens/AllStockByItem';
+import LocationStockByItem from './screens/LocationStockByItem';
 import Move from './screens/Move';
-import OverviewByItem from './screens/OverviewByItem';
-import OverviewByLocation from './screens/OverviewByLocation';
-import OverviewDetails from './screens/OverviewDetails';
 import Scanner from './screens/Scanner';
+import StockByLocation from './screens/StockByLocation';
+import StockItemDetails from './screens/StockItemDetails';
 import Supply from './screens/Supply';
 import store from './store';
 
@@ -95,33 +94,9 @@ const App = () => {
   const OverviewTabs = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTab}>
-        <OverviewTab.Screen name="By Stuff" component={OverviewByItem} />
-        <OverviewTab.Screen name="By Location" component={OverviewByLocation} />
+        <OverviewTab.Screen name="By Items" component={AllStockByItem} />
+        <OverviewTab.Screen name="By Location" component={StockByLocation} />
       </OverviewTab.Navigator>
-    );
-  };
-
-  const LocationTab = createMaterialTopTabNavigator();
-  const LocationTabs = (props: any) => {
-    return (
-      <LocationTab.Navigator screenOptions={defaultScreenOptionsTab}>
-        <LocationTab.Screen
-          initialParams={props.route.params}
-          name="Location Details Overview"
-          component={LocationDetailsOverview}
-          options={{
-            title: 'Overview',
-          }}
-        />
-        <LocationTab.Screen
-          initialParams={props.route.params}
-          name="Location Manage Stock"
-          component={LocationDetailsManageStock}
-          options={{
-            title: 'Manage Stock',
-          }}
-        />
-      </LocationTab.Navigator>
     );
   };
 
@@ -130,12 +105,12 @@ const App = () => {
     <OverviewStack.Navigator screenOptions={defaultScreenOptionsStack}>
       <OverviewStack.Screen name="Overview" component={OverviewTabs} />
       <OverviewStack.Screen
-        name="Overview Details"
-        component={OverviewDetails}
+        name="Stock Item Details"
+        component={StockItemDetails}
       />
       <OverviewStack.Screen
-        name="Location Tabs"
-        component={LocationTabs}
+        name="Location Stock By Item"
+        component={LocationStockByItem}
         options={(props) => ({
           // @ts-ignore
           title: props.route.params?.location?.name,

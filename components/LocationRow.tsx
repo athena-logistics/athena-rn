@@ -30,7 +30,7 @@ const LocationRow = ({ row }: { row: LogisticLocation }) => {
   const navigation = useNavigation();
   const handlePress = () => {
     // @ts-ignore
-    navigation.navigate('Location Tabs', { location: row });
+    navigation.navigate('Location Stock By Item', { location: row });
   };
 
   return (

@@ -8,13 +8,13 @@ import NativeText from '../components/native/NativeText';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 
-const OverviewDetails = ({}: {}) => {
+const StockItemDetails = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
   const route = useRoute();
   // @ts-ignore
-  const row: OverviewRow = route.params?.row;
+  const row: StockItemRow = route.params?.row;
 
   const getStatusIcon = (): { iconName: any; iconColor: string } => {
     switch (row.status as StockEntryStatus) {
@@ -96,4 +96,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     status: { marginLeft: 20 },
   });
 
-export default OverviewDetails;
+export default StockItemDetails;

@@ -525,14 +525,14 @@ export type GetLocationStockQueryVariables = Exact<{
 }>;
 
 
-export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
+export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
 
-export type GetAllLocationStockQueryVariables = Exact<{
+export type GetAllStockQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetAllLocationStockQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | null };
+export type GetAllStockQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | null };
 
 
 export const GetEventLocations = gql`
@@ -570,6 +570,15 @@ export const GetLocationStock = gql`
               id
               name
             }
+            location {
+              id
+              name
+            }
+            stock
+            supply
+            consumption
+            movementIn
+            movementOut
             status
           }
         }
@@ -578,8 +587,8 @@ export const GetLocationStock = gql`
   }
 }
     `;
-export const GetAllLocationStock = gql`
-    query GetAllLocationStock($id: ID!) {
+export const GetAllStock = gql`
+    query GetAllStock($id: ID!) {
   event(id: $id) {
     name
     id
@@ -589,6 +598,7 @@ export const GetAllLocationStock = gql`
           item {
             id
             name
+            unit
           }
           itemGroup {
             id

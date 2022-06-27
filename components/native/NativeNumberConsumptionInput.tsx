@@ -15,12 +15,14 @@ import NativeText from './NativeText';
 
 interface NativeNumberConsumptionInputProps extends TextInputProps {
   onChangeText: (newValue?: string, change?: number) => void;
+  loading: boolean;
 }
 
 const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   onChangeText,
   value,
   editable,
+  loading,
   ...rest
 }) => {
   const isPressing = useRef(false);
@@ -97,12 +99,10 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         onPressOut={cancelLongPress}
         // disabled={!editable}
       >
-        {!editable && (
-          <ActivityIndicator color={colors.primary} size={'large'} />
-        )}
-        {editable && (
+        {loading && <ActivityIndicator color={colors.primary} size={'large'} />}
+        {!loading && editable && (
           <Ionicons
-            size={44}
+            size={40}
             name={'ios-remove-circle'}
             color={colors.primary}
           />

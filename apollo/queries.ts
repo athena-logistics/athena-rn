@@ -36,6 +36,15 @@ export const GET_LOCATION_STOCK = gql`
                 id
                 name
               }
+              location {
+                id
+                name
+              }
+              stock
+              supply
+              consumption
+              movementIn
+              movementOut
               status
             }
           }
@@ -45,8 +54,8 @@ export const GET_LOCATION_STOCK = gql`
   }
 `;
 
-export const GET_ALL_LOCATION_STOCK = gql`
-  query GetAllLocationStock($id: ID!) {
+export const GET_ALL_STOCK = gql`
+  query GetAllStock($id: ID!) {
     event(id: $id) {
       name
       id
@@ -56,6 +65,7 @@ export const GET_ALL_LOCATION_STOCK = gql`
             item {
               id
               name
+              unit
             }
             itemGroup {
               id
