@@ -13,12 +13,14 @@ export const getLocationData = (allStock: StockItem[]) => {
         id: stock.locationId,
         name: stock.locationName,
         status: stock.status,
+        stockItems: [stock],
       });
     } else {
       locationData[index].status = getNewStatus(
         locationData[index].status,
         stock.status
       );
+      locationData[index].stockItems.push(stock);
     }
   });
 

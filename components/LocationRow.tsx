@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -13,19 +13,9 @@ const LocationRow = ({ row }: { row: LogisticLocation }) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
-  const getStatusIcon = (): { iconName: any; iconColor: string } => {
-    switch (row.status as StockEntryStatus) {
-      case StockEntryStatus.Normal:
-        return { iconName: 'airplane', iconColor: 'green' };
-      case StockEntryStatus.Warning:
-        return { iconName: 'airplane', iconColor: 'orange' };
-      case StockEntryStatus.Important:
-      default:
-        return { iconName: 'airplane', iconColor: 'red' };
-    }
+  const getNumberOfItemsPerStatus = (status: StockEntryStatus) => {
+    return row.stockItems.filter((item) => item.status === status).length;
   };
-
-  const { iconName, iconColor } = getStatusIcon();
 
   const navigation = useNavigation();
   const handlePress = () => {
@@ -41,7 +31,24 @@ const LocationRow = ({ row }: { row: LogisticLocation }) => {
         </View>
         <View style={style.leftContainer}>
           <View style={style.status}>
-            <Ionicons name={iconName} size={23} color={iconColor} />
+            <NativeText style={style.statusText}>
+              {getNumberOfItemsPerStatus(StockEntryStatus.Important)}
+            </NativeText>
+            <Entypo name={'cup'} size={30} color={'red'} />
+          </View>
+          <View style={style.status}>
+            <NativeText style={style.statusText}>
+              {' '}
+              {getNumberOfItemsPerStatus(StockEntryStatus.Warning)}
+            </NativeText>
+            <Entypo name={'cup'} size={30} color={'orange'} />
+          </View>
+          <View style={style.status}>
+            <NativeText style={style.statusText}>
+              {' '}
+              {getNumberOfItemsPerStatus(StockEntryStatus.Normal)}
+            </NativeText>
+            <Entypo name={'cup'} size={30} color={'green'} />
           </View>
         </View>
       </View>
@@ -79,7 +86,16 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     numberContainer: { alignItems: 'center' },
     numberText: { fontSize: 12, textTransform: 'uppercase' },
     number: { fontSize: 20, fontFamily: fonts.defaultFontFamilyBold },
-    status: { marginLeft: 20 },
+    status: {
+      width: 60,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      color: colors.primary,
+    },
+    statusText: {
+      fontSize: 16,
+    },
   });
 
 export default LocationRow;

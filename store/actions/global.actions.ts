@@ -1,6 +1,7 @@
 export enum ActionType {
   SET_EVENT_ID = 'SET_EVENT_ID',
   SET_ALL_STOCK = 'SET_ALL_STOCK',
+  SET_ALL_ITEMS = 'SET_ALL_ITEMS',
   SET_LOCATIONS = 'SET_LOCATIONS',
   SET_LOCATION_STOCK_DATA = 'SET_LOCATION_STOCK_DATA',
 }
@@ -10,6 +11,9 @@ export const setEventId = (eventId: string | undefined) => {
 };
 export const setAllStock = (rows: StockItem[]) => {
   return { type: ActionType.SET_ALL_STOCK, payload: { rows } };
+};
+export const setAllItems = (rows: Item[]) => {
+  return { type: ActionType.SET_ALL_ITEMS, payload: { rows } };
 };
 
 export const setLocations = (locations: any) => {

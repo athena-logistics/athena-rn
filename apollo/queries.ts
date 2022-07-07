@@ -21,6 +21,7 @@ export const GET_LOCATION_STOCK = gql`
   query GetLocationStock($id: ID!) {
     node(id: $id) {
       id
+
       __typename
       ... on Location {
         stock(first: 1000) {
@@ -31,6 +32,7 @@ export const GET_LOCATION_STOCK = gql`
                 id
                 name
                 unit
+                inverse
               }
               itemGroup {
                 id
@@ -66,6 +68,7 @@ export const GET_ALL_STOCK = gql`
               id
               name
               unit
+              inverse
             }
             itemGroup {
               id
@@ -81,6 +84,29 @@ export const GET_ALL_STOCK = gql`
             movementIn
             movementOut
             status
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_ALL_ITEMS = gql`
+  query GetAllItems($id: ID!) {
+    event(id: $id) {
+      name
+      id
+      items(first: 1000) {
+        edges {
+          node {
+            id
+            name
+            unit
+            inverse
+            itemGroup {
+              id
+              name
+            }
           }
         }
       }

@@ -29,22 +29,19 @@ const LocationStockByItem = ({}: {}) => {
     fetch();
   }, [location]);
 
-  const getData = () => {
-    const locationData = useSelector(
-      (state: RootState) => state.global.locationStock[location.id]
+  const locationData = useSelector(
+    (state: RootState) => state.global.locationStock[location.id]
+  );
+  let data: StockItem[] = [];
+  if (locationData) {
+    data = Object.values(locationData.itemById).sort(
+      (row1, row2) => row1.stock - row2.stock
     );
-    if (locationData) {
-      return Object.values(locationData.itemById).sort(
-        (row1, row2) => row1.stock - row2.stock
-      );
-    } else {
-      return [];
-    }
-  };
+  }
 
   return (
     <NativeScreen style={style.screen}>
-      <StockByItem itemList={getData()} fetch={fetch} loading={loading} />
+      <StockByItem itemList={data} fetch={fetch} loading={loading} />
     </NativeScreen>
   );
 };

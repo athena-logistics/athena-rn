@@ -22,12 +22,15 @@ import { useFonts } from 'expo-font';
 import React from 'react';
 import { LogBox, StyleSheet } from 'react-native';
 import 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import client from './apollo';
 import colors from './constants/colors';
 import fonts from './constants/fonts';
 import isAndroid from './constants/isAndroid';
 import AllStockByItem from './screens/AllStockByItem';
+import ItemTypes from './screens/ItemTypes';
+import LocationStockByGroup from './screens/LocationStockByGroup';
 import LocationStockByItem from './screens/LocationStockByItem';
 import Move from './screens/Move';
 import Scanner from './screens/Scanner';
@@ -94,7 +97,9 @@ const App = () => {
   const OverviewTabs = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTab}>
-        <OverviewTab.Screen name="By Items" component={AllStockByItem} />
+        {/* <OverviewTab.Screen name="Big table" component={StockByLocation2} /> */}
+        <OverviewTab.Screen name="By Item Type" component={ItemTypes} />
+        <OverviewTab.Screen name="All Items" component={AllStockByItem} />
         <OverviewTab.Screen name="By Location" component={StockByLocation} />
       </OverviewTab.Navigator>
     );
@@ -115,6 +120,10 @@ const App = () => {
           // @ts-ignore
           title: props.route.params?.location?.name,
         })}
+      />
+      <OverviewStack.Screen
+        name="Location Stock By Group"
+        component={LocationStockByGroup}
       />
     </OverviewStack.Navigator>
   );
@@ -165,6 +174,7 @@ const App = () => {
           <AppTabNavigator />
         </NavigationContainer>
       </ApolloProvider>
+      <Toast />
     </Provider>
   );
 };

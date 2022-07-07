@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DO_SUPPLY } from '../apollo/mutations';
 import { SupplyInput } from '../apollo/schema';
 import {
+  useAllItemsQuery,
   useLocationQuery,
-  useLocationStockQuery,
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import NativeNumberOnlyInput from '../components/native/NativeNumberOnlyInput';
@@ -121,18 +121,12 @@ const Supply = ({}: {}) => {
     }
   }, [data, error, loading]);
 
-  const [fetch] = useLocationStockQuery(to);
+  const [fetch] = useAllItemsQuery(eventId);
 
-  const locationStock = useSelector(
-    (state: RootState) => state.global.locationStock[to]
-  );
+  const allItems = useSelector((state: RootState) => state.global.allItems);
 
-  let itemById: { [key: string]: StockItem } = {};
-  let availableItems: any[] = [];
-  if (locationStock) {
-    itemById = locationStock.itemById;
-    availableItems = getGroupedData(Object.values(locationStock.itemById));
-  }
+  let itemById: { [key: string]: Item } = {};
+  const availableItems = getGroupedData(allItems);
 
   useMovementSubscription({
     locationId: to,
@@ -147,6 +141,7 @@ const Supply = ({}: {}) => {
 
   const [createSupplyMutation] = useMutation<SupplyInput>(DO_SUPPLY);
   const save = useCallback(() => {
+    console.log('save');
     Promise.all(
       moveState.stuff.map(async (stuff) => {
         const amount = Number(stuff.stock);
@@ -158,6 +153,7 @@ const Supply = ({}: {}) => {
             locationId,
             itemId,
           };
+          console.log('creating mutation', variables);
           await createSupplyMutation({ variables });
         }
       })

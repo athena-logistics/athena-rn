@@ -1,5 +1,9 @@
+import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { FlatList, SectionList, StyleSheet, Switch, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { DO_CONSUME } from '../apollo/mutations';
+import { ConsumeInput } from '../apollo/schema';
 import NativeText from '../components/native/NativeText';
 import StockItemRow from '../components/StockItemRow';
 import colors from '../constants/colors';
@@ -18,14 +22,45 @@ const StockByItem = ({
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isGroupView, setIsGroupView] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
+  const [isGroupView, setIsGroupView] = useState(true);
   const toggleGroupView = () =>
     setIsGroupView((previousState) => !previousState);
   const toggleEditing = () => setIsEditing((previousState) => !previousState);
 
+  const [createConsumeMutation] = useMutation<ConsumeInput>(DO_CONSUME, {
+    onError: (error) => console.log('error', error),
+    onCompleted: (data) => {
+      // @ts-ignore
+      console.log('completed messages:', data.consume.messages);
+      // @ts-ignore
+      if (data.consume.messages.length > 0) {
+        // @ts-ignore
+        data.consume.messages.forEach((message) => {
+          if (message.__typename === 'ValidationMessage') {
+            console.log('error', message.field + ' ' + message.message);
+            Toast.show({
+              type: 'error',
+              text1: 'error',
+              text2: message.field + ' ' + message.message,
+            });
+          }
+        });
+        fetch();
+      }
+    },
+  });
+
   const renderRow = ({ item }: { item: StockItem }) => {
-    return <StockItemRow row={item} key={item.id} isEditing={isEditing} />;
+    return (
+      <StockItemRow
+        row={item}
+        key={item.id + item.locationId}
+        isEditing={isEditing}
+        loading={loading}
+        createConsumeMutation={createConsumeMutation}
+      />
+    );
   };
 
   return (
@@ -42,7 +77,7 @@ const StockByItem = ({
           onRefresh={fetch}
           refreshing={loading}
           renderItem={renderRow}
-          keyExtractor={(row) => row.id + row.stock}
+          keyExtractor={(row) => row.id + row.locationId}
         />
       )}
       {isGroupView && (
@@ -54,9 +89,15 @@ const StockByItem = ({
           }))}
           refreshing={loading}
           onRefresh={fetch}
-          keyExtractor={(item) => item.id}
+          // @ts-ignore
+          keyExtractor={(item) => item.id + item.stock + item.locationId}
           renderItem={({ item }) => (
-            <StockItemRow row={item} isEditing={isEditing} />
+            <StockItemRow
+              row={item}
+              isEditing={isEditing}
+              loading={loading}
+              createConsumeMutation={createConsumeMutation}
+            />
           )}
           renderSectionHeader={({ section: { name, id } }) => (
             <View style={style.row} key={id}>

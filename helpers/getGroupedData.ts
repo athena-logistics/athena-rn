@@ -1,6 +1,6 @@
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 
-export const getGroupedData = (itemList: StockItem[]) => {
+export const getGroupedData = (itemList: (StockItem | Item)[]) => {
   let uniqueItemGroups: { [key: string]: ItemGroup } = {};
   itemList.forEach((d) => {
     uniqueItemGroups[d.itemGroupId] = {
@@ -18,7 +18,8 @@ export const getGroupedData = (itemList: StockItem[]) => {
         .sort((a, b) =>
           a.name.toLowerCase().localeCompare(b.name.toLowerCase())
         )
-        .sort((row1, row2) => row1.stock - row2.stock),
+        .sort((row1, row2) => row1.stock! - row2.stock!)
+        .sort((row1, row2) => (row1.inverse ? -1 : 1)),
     }))
     .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 

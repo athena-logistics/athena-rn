@@ -5,6 +5,7 @@ import { ActionType } from '../actions/global.actions';
 interface GlobalState {
   eventId: string;
   allStock: StockItem[];
+  allItems: Item[];
   locations: any[];
   locationStock: {
     [key: string]: {
@@ -16,6 +17,7 @@ interface GlobalState {
 const initialState: GlobalState = {
   eventId: DEFAULT_EVENT_ID,
   allStock: [],
+  allItems: [],
   locations: [],
   locationStock: {},
 };
@@ -34,6 +36,11 @@ const globalReducer = (
       return {
         ...state,
         allStock: action.payload.rows,
+      };
+    case ActionType.SET_ALL_ITEMS:
+      return {
+        ...state,
+        allItems: action.payload.rows,
       };
     case ActionType.SET_LOCATIONS:
       return {

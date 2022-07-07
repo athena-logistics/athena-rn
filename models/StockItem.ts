@@ -12,4 +12,5 @@ interface StockItem {
   stock: number;
   supply: number;
   unit: string;
+  inverse: boolean;
 }
