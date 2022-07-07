@@ -28,7 +28,7 @@ const LocationStockByGroup = ({}: {}) => {
 
   const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
   // @ts-ignore
-  const item: StockItem = route.params?.item;
+  const item: Item = route.params?.item;
 
   const allStock = useSelector((state: RootState) => state.global.allStock);
   const locationStock = allStock.filter((stock) => stock.id === item.id);

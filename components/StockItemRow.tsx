@@ -64,28 +64,28 @@ const StockItemRow = ({
     };
 
   return (
-    <TouchableOpacity onPress={handlePress}>
-      <View style={style.row}>
+    <View style={style.row}>
+      <TouchableOpacity onPress={handlePress}>
         <View style={style.title}>
           <NativeText style={style.titleText}>{row.name}</NativeText>
           <NativeText style={style.subtitleText}>{row.unit}</NativeText>
         </View>
-        <View style={style.leftContainer}>
-          <View style={style.numberContainer}>
-            <NativeNumberConsumptionInput
-              value={row.stock + ''}
-              onChangeText={consume(row)}
-              loading={loading}
-              editable={isEditing}
-              type={row.status as StockEntryStatus}
-            />
-          </View>
-          {/* <View style={style.status}>
+      </TouchableOpacity>
+      <View style={style.leftContainer}>
+        <View style={style.numberContainer}>
+          <NativeNumberConsumptionInput
+            value={row.stock + ''}
+            onChangeText={consume(row)}
+            loading={loading}
+            editable={isEditing}
+            type={row.status as StockEntryStatus}
+          />
+        </View>
+        {/* <View style={style.status}>
             <Ionicons name={iconName} size={23} color={iconColor} />
           </View> */}
-        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

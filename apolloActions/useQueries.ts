@@ -61,7 +61,7 @@ export const useAllItemsQuery = (eventId: string) => {
       if (data && data.event?.__typename === 'Event') {
         const rowData: Item[] = getNodes(data.event.items).map((item) => ({
           id: item.id,
-          name: `${item.name} (${item.unit})`,
+          name: item.name,
           unit: item.unit,
           inverse: item.inverse,
           itemGroupId: item.itemGroup.id,

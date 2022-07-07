@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
-import { FlatList, SectionList, StyleSheet, Switch, View } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput } from '../apollo/schema';
@@ -65,13 +65,13 @@ const StockByItem = ({
 
   return (
     <>
-      <View style={style.actions}>
+      {/* <View style={style.actions}>
         <Switch onChange={toggleEditing} value={isEditing} />
         <NativeText>Edit</NativeText>
         <Switch onChange={toggleGroupView} value={isGroupView} />
         <NativeText>Group view</NativeText>
-      </View>
-      {!isGroupView && (
+      </View> */}
+      {/* {!isGroupView && (
         <FlatList
           data={itemList}
           onRefresh={fetch}
@@ -79,7 +79,7 @@ const StockByItem = ({
           renderItem={renderRow}
           keyExtractor={(row) => row.id + row.locationId}
         />
-      )}
+      )} */}
       {isGroupView && (
         <SectionList
           sections={getGroupedData(itemList).map((x) => ({
@@ -93,7 +93,7 @@ const StockByItem = ({
           keyExtractor={(item) => item.id + item.stock + item.locationId}
           renderItem={({ item }) => (
             <StockItemRow
-              row={item}
+              row={item as StockItem}
               isEditing={isEditing}
               loading={loading}
               createConsumeMutation={createConsumeMutation}

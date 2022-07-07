@@ -28,7 +28,6 @@ import client from './apollo';
 import colors from './constants/colors';
 import fonts from './constants/fonts';
 import isAndroid from './constants/isAndroid';
-import AllStockByItem from './screens/AllStockByItem';
 import ItemTypes from './screens/ItemTypes';
 import LocationStockByGroup from './screens/LocationStockByGroup';
 import LocationStockByItem from './screens/LocationStockByItem';
@@ -98,8 +97,8 @@ const App = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTab}>
         {/* <OverviewTab.Screen name="Big table" component={StockByLocation2} /> */}
+        {/* <OverviewTab.Screen name="All Items" component={AllStockByItem} /> */}
         <OverviewTab.Screen name="By Item Type" component={ItemTypes} />
-        <OverviewTab.Screen name="All Items" component={AllStockByItem} />
         <OverviewTab.Screen name="By Location" component={StockByLocation} />
       </OverviewTab.Navigator>
     );

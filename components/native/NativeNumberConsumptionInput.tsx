@@ -76,6 +76,8 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
       ? styles.green
       : {};
 
+  console.log(color, 'color');
+
   return (
     <View style={styles.numberContainer}>
       <TouchableOpacity
@@ -144,13 +146,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   red: {
-    shadowColor: '#f80300',
+    color: '#f80300',
   },
   yellow: {
-    shadowColor: '#fe7303',
+    color: '#fe7303',
   },
   green: {
-    shadowColor: 'green',
+    color: 'green',
   },
 });
 
