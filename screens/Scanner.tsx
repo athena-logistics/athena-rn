@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -11,19 +11,17 @@ import { setEventId } from '../store/actions/global.actions';
 
 const Scanner = ({}: {}) => {
   const dispatch = useDispatch();
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean>();
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
-      // @ts-ignore
       setHasPermission(status === 'granted');
     })();
   }, []);
   const navigation = useNavigation();
-  // @ts-ignore
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned: BarCodeScannedCallback = ({ type, data }) => {
     setScanned(true);
     const overviewRegexp = new RegExp(
       `^${API_URL}/logistics/events/((\\d|[a-z]|-)+)/overview$`
@@ -48,10 +46,12 @@ const Scanner = ({}: {}) => {
 
   return (
     <NativeScreen>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
+      {!scanned && (
+        <BarCodeScanner
+          onBarCodeScanned={handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+      )}
       {scanned && (
         <NativeButton
           title={'Tap to Scan Again'}
