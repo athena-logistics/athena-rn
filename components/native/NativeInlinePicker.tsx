@@ -30,7 +30,7 @@ const NativeInlinePicker: FC<NativeInlinePickerProps> = ({
           color: colors.secondary,
           overflow: 'hidden',
         }}
-        dropdownIconColor={'red'}
+        dropdownIconColor={colors.red}
       >
         {items.map((item: any) => (
           <Picker.Item label={item.name} value={item.id} key={item.id} />
@@ -45,7 +45,7 @@ const NativeInlinePicker: FC<NativeInlinePickerProps> = ({
 const styles = StyleSheet.create({
   picker: {
     width: '40%',
-    color: 'red',
+    color: colors.red,
     alignContent: 'stretch',
     alignItems: 'stretch',
   },

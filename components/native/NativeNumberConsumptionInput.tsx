@@ -146,13 +146,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   red: {
-    color: '#f80300',
+    color: colors.red,
   },
   yellow: {
-    color: '#fe7303',
+    color: colors.orange,
   },
   green: {
-    color: 'green',
+    color: colors.green,
   },
 });
 

@@ -15,12 +15,12 @@ const LocationRow2 = ({ row }: { row: LogisticLocation }) => {
   const getStatusIcon = (): { iconName: any; iconColor: string } => {
     switch (row.status as StockEntryStatus) {
       case StockEntryStatus.Normal:
-        return { iconName: 'airplane', iconColor: 'green' };
+        return { iconName: 'airplane', iconColor: colors.green };
       case StockEntryStatus.Warning:
-        return { iconName: 'airplane', iconColor: 'orange' };
+        return { iconName: 'airplane', iconColor: colors.orange };
       case StockEntryStatus.Important:
       default:
-        return { iconName: 'airplane', iconColor: 'red' };
+        return { iconName: 'airplane', iconColor: colors.red };
     }
   };
 

@@ -17,9 +17,9 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
-import React from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
 import { LogBox, StyleSheet } from 'react-native';
 import 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
@@ -55,8 +55,26 @@ const App = () => {
     'Avenir-Book': require('./assets/fonts/Avenir-Book.otf'),
   });
 
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    const loadAsync = async () => {
+      if (fontsLoaded) {
+        // await new Promise((resolve) => setTimeout(resolve, 2000));
+        await SplashScreen.hideAsync();
+      }
+    };
+    loadAsync();
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
 
   const defaultScreenOptions: BottomTabNavigationOptions = {

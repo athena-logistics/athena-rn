@@ -8,6 +8,9 @@ export default {
   grey: '#919191',
   black: '#202124',
   white: '#ffffff',
+  red: '#f80300',
+  orange: '#fe7303',
+  green: '#288a7b',
 };
 
 //efbb35

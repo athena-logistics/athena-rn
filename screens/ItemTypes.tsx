@@ -1,4 +1,9 @@
-import { Entypo } from '@expo/vector-icons';
+import {
+  Entypo,
+  Feather,
+  Ionicons,
+  MaterialCommunityIcons,
+} from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { Pressable, RefreshControl, StyleSheet, View } from 'react-native';
@@ -79,6 +84,57 @@ const ItemTypes = ({}: {}) => {
     return StockEntryStatus.Normal;
   };
 
+  const getGroupNameIcon = (name: string) => {
+    console.log(name);
+    switch (name) {
+      case 'Becher':
+        return (
+          <Entypo
+            name={'cup'}
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 5 }}
+          />
+        );
+      case 'Bier':
+        return (
+          <Ionicons
+            name={'beer'}
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 5 }}
+          />
+        );
+      case 'Diverses':
+        return (
+          <Feather
+            name={'box'}
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 5 }}
+          />
+        );
+      case 'Softdrinks':
+        return (
+          <MaterialCommunityIcons
+            name={'bottle-soda'}
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 5 }}
+          />
+        );
+      case 'Wein':
+        return (
+          <MaterialCommunityIcons
+            name={'glass-wine'}
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 5 }}
+          />
+        );
+    }
+  };
+
   return (
     <NativeScreen style={style.screen}>
       <ScrollView
@@ -96,12 +152,7 @@ const ItemTypes = ({}: {}) => {
           {groupedItems.map((group) => (
             <View style={style.itemContainer} key={group.id}>
               <View style={style.headerItem}>
-                <Entypo
-                  name={'cup'}
-                  size={20}
-                  color={colors.primary}
-                  style={{ marginRight: 5 }}
-                />
+                {getGroupNameIcon(group.name)}
                 <NativeText type="bold" style={style.headerText}>
                   {group.name}
                 </NativeText>
@@ -117,11 +168,17 @@ const ItemTypes = ({}: {}) => {
                     {item.unit}
                   </NativeText>
                   <View style={style.numberContainer}>
+                    <MaterialCommunityIcons
+                      name="home-city"
+                      size={18}
+                      color={colors.primary}
+                    />
                     <NativeText
                       style={{
                         ...style.numberText,
                         ...style.IMPORTANT,
                       }}
+                      type={'bold'}
                     >
                       {getNumberOfItemsPerStatus(
                         item,
@@ -133,6 +190,7 @@ const ItemTypes = ({}: {}) => {
                         ...style.numberText,
                         ...style.WARNING,
                       }}
+                      type={'bold'}
                     >
                       {getNumberOfItemsPerStatus(
                         item,
@@ -144,14 +202,10 @@ const ItemTypes = ({}: {}) => {
                         ...style.numberText,
                         ...style.NORMAL,
                       }}
+                      type={'bold'}
                     >
                       {getNumberOfItemsPerStatus(item, StockEntryStatus.Normal)}
                     </NativeText>
-                    {/* <MaterialCommunityIcons
-                      name="warehouse"
-                      size={18}
-                      color={colors.primary}
-                    /> */}
                   </View>
                 </Pressable>
               ))}
@@ -173,7 +227,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       margin: 10,
     },
     headerItem: {
-      padding: 10,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
       width: 120,
       height: 100,
       borderWidth: StyleSheet.hairlineWidth,
@@ -182,7 +237,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       flexDirection: 'row',
     },
     item: {
-      padding: 10,
+      paddingVertical: 5,
+      paddingHorizontal: 5,
       width: 120,
       height: 100,
       borderWidth: StyleSheet.hairlineWidth,
@@ -206,11 +262,17 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     headerText: { fontSize: 16 },
     itemText: { fontSize: 16 },
     itemSubtitleText: { fontSize: 12, color: colors.grey },
-    numberText: { fontSize: 18, marginLeft: 5 },
+    numberText: { fontSize: 20, marginLeft: 8 },
 
-    NORMAL: { color: 'green' },
-    IMPORTANT: { color: 'red' },
-    WARNING: { color: 'orange' },
+    NORMAL: { color: colors.green },
+    IMPORTANT: { color: colors.red },
+    WARNING: { color: colors.orange },
+    icon: {
+      // color: 'transparent',
+      textShadowColor: colors.primary,
+      textShadowRadius: 1,
+      marginRight: 2,
+    },
   });
 
 export default ItemTypes;

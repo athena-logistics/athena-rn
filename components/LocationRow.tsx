@@ -34,21 +34,19 @@ const LocationRow = ({ row }: { row: LogisticLocation }) => {
             <NativeText style={style.statusText}>
               {getNumberOfItemsPerStatus(StockEntryStatus.Important)}
             </NativeText>
-            <Entypo name={'cup'} size={30} color={'red'} />
+            <Entypo name={'cup'} size={30} color={colors.red} />
           </View>
           <View style={style.status}>
             <NativeText style={style.statusText}>
-              {' '}
               {getNumberOfItemsPerStatus(StockEntryStatus.Warning)}
             </NativeText>
-            <Entypo name={'cup'} size={30} color={'orange'} />
+            <Entypo name={'cup'} size={30} color={colors.orange} />
           </View>
           <View style={style.status}>
             <NativeText style={style.statusText}>
-              {' '}
               {getNumberOfItemsPerStatus(StockEntryStatus.Normal)}
             </NativeText>
-            <Entypo name={'cup'} size={30} color={'green'} />
+            <Entypo name={'cup'} size={30} color={colors.green} />
           </View>
         </View>
       </View>

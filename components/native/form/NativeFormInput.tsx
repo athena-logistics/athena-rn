@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useReducer } from 'react';
 import { StyleSheet, TextInputProps, View } from 'react-native';
+import colors from '../../../constants/colors';
 import NativeInput from '../NativeInput';
 import NativeText from '../NativeText';
 
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   errorText: {
-    color: 'red',
+    color: colors.red
     fontSize: 14,
   },
 });

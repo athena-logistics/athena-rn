@@ -2,11 +2,12 @@
   "expo": {
     "name": "athena-rn",
     "slug": "athena-rn",
+    "scheme": "athena-rn",
     "version": "0.0.1",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,17 +16,18 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.punkah.athenarn"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.punkah.athenarn"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["react-native-vision-camera"]
+    }
   }
 }

@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { StockEntryStatus } from '../apollo/schema';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
+import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 
@@ -19,12 +20,12 @@ const StockItemDetails = ({}: {}) => {
   const getStatusIcon = (): { iconName: any; iconColor: string } => {
     switch (row.status as StockEntryStatus) {
       case StockEntryStatus.Normal:
-        return { iconName: 'airplane', iconColor: 'green' };
+        return { iconName: 'airplane', iconColor: colors.green };
       case StockEntryStatus.Important:
-        return { iconName: 'airplane', iconColor: 'orange' };
+        return { iconName: 'airplane', iconColor: colors.orange };
       case StockEntryStatus.Warning:
       default:
-        return { iconName: 'airplane', iconColor: 'red' };
+        return { iconName: 'airplane', iconColor: colors.red };
     }
   };
 
