@@ -25,6 +25,7 @@ import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
+import i18n from 'i18n-js';
 
 export interface ItemState {
   stock: string;
@@ -175,7 +176,7 @@ const Move = ({}: {}) => {
       if (data && data.event?.__typename === 'Event') {
         const locations = [
           {
-            name: 'Locations',
+            name: i18n.t('locations'),
             id: 0,
             children: getNodes(data.event.locations).map((location: any) => ({
               name: location.name,
@@ -239,7 +240,7 @@ const Move = ({}: {}) => {
                 color: isAndroid ? colors.white : colors.primary,
               }}
             >
-              Save
+              {i18n.t('save')}
             </NativeText>
           )}
         </Pressable>
@@ -287,7 +288,7 @@ const Move = ({}: {}) => {
             items={locations}
             selectedValue={from}
             setSelectedValue={handleSetFrom}
-            placeholderText={'From...'}
+            placeholderText={i18n.t('from')}
             width="100%"
           />
           <Ionicons
@@ -300,7 +301,7 @@ const Move = ({}: {}) => {
             items={locations}
             selectedValue={to}
             setSelectedValue={handleSetTo}
-            placeholderText={'To...'}
+            placeholderText={i18n.t('to')}
             width="100%"
           />
         </View>
@@ -318,6 +319,7 @@ const Move = ({}: {}) => {
                   items={availableItems}
                   selectedValue={stuff.item}
                   setSelectedValue={setStuffItem(stuff, index)}
+                  placeholderText={i18n.t('select')}
                   alreadySelectedItems={moveState.stuff.map(
                     (stuff) => stuff.item
                   )}
@@ -353,7 +355,9 @@ const Move = ({}: {}) => {
             onPress={handleAdd}
             android_ripple={{ color: colors.primary }}
           >
-            <NativeText style={style.addNewText}>Add new stuff</NativeText>
+            <NativeText style={style.addNewText}>
+              {i18n.t('addNewStuff')}
+            </NativeText>
             <Ionicons
               size={33}
               name={'ios-add-circle-outline'}

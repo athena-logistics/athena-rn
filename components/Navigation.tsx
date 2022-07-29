@@ -85,6 +85,7 @@ const Navigation = () => {
           component={ItemOverview}
           options={{
             lazy: true,
+            title: i18n.t('byItem'),
           }}
         />
         <OverviewTab.Screen
@@ -92,6 +93,7 @@ const Navigation = () => {
           component={LocationOverview}
           options={{
             lazy: true,
+            title: i18n.t('byLocation'),
           }}
         />
       </OverviewTab.Navigator>
@@ -105,7 +107,13 @@ const Navigation = () => {
       defaultScreenOptions={{}}
     >
       {isEventAdmin() ? (
-        <OverviewStack.Screen name="Overview" component={OverviewTabs} />
+        <OverviewStack.Screen
+          name="Overview"
+          component={OverviewTabs}
+          options={(props) => ({
+            title: i18n.t('overview'),
+          })}
+        />
       ) : null}
       <OverviewStack.Screen
         name="Stock Item Details"

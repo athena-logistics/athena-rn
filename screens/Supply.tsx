@@ -24,6 +24,7 @@ import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
+import i18n from 'i18n-js';
 
 interface ItemState {
   stock: string;
@@ -122,7 +123,7 @@ const Supply = ({}: {}) => {
       if (data && data.event?.__typename === 'Event') {
         const locations = [
           {
-            name: 'Locations',
+            name: i18n.t('locations'),
             id: 0,
             children: getNodes(data.event.locations).map((location: any) => ({
               name: location.name,
@@ -220,7 +221,7 @@ const Supply = ({}: {}) => {
                 color: isAndroid ? colors.white : colors.primary,
               }}
             >
-              Save
+              {i18n.t('save')}
             </NativeText>
           )}
         </Pressable>
@@ -272,7 +273,7 @@ const Supply = ({}: {}) => {
             items={locations}
             selectedValue={to}
             setSelectedValue={handleSetTo}
-            placeholderText={'To...'}
+            placeholderText={i18n.t('to')}
             width="100%"
           />
         </View>
@@ -290,6 +291,7 @@ const Supply = ({}: {}) => {
                   items={availableItems}
                   selectedValue={stuff.item}
                   setSelectedValue={setStuffItem(stuff, index)}
+                  placeholderText={i18n.t('select')}
                   alreadySelectedItems={moveState.stuff.map(
                     (stuff) => stuff.item
                   )}
@@ -324,7 +326,9 @@ const Supply = ({}: {}) => {
             onPress={handleAdd}
             android_ripple={{ color: colors.primary }}
           >
-            <NativeText style={style.addNewText}>Add new stuff</NativeText>
+            <NativeText style={style.addNewText}>
+              {i18n.t('addNewStuff')}
+            </NativeText>
             <Ionicons
               size={33}
               name={'ios-add-circle-outline'}

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import i18n from 'i18n-js';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -102,7 +103,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
           onChangeText={setCurrentValue}
           onBlur={handleBlur}
         />
-        <NativeText style={styles.numberText}>in stock</NativeText>
+        <NativeText style={styles.numberText}>{i18n.t('inStock')}</NativeText>
       </View>
       <TouchableOpacity
         onPress={add(false)}

@@ -1,5 +1,6 @@
 import { Octicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
+import i18n from 'i18n-js';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StockEntryStatus } from '../apollo/schema';
@@ -46,28 +47,42 @@ const StockItemDetails = ({}: {}) => {
         </View>
         <View style={style.leftContainer}>
           <View style={style.numberContainer}>
+            <NativeText style={style.number}>{item.itemGroupName}</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('itemGroup')}
+            </NativeText>
+          </View>
+          <View style={style.numberContainer}>
+            <NativeText style={style.number}>{item.unit}</NativeText>
+            <NativeText style={style.numberText}>{i18n.t('unit')}</NativeText>
+          </View>
+          <View style={style.numberContainer}>
             <NativeText style={style.number}>{item.stock}</NativeText>
-            <NativeText style={style.numberText}>in stock</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('inStock')}
+            </NativeText>
           </View>
           <View style={style.numberContainer}>
             <NativeText style={style.number}>{item.consumption}</NativeText>
-            <NativeText style={style.numberText}>consumption</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('consumption')}
+            </NativeText>
           </View>
           <View style={style.numberContainer}>
             <NativeText style={style.number}>{item.movementIn}</NativeText>
-            <NativeText style={style.numberText}>movement in</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('movementIn')}
+            </NativeText>
           </View>
           <View style={style.numberContainer}>
             <NativeText style={style.number}>{item.movementOut}</NativeText>
-            <NativeText style={style.numberText}>movement out</NativeText>
-          </View>
-          <View style={style.numberContainer}>
-            <NativeText style={style.number}>{item.itemGroupName}</NativeText>
-            <NativeText style={style.numberText}>item group</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('movementOut')}
+            </NativeText>
           </View>
           <View style={style.numberContainer}>
             <NativeText style={style.number}>{item.supply}</NativeText>
-            <NativeText style={style.numberText}>supply</NativeText>
+            <NativeText style={style.numberText}>{i18n.t('supply')}</NativeText>
           </View>
         </View>
       </View>
