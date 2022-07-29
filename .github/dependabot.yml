@@ -8,3 +8,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      # Expo Deps are handled independently
+      - dependency-name: expo-*
