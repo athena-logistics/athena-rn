@@ -541,6 +541,13 @@ export type GetAllItemsQueryVariables = Exact<{
 
 export type GetAllItemsQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, items?: { __typename?: 'ItemConnection', edges: Array<{ __typename?: 'ItemEdge', node?: { __typename?: 'Item', id: string, name: string, unit: string, inverse: boolean, itemGroup: { __typename?: 'ItemGroup', id: string, name: string } } | null }> } | null } | null };
 
+export type GetInternalLocationIdQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetInternalLocationIdQuery = { __typename?: 'RootQueryType', location?: { __typename?: 'Location', id: string, name: string } | null };
+
 
 export const GetEventLocations = gql`
     query GetEventLocations($id: ID!) {
@@ -648,6 +655,14 @@ export const GetAllItems = gql`
         }
       }
     }
+  }
+}
+    `;
+export const GetInternalLocationId = gql`
+    query GetInternalLocationId($id: ID!) {
+  location(id: $id) {
+    id
+    name
   }
 }
     `;

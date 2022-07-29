@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux';
-import { DEFAULT_EVENT_ID } from '../../constants/app';
+import { PermissionEnum } from '../../models/PermissionEnum';
 import { ActionType } from '../actions/global.actions';
 
 interface GlobalState {
@@ -12,14 +12,18 @@ interface GlobalState {
       itemById: { [key: string]: StockItem };
     };
   };
+  currentPermission: PermissionEnum;
+  currentPermissionId?: string;
 }
 
 const initialState: GlobalState = {
-  eventId: DEFAULT_EVENT_ID,
+  eventId: '',
   allStock: [],
   allItems: [],
   locations: [],
   locationStock: {},
+  currentPermission: PermissionEnum.Guest,
+  currentPermissionId: undefined,
 };
 
 const globalReducer = (
@@ -27,11 +31,6 @@ const globalReducer = (
   action: AnyAction
 ): GlobalState => {
   switch (action.type) {
-    case ActionType.SET_EVENT_ID:
-      return {
-        ...state,
-        eventId: action.payload.eventId,
-      };
     case ActionType.SET_ALL_STOCK:
       return {
         ...state,
@@ -54,6 +53,26 @@ const globalReducer = (
           ...state.locationStock,
           [action.payload.id]: action.payload.data,
         },
+      };
+    case ActionType.RESET_PERMISSIONS:
+      return {
+        ...state,
+        currentPermission: PermissionEnum.Guest,
+        currentPermissionId: undefined,
+        eventId: '',
+      };
+    case ActionType.SWITCH_TO_EVENT:
+      return {
+        ...state,
+        currentPermission: PermissionEnum.EventAdmin,
+        currentPermissionId: action.payload.eventId,
+        eventId: action.payload.eventId,
+      };
+    case ActionType.SWITCH_TO_LOCATION:
+      return {
+        ...state,
+        currentPermission: PermissionEnum.LocationUser,
+        currentPermissionId: action.payload.locationId,
       };
     default:
       return state;

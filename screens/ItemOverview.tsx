@@ -21,7 +21,7 @@ import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 
-const ItemTypes = ({}: {}) => {
+const ItemOverview: React.FC = () => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
   const route = useRoute();
@@ -52,7 +52,7 @@ const ItemTypes = ({}: {}) => {
   const navigation = useNavigation();
   const handlePress = (item: Item) => () => {
     // @ts-ignore
-    navigation.navigate('Location Stock By Group', { item });
+    navigation.navigate('Item Overview', { item });
   };
 
   const getItemLocationCount = (item: Item) =>
@@ -85,7 +85,6 @@ const ItemTypes = ({}: {}) => {
   };
 
   const getGroupNameIcon = (name: string) => {
-    console.log(name);
     switch (name) {
       case 'Becher':
         return (
@@ -275,4 +274,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     },
   });
 
-export default ItemTypes;
+export default ItemOverview;

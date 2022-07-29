@@ -4,12 +4,14 @@ import {
   GET_ALL_ITEMS,
   GET_ALL_STOCK,
   GET_EVENT_LOCATIONS,
+  GET_INTERNAL_LOCATION_ID,
   GET_LOCATION_STOCK,
 } from '../apollo/queries';
 import {
   GetAllItemsQuery,
   GetAllStockQuery,
   GetEventLocationsQuery,
+  GetInternalLocationIdQuery,
   GetLocationStockQuery,
 } from '../apollo/schema';
 import { getNodes } from '../helpers/apollo';
@@ -50,6 +52,7 @@ export const useAllStockQuery = (eventId: string) => {
         dispatch(setAllStock(rowData));
       }
     },
+    fetchPolicy: 'no-cache',
   });
 };
 
@@ -75,6 +78,7 @@ export const useAllItemsQuery = (eventId: string) => {
         dispatch(setAllItems(rowData));
       }
     },
+    fetchPolicy: 'no-cache',
   });
 };
 
@@ -120,5 +124,12 @@ export const useLocationQuery = (eventId: string) => {
   return useQuery<GetEventLocationsQuery>(GET_EVENT_LOCATIONS, {
     variables: { id: eventId },
     skip: !eventId,
+  });
+};
+
+export const useInternalLocationId = (externalLocationId: string) => {
+  return useQuery<GetInternalLocationIdQuery>(GET_INTERNAL_LOCATION_ID, {
+    variables: { id: externalLocationId },
+    skip: !externalLocationId,
   });
 };

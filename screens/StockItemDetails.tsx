@@ -16,6 +16,9 @@ const StockItemDetails = ({}: {}) => {
   const route = useRoute();
   // @ts-ignore
   const row: StockItemRow = route.params?.row;
+  if (!row) {
+    return null;
+  }
 
   const getStatusIcon = (): { iconName: any; iconColor: string } => {
     switch (row.status as StockEntryStatus) {

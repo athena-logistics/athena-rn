@@ -2,8 +2,9 @@ import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { DO_SUPPLY } from '../apollo/mutations';
 import { SupplyInput } from '../apollo/schema';
@@ -37,6 +38,7 @@ enum ActionType {
   Add,
   Change,
   Delete,
+  Initialize,
 }
 
 export type AddStuffAction = {
@@ -58,7 +60,14 @@ export type DeleteStuffAction = {
   };
 };
 
-export type MoveAction = AddStuffAction | ChangeStuffAction | DeleteStuffAction;
+export type InitializeAction = {
+  type: ActionType.Initialize;
+};
+export type MoveAction =
+  | AddStuffAction
+  | ChangeStuffAction
+  | DeleteStuffAction
+  | InitializeAction;
 
 const defaultItem = { item: '', stock: '1' };
 
@@ -82,6 +91,11 @@ const moveReducer = (state: MoveState, action: MoveAction): MoveState => {
       return {
         ...state,
         stuff: stuffs2,
+      };
+    case ActionType.Initialize:
+      return {
+        ...state,
+        stuff: [defaultItem],
       };
 
     default:
@@ -139,9 +153,30 @@ const Supply = ({}: {}) => {
     fetch();
   }, []);
 
-  const [createSupplyMutation] = useMutation<SupplyInput>(DO_SUPPLY);
+  const [createSupplyMutation, { loading: supplyLoading }] =
+    useMutation<SupplyInput>(DO_SUPPLY, {
+      onCompleted: (data) => {
+        console.log(data);
+        // @ts-ignore
+        if (data.supply.messages.length > 0) {
+          // @ts-ignore
+          data.supply.messages.forEach((message) => {
+            Toast.show({
+              type: 'error',
+              text1: 'error',
+              text2: message.field + ' ' + message.message,
+            });
+          });
+        } else {
+          Toast.show({
+            text1: 'success',
+            text2: 'successful supply',
+          });
+          dispatch({ type: ActionType.Initialize });
+        }
+      },
+    });
   const save = useCallback(() => {
-    console.log('save');
     Promise.all(
       moveState.stuff.map(async (stuff) => {
         const amount = Number(stuff.stock);
@@ -168,19 +203,30 @@ const Supply = ({}: {}) => {
         // <HeaderButtons HeaderButtonComponent={NativeHeaderButton}>
         //   <Item title="Save" iconName={'ios-checkmark'} />
         // </HeaderButtons>
-        <Pressable onPress={save}>
-          <NativeText
-            style={{
-              paddingRight: 20,
-              color: isAndroid ? 'white' : colors.primary,
-            }}
-          >
-            Save
-          </NativeText>
+        <Pressable onPress={save} disabled={supplyLoading}>
+          {supplyLoading && (
+            <ActivityIndicator
+              size={'small'}
+              color={isAndroid ? colors.white : colors.primary}
+              style={{
+                paddingRight: 20,
+              }}
+            />
+          )}
+          {!supplyLoading && (
+            <NativeText
+              style={{
+                paddingRight: 20,
+                color: isAndroid ? colors.white : colors.primary,
+              }}
+            >
+              Save
+            </NativeText>
+          )}
         </Pressable>
       ),
     });
-  }, [navigation]);
+  }, [navigation, supplyLoading, save]);
 
   const handleSetTo = (value: any) => {
     setTo(value);

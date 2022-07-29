@@ -7,11 +7,11 @@ import { useSelector } from 'react-redux';
 import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput } from '../apollo/schema';
 import { useAllStockQuery } from '../apolloActions/useQueries';
-import ItemInLocation from '../components/ItemInLocation';
+import ItemRow from '../components/ItemRow';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 
-const LocationStockByGroup = ({}: {}) => {
+const ItemDetails = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -33,35 +33,37 @@ const LocationStockByGroup = ({}: {}) => {
   const allStock = useSelector((state: RootState) => state.global.allStock);
   const locationStock = allStock.filter((stock) => stock.id === item.id);
 
-  const [createConsumeMutation] = useMutation<ConsumeInput>(DO_CONSUME, {
-    onError: (error) => console.log('error', error),
-    onCompleted: (data) => {
-      // @ts-ignore
-      console.log('completed messages:', data.consume.messages);
-      // @ts-ignore
-      if (data.consume.messages.length > 0) {
+  const [createConsumeMutation, { loading: consumeLoading }] =
+    useMutation<ConsumeInput>(DO_CONSUME, {
+      onError: (error) => console.log('error', error),
+      onCompleted: (data) => {
         // @ts-ignore
-        data.consume.messages.forEach((message) => {
-          if (message.__typename === 'ValidationMessage') {
-            console.log('error', message.field + ' ' + message.message);
-            Toast.show({
-              type: 'error',
-              text1: 'error',
-              text2: message.field + ' ' + message.message,
-            });
-          }
-        });
-        fetchStock();
-      }
-    },
-  });
+        console.log('completed messages:', data.consume.messages);
+        // @ts-ignore
+        if (data.consume.messages.length > 0) {
+          // @ts-ignore
+          data.consume.messages.forEach((message) => {
+            if (message.__typename === 'ValidationMessage') {
+              console.log('error', message.field + ' ' + message.message);
+              Toast.show({
+                type: 'error',
+                text1: 'error',
+                text2: message.field + ' ' + message.message,
+              });
+            }
+          });
+          // fetchStock();
+        }
+      },
+    });
 
   const renderRow = ({ item }: { item: StockItem }) => {
     return (
-      <ItemInLocation
+      <ItemRow
         row={item}
-        loading={loadingStock}
+        loading={loadingStock || consumeLoading}
         createConsumeMutation={createConsumeMutation}
+        variant={'location'}
       />
     );
   };
@@ -70,7 +72,7 @@ const LocationStockByGroup = ({}: {}) => {
     <FlatList
       data={locationStock}
       onRefresh={fetchStock}
-      refreshing={loadingStock}
+      refreshing={loadingStock || consumeLoading}
       renderItem={renderRow}
       keyExtractor={(row) => row.locationId}
     />
@@ -82,4 +84,4 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     screen: { alignItems: 'stretch' },
   });
 
-export default LocationStockByGroup;
+export default ItemDetails;

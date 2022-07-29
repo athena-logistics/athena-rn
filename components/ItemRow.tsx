@@ -9,19 +9,31 @@ import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeNumberConsumptionInput from './native/NativeNumberConsumptionInput';
 import NativeText from './native/NativeText';
 
-const ItemInLocation = ({
+const ItemRow = ({
   row,
   loading,
   createConsumeMutation,
+  variant,
 }: {
   row: StockItem;
   loading: boolean;
   createConsumeMutation: (
     options?: MutationFunctionOptions
   ) => Promise<FetchResult>;
+  variant: 'nameAndUnit' | 'location';
 }) => {
   const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+  const isInverse = row.inverse;
+  const style = styles(
+    { isPortrait, isLandscape },
+    { isInverse: variant === 'nameAndUnit' ? isInverse : false }
+  );
+
+  const navigation = useNavigation();
+  const handlePress = () => {
+    // @ts-ignore
+    navigation.navigate('Stock Item Details', { row });
+  };
 
   const consume =
     (item: StockItem) => async (newValue?: string, change?: number) => {
@@ -40,19 +52,25 @@ const ItemInLocation = ({
       }
     };
 
-  const navigation = useNavigation();
-  const handlePress = () => {
-    // @ts-ignore
-    navigation.navigate('Stock Item Details', { row });
-  };
-
   return (
     <View style={style.row}>
-      <View style={style.title}>
-        <TouchableOpacity onPress={handlePress}>
-          <NativeText style={style.titleText}>{row.locationName}</NativeText>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={handlePress}>
+        <View style={style.rightContainer}>
+          <View style={style.title}>
+            {variant === 'nameAndUnit' && (
+              <>
+                <NativeText style={style.titleText}>{row.name}</NativeText>
+                <NativeText style={style.subtitleText}>{row.unit}</NativeText>
+              </>
+            )}
+            {variant === 'location' && (
+              <NativeText style={style.titleText}>
+                {row.locationName}
+              </NativeText>
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
       <View style={style.leftContainer}>
         <NativeNumberConsumptionInput
           value={row.stock + ''}
@@ -66,7 +84,10 @@ const ItemInLocation = ({
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
+const styles = (
+  { isPortrait, isLandscape }: Orientation,
+  { isInverse }: { isInverse: boolean }
+) =>
   StyleSheet.create({
     row: {
       flexDirection: 'row',
@@ -80,20 +101,23 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       width: '100%',
       overflow: 'hidden',
     },
-    titleContainer: {},
+    rightContainer: {
+      flexShrink: 1,
+    },
     leftContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    title: { overflow: 'hidden', flex: 1 },
+    title: { overflow: 'hidden', flex: 1, justifyContent: 'center' },
     titleText: {
       fontSize: 18,
       fontFamily: fonts.defaultFontFamilyBold,
+      color: isInverse ? colors.secondary : colors.primary,
     },
     subtitleText: {
       fontSize: 12,
     },
   });
 
-export default ItemInLocation;
+export default ItemRow;

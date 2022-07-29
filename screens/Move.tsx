@@ -2,8 +2,9 @@ import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { DO_RELOCATE } from '../apollo/mutations';
 import { RelocateInput } from '../apollo/schema';
@@ -59,8 +60,15 @@ export type DeleteStuffAction = {
     index: number;
   };
 };
+export type InitializeAction = {
+  type: MoveActionType.Initialize;
+};
 
-export type MoveAction = AddStuffAction | ChangeStuffAction | DeleteStuffAction;
+export type MoveAction =
+  | AddStuffAction
+  | ChangeStuffAction
+  | DeleteStuffAction
+  | InitializeAction;
 
 export const defaultItem = { item: '', stock: '1' };
 
@@ -88,6 +96,11 @@ export const moveReducer = (
       return {
         ...state,
         stuff: stuffs2,
+      };
+    case MoveActionType.Initialize:
+      return {
+        ...state,
+        stuff: [defaultItem],
       };
 
     default:
@@ -117,8 +130,31 @@ const Move = ({}: {}) => {
     (state: RootState) => state.global.locationStock[from]
   );
 
-  const [createRelocateMutation] = useMutation<RelocateInput>(DO_RELOCATE);
+  const [createRelocateMutation, { loading: moveLoading, error: moveError }] =
+    useMutation<RelocateInput>(DO_RELOCATE, {
+      onCompleted: (data) => {
+        console.log('done');
+        // @ts-ignore
+        if (data.relocate.messages.length > 0) {
+          // @ts-ignore
+          data.relocate.messages.forEach((message) => {
+            Toast.show({
+              type: 'error',
+              text1: 'error',
+              text2: message.field + ' ' + message.message,
+            });
+          });
+        } else {
+          Toast.show({
+            text1: 'success',
+            text2: 'successful move',
+          });
+          dispatch({ type: MoveActionType.Initialize });
+        }
+      },
+    });
 
+  console.log('move error', moveError, moveLoading);
   useMovementSubscription({
     locationId: from,
     onSubscriptionData: (data: any) => {
@@ -186,19 +222,30 @@ const Move = ({}: {}) => {
         // <HeaderButtons HeaderButtonComponent={NativeHeaderButton}>
         //   <Item title="Save" iconName={'ios-checkmark'} />
         // </HeaderButtons>
-        <Pressable onPress={save}>
-          <NativeText
-            style={{
-              paddingRight: 20,
-              color: isAndroid ? 'white' : colors.primary,
-            }}
-          >
-            Save
-          </NativeText>
+        <Pressable onPress={save} disabled={moveLoading}>
+          {moveLoading && (
+            <ActivityIndicator
+              size={'small'}
+              color={isAndroid ? colors.white : colors.primary}
+              style={{
+                paddingRight: 20,
+              }}
+            />
+          )}
+          {!moveLoading && (
+            <NativeText
+              style={{
+                paddingRight: 20,
+                color: isAndroid ? colors.white : colors.primary,
+              }}
+            >
+              Save
+            </NativeText>
+          )}
         </Pressable>
       ),
     });
-  }, [navigation, save]);
+  }, [navigation, save, moveLoading]);
 
   const handleSetTo = (value: any) => {
     setTo(value);

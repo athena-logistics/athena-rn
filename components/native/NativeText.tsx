@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.defaultFontFamily,
     fontSize: 16,
     color: colors.primary,
+    
   },
   textBold: {
     fontFamily: fonts.defaultFontFamilyBold,

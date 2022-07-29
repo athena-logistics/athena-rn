@@ -33,27 +33,36 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
-    if (value !== currentValue) {
-      setCurrentValue(value?.toString());
+    if (!loading) {
+      if (value !== currentValue) {
+        console.log('setting current value', value);
+        setCurrentValue(value?.toString());
+      }
     }
   }, [value, loading]);
 
   const add = (offset: number) => () => {
     const newNumber = Number(currentValue) + offset + '';
+    if (Number(currentValue) >= 0) {
+      setCurrentValue((currentValue) => Number(currentValue) + offset + '');
+      if (!isPressing.current) {
+        if (timer2.current) {
+          clearTimeout(timer2.current);
+        }
 
-    setCurrentValue((currentValue) => Number(currentValue) + offset + '');
-    if (!isPressing.current) {
-      if (timer2.current) {
-        clearTimeout(timer2.current);
+        timer2.current = setTimeout(() => onChangeText(newNumber), 0
+        
+        );
       }
-      timer2.current = setTimeout(() => onChangeText(newNumber), 1000);
     }
   };
 
   const cancelLongPress = async () => {
     if (isPressing.current) {
       clearInterval(timer.current);
-      onChangeText(currentValue);
+      if (Number(currentValue) >= 0) {
+        onChangeText(currentValue);
+      }
       isPressing.current = false;
     }
   };
@@ -64,7 +73,9 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   };
 
   const handleBlur = (props: any) => {
-    onChangeText && onChangeText(currentValue);
+    if (Number(currentValue) >= 0) {
+      onChangeText && onChangeText(currentValue);
+    }
   };
 
   const color =
@@ -75,8 +86,6 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
       : type === StockEntryStatus.Normal
       ? styles.green
       : {};
-
-  console.log(color, 'color');
 
   return (
     <View style={styles.numberContainer}>

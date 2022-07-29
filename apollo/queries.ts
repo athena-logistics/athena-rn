@@ -113,3 +113,12 @@ export const GET_ALL_ITEMS = gql`
     }
   }
 `;
+
+export const GET_INTERNAL_LOCATION_ID = gql`
+  query GetInternalLocationId($id: ID!) {
+    location(id: $id) {
+      id
+      name
+    }
+  }
+`;
