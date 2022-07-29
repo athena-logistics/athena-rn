@@ -110,9 +110,13 @@ const Navigation = () => {
       <OverviewStack.Screen
         name="Stock Item Details"
         component={StockItemDetails}
+        options={(props) => ({
+          // @ts-ignore
+          title: props.route.params?.stockItem?.name,
+        })}
       />
       <OverviewStack.Screen
-        name="Location Overview"
+        name="Location Details"
         component={LocationDetails}
         options={(props) => ({
           // @ts-ignore
@@ -121,10 +125,10 @@ const Navigation = () => {
       />
       {isEventAdmin() ? (
         <OverviewStack.Screen
-          name="Item Overview"
+          name="Item Details"
           component={ItemDetails}
           options={(props) => ({
-            // @ts-ignorew
+            // @ts-ignore
             title: props.route.params?.item?.name,
           })}
         />

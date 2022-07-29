@@ -1,6 +1,7 @@
 import { FetchResult, MutationFunctionOptions } from '@apollo/client';
+import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ConsumeInput, StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
@@ -22,6 +23,12 @@ const ItemRow = ({
   ) => Promise<FetchResult>;
   variant: 'nameAndUnit' | 'location';
 }) => {
+  const [localRow, setLocalRow] = useState(row);
+
+  useEffect(() => {
+    setLocalRow(row);
+  }, [row]);
+
   const { isPortrait, isLandscape } = useOrientation();
   const isInverse = row.inverse;
   const style = styles(
@@ -32,30 +39,45 @@ const ItemRow = ({
   const navigation = useNavigation();
   const handlePress = () => {
     // @ts-ignore
-    navigation.navigate('Stock Item Details', { row });
+    navigation.navigate('Stock Item Details', { stockItem: row });
   };
 
-  const consume =
-    (item: StockItem) => async (newValue?: string, change?: number) => {
-      console.log('consume', item.stock, newValue, change);
-      const amount = change ? -change : Number(item.stock) - Number(newValue);
-      const locationId = item.locationId;
-      const itemId = item.id;
-      if (!Number.isNaN(amount) && locationId && itemId) {
-        console.log('consume changed', amount, itemId);
-        const variables: ConsumeInput = {
-          amount,
-          locationId,
-          itemId,
-        };
-        await createConsumeMutation({ variables });
-      }
-    };
+  const consume = async (newValue?: string, change?: number) => {
+    console.log('consume', row.stock, localRow.stock, newValue, change);
+    const amount = change ? -change : Number(localRow.stock) - Number(newValue);
+    const locationId = row.locationId;
+    const itemId = row.id;
+    if (!Number.isNaN(amount) && locationId && itemId) {
+      console.log('consume changed', amount, itemId);
+      const variables: ConsumeInput = {
+        amount,
+        locationId,
+        itemId,
+      };
+      await createConsumeMutation({ variables });
+      setLocalRow((row) => ({
+        ...row,
+        stock: row.stock + amount,
+      }));
+    }
+  };
+
+  const color =
+    row.status === StockEntryStatus.Important
+      ? colors.red
+      : row.status === StockEntryStatus.Warning
+      ? colors.orange
+      : row.status === StockEntryStatus.Normal
+      ? colors.green
+      : '';
 
   return (
     <View style={style.row}>
       <TouchableOpacity onPress={handlePress}>
         <View style={style.rightContainer}>
+          <View style={style.status}>
+            <Octicons name="dot-fill" size={30} color={color} />
+          </View>
           <View style={style.title}>
             {variant === 'nameAndUnit' && (
               <>
@@ -73,8 +95,8 @@ const ItemRow = ({
       </TouchableOpacity>
       <View style={style.leftContainer}>
         <NativeNumberConsumptionInput
-          value={row.stock + ''}
-          onChangeText={consume(row)}
+          value={localRow.stock + ''}
+          onChangeText={consume}
           loading={loading}
           editable={true}
           type={row.status as StockEntryStatus}
@@ -101,15 +123,17 @@ const styles = (
       width: '100%',
       overflow: 'hidden',
     },
+    status: { marginRight: 10 },
     rightContainer: {
-      flexShrink: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     leftContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    title: { overflow: 'hidden', flex: 1, justifyContent: 'center' },
+    title: { overflow: 'hidden', justifyContent: 'center' },
     titleText: {
       fontSize: 18,
       fontFamily: fonts.defaultFontFamilyBold,

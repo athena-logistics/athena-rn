@@ -52,7 +52,7 @@ const ItemOverview: React.FC = () => {
   const navigation = useNavigation();
   const handlePress = (item: Item) => () => {
     // @ts-ignore
-    navigation.navigate('Item Overview', { item });
+    navigation.navigate('Item Details', { item });
   };
 
   const getItemLocationCount = (item: Item) =>

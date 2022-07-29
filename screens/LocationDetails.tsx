@@ -88,7 +88,7 @@ const LocationDetails = ({}: {}) => {
             }
           });
         }
-        // fetch();
+        fetch();
       },
     });
 

@@ -35,24 +35,18 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   useEffect(() => {
     if (!loading) {
       if (value !== currentValue) {
-        console.log('setting current value', value);
+        console.log('setting current value', value, currentValue);
         setCurrentValue(value?.toString());
       }
     }
   }, [value, loading]);
 
-  const add = (offset: number) => () => {
-    const newNumber = Number(currentValue) + offset + '';
+  const add = (up: boolean) => () => {
+    const change = up ? 1 : -1;
     if (Number(currentValue) >= 0) {
-      setCurrentValue((currentValue) => Number(currentValue) + offset + '');
+      setCurrentValue((currentValue) => Number(currentValue) + change + '');
       if (!isPressing.current) {
-        if (timer2.current) {
-          clearTimeout(timer2.current);
-        }
-
-        timer2.current = setTimeout(() => onChangeText(newNumber), 0
-        
-        );
+        onChangeText(undefined, change);
       }
     }
   };
@@ -90,8 +84,8 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   return (
     <View style={styles.numberContainer}>
       <TouchableOpacity
-        onPress={add(1)}
-        onLongPress={onLongPress(add(1))}
+        onPress={add(true)}
+        onLongPress={onLongPress(add(true))}
         onPressOut={cancelLongPress}
         disabled={!editable}
       >
@@ -101,7 +95,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
       </TouchableOpacity>
       <View style={styles.numberColumn}>
         <NativeInput
-          style={{ ...styles.number, ...color }}
+          style={styles.number}
           keyboardType="number-pad"
           {...rest}
           value={currentValue}
@@ -111,8 +105,8 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         <NativeText style={styles.numberText}>in stock</NativeText>
       </View>
       <TouchableOpacity
-        onPress={add(-1)}
-        onLongPress={onLongPress(add(-1))}
+        onPress={add(false)}
+        onLongPress={onLongPress(add(false))}
         onPressOut={cancelLongPress}
         disabled={!editable}
       >

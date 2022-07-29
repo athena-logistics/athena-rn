@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -14,60 +14,60 @@ const StockItemDetails = ({}: {}) => {
   const style = styles({ isPortrait, isLandscape });
 
   const route = useRoute();
+
   // @ts-ignore
-  const row: StockItemRow = route.params?.row;
-  if (!row) {
+  const item: StockItem = route.params?.stockItem;
+  if (!item) {
     return null;
   }
 
-  const getStatusIcon = (): { iconName: any; iconColor: string } => {
-    switch (row.status as StockEntryStatus) {
+  const getStatusIcon = (): { iconColor: string } => {
+    switch (item.status as StockEntryStatus) {
       case StockEntryStatus.Normal:
-        return { iconName: 'airplane', iconColor: colors.green };
+        return { iconColor: colors.green };
       case StockEntryStatus.Important:
-        return { iconName: 'airplane', iconColor: colors.orange };
+        return { iconColor: colors.red };
       case StockEntryStatus.Warning:
       default:
-        return { iconName: 'airplane', iconColor: colors.red };
+        return { iconColor: colors.orange };
     }
   };
 
-  const { iconName, iconColor } = getStatusIcon();
+  const { iconColor } = getStatusIcon();
 
   return (
     <NativeScreen style={style.screen}>
-      <View style={style.row}>
+      <View style={style.item}>
         <View style={style.title}>
-          <NativeText style={style.titleText}>{row.itemName}</NativeText>
-          <NativeText style={style.subtitleText}>{row.locationName}</NativeText>
+          <View style={style.status}>
+            <Octicons name="dot-fill" size={30} color={iconColor} />
+          </View>
+          <NativeText style={style.titleText}>{item.locationName}</NativeText>
         </View>
         <View style={style.leftContainer}>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.stock}</NativeText>
+            <NativeText style={style.number}>{item.stock}</NativeText>
             <NativeText style={style.numberText}>in stock</NativeText>
           </View>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.consumption}</NativeText>
+            <NativeText style={style.number}>{item.consumption}</NativeText>
             <NativeText style={style.numberText}>consumption</NativeText>
           </View>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.movementIn}</NativeText>
+            <NativeText style={style.number}>{item.movementIn}</NativeText>
             <NativeText style={style.numberText}>movement in</NativeText>
           </View>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.movementOut}</NativeText>
+            <NativeText style={style.number}>{item.movementOut}</NativeText>
             <NativeText style={style.numberText}>movement out</NativeText>
           </View>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.itemGroupName}</NativeText>
+            <NativeText style={style.number}>{item.itemGroupName}</NativeText>
             <NativeText style={style.numberText}>item group</NativeText>
           </View>
           <View style={style.numberContainer}>
-            <NativeText style={style.number}>{row.supply}</NativeText>
+            <NativeText style={style.number}>{item.supply}</NativeText>
             <NativeText style={style.numberText}>supply</NativeText>
-          </View>
-          <View style={style.status}>
-            <Ionicons name={iconName} size={23} color={iconColor} />
           </View>
         </View>
       </View>
@@ -78,7 +78,7 @@ const StockItemDetails = ({}: {}) => {
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: { alignItems: 'stretch', justifyContent: 'flex-start' },
-    row: {
+    item: {
       paddingHorizontal: 20,
       paddingVertical: 10,
     },
@@ -86,7 +86,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    title: {},
+    title: { flexDirection: 'row', marginBottom: 20, alignItems: 'center' },
+    status: { marginRight: 10 },
     titleText: {
       fontSize: 20,
       fontFamily: fonts.defaultFontFamilyBold,
@@ -94,10 +95,24 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     subtitleText: {
       fontSize: 12,
     },
-    numberContainer: { alignItems: 'center' },
-    numberText: { fontSize: 12, textTransform: 'uppercase' },
-    number: { fontSize: 20, fontFamily: fonts.defaultFontFamilyBold },
-    status: { marginLeft: 20 },
+    numberContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      width: '100%',
+      marginBottom: 5,
+    },
+    numberText: {
+      fontSize: 12,
+      textTransform: 'uppercase',
+      paddingLeft: 5,
+    },
+    number: {
+      fontSize: 20,
+      fontFamily: fonts.defaultFontFamilyBold,
+      flexBasis: '50%',
+      textAlign: 'right',
+      paddingRight: 5,
+    },
   });
 
 export default StockItemDetails;

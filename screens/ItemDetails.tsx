@@ -52,8 +52,8 @@ const ItemDetails = ({}: {}) => {
               });
             }
           });
-          // fetchStock();
         }
+        fetchStock();
       },
     });
 
