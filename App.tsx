@@ -10,10 +10,27 @@ import { LogBox, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import AppContent from './AppContent';
 import store from './store';
+import i18n from "i18n-js";
 
 if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
 }
+
+i18n.translations = {
+  en: {
+    supply: "Supply",
+    scanner: "Scanner",
+    move: "Move",
+    overview: "Overview",
+  },
+  de: {
+    supply: "Anlieferung",
+    scanner: "Scanner",
+    move: "Verschiebung",
+    overview: "Übersicht",
+  },
+};
+i18n.locale = Localization.locale;
 
 const App = () => {
   const [fontsLoaded] = useFonts({
