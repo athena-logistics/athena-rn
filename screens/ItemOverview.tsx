@@ -2,7 +2,7 @@ import {
   Entypo,
   Feather,
   Ionicons,
-  MaterialCommunityIcons,
+  MaterialCommunityIcons
 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { StockEntryStatus } from '../apollo/schema';
 import {
   useAllItemsQuery,
-  useAllStockQuery,
+  useAllStockQuery
 } from '../apolloActions/useQueries';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
@@ -137,6 +137,8 @@ const ItemOverview: React.FC = () => {
   return (
     <NativeScreen style={style.screen}>
       <ScrollView
+        contentContainerStyle={style.scrollview}
+        style={style.scroll}
         refreshControl={
           <RefreshControl
             refreshing={loadingItems}
@@ -147,7 +149,6 @@ const ItemOverview: React.FC = () => {
           />
         }
       >
-        <View>
           {groupedItems.map((group) => (
             <View style={style.itemContainer} key={group.id}>
               <View style={style.headerItem}>
@@ -210,7 +211,6 @@ const ItemOverview: React.FC = () => {
               ))}
             </View>
           ))}
-        </View>
       </ScrollView>
     </NativeScreen>
   );
@@ -218,7 +218,9 @@ const ItemOverview: React.FC = () => {
 
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
-    screen: { alignItems: 'stretch' },
+    screen: { alignItems: 'stretch', height: 20, justifyContent: 'center' },
+    scroll: { flex: 1, height: '100%' },
+    scrollview: { flex: 1, height: '100%' },
     itemContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',

@@ -57,7 +57,7 @@ const ItemRow = ({
       await createConsumeMutation({ variables });
       setLocalRow((row) => ({
         ...row,
-        stock: row.stock + amount,
+        stock: row.stock - amount,
       }));
     }
   };

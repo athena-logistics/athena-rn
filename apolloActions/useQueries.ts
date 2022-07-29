@@ -47,7 +47,9 @@ export const useAllStockQuery = (eventId: string) => {
           // .sort(
           //   (row1, row2) =>
           //     RowOrder.indexOf(row1.status) - RowOrder.indexOf(row2.status)
-          .sort((row1, row2) => row1.stock - row2.stock);
+          .sort((a, b) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+          );
 
         dispatch(setAllStock(rowData));
       }

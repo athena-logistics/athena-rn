@@ -24,10 +24,8 @@ export const getLocationData = (allStock: StockItem[]) => {
     }
   });
 
-  locationData.sort(
-    (row1, row2) =>
-      // @ts-ignore
-      RowOrder.indexOf(row1.status) - RowOrder.indexOf(row2.status)
+  locationData.sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   );
 
   return locationData;

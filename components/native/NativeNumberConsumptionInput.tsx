@@ -36,7 +36,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   useEffect(() => {
     if (!loading) {
       if (value !== currentValue) {
-        console.log('setting current value', value, currentValue);
+        console.log('setting current value', currentValue, '->', value);
         setCurrentValue(value?.toString());
       }
     }

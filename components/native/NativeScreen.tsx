@@ -1,5 +1,5 @@
 import { FC, ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 interface NativeScreenProps {
   children?: ReactNode;
@@ -7,7 +7,9 @@ interface NativeScreenProps {
 }
 
 const NativeScreen: FC<NativeScreenProps> = ({ children, style }) => {
-  return <View style={{ ...styles.screen, ...style }}>{children}</View>;
+  return (
+      <SafeAreaView style={{ ...styles.screen, ...style }}>{children}</SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({

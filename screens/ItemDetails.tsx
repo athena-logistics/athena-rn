@@ -1,13 +1,15 @@
 import { useMutation } from '@apollo/client';
 import { useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useRef } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput } from '../apollo/schema';
 import { useAllStockQuery } from '../apolloActions/useQueries';
+import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import ItemRow from '../components/ItemRow';
+import NativeScreen from '../components/native/NativeScreen';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 
@@ -33,6 +35,17 @@ const ItemDetails = ({}: {}) => {
   const allStock = useSelector((state: RootState) => state.global.allStock);
   const locationStock = allStock.filter((stock) => stock.id === item.id);
 
+  const fetchTimer = useRef<any>();
+  useMovementSubscription({
+    onSubscriptionData: () => {
+      console.log('subscription updated');
+      if (fetchTimer.current) {
+        clearTimeout(fetchTimer.current);
+      }
+      fetchTimer.current = setTimeout(fetchStock, 500);
+    },
+  });
+
   const [createConsumeMutation, { loading: consumeLoading }] =
     useMutation<ConsumeInput>(DO_CONSUME, {
       onError: (error) => console.log('error', error),
@@ -53,7 +66,7 @@ const ItemDetails = ({}: {}) => {
             }
           });
         }
-        fetchStock();
+        // fetchStock();
       },
     });
 
@@ -69,13 +82,15 @@ const ItemDetails = ({}: {}) => {
   };
 
   return (
-    <FlatList
-      data={locationStock}
-      onRefresh={fetchStock}
-      refreshing={loadingStock || consumeLoading}
-      renderItem={renderRow}
-      keyExtractor={(row) => row.locationId}
-    />
+    <NativeScreen style={style.screen}>
+      <FlatList
+        data={locationStock}
+        onRefresh={fetchStock}
+        refreshing={loadingStock || consumeLoading}
+        renderItem={renderRow}
+        keyExtractor={(row) => row.locationId}
+      />
+    </NativeScreen>
   );
 };
 

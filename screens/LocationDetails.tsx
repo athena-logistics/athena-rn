@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput } from '../apollo/schema';
 import {
   useInternalLocationId,
-  useLocationStockQuery,
+  useLocationStockQuery
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import ItemRow from '../components/ItemRow';
@@ -36,11 +36,18 @@ const LocationDetails = ({}: {}) => {
   const currentLocationId = internalLocationId || location?.id;
 
   const [fetch, { loading }] = useLocationStockQuery(currentLocationId);
+
+  const fetchTimer = useRef<any>();
   useMovementSubscription({
     onSubscriptionData: () => {
-      fetch();
+      console.log('subscription updated');
+      if (fetchTimer.current) {
+        clearTimeout(fetchTimer.current);
+      }
+      fetchTimer.current = setTimeout(fetch, 500);
     },
   });
+  
   useEffect(() => {
     fetch();
   }, [currentLocationId]);
@@ -88,7 +95,7 @@ const LocationDetails = ({}: {}) => {
             }
           });
         }
-        fetch();
+        // fetch();
       },
     });
 

@@ -18,8 +18,8 @@ export const getGroupedData = (itemList: (StockItem | Item)[]) => {
         .sort((a, b) =>
           a.name.toLowerCase().localeCompare(b.name.toLowerCase())
         )
-        .sort((row1, row2) => row1.stock! - row2.stock!)
-        .sort((row1, row2) => (row1.inverse ? -1 : 1)),
+        // .sort((row1, row2) => row1.stock! - row2.stock!)
+        // .sort((row1, row2) => (row1.inverse ? -1 : 1)),
     }))
     .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
