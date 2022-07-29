@@ -164,14 +164,14 @@ const Supply = ({}: {}) => {
           data.supply.messages.forEach((message) => {
             Toast.show({
               type: 'error',
-              text1: 'error',
+              text1: i18n.t('ohNo'),
               text2: message.field + ' ' + message.message,
             });
           });
         } else {
           Toast.show({
-            text1: 'success',
-            text2: 'successful supply',
+            text1: i18n.t('yay'),
+            text2: i18n.t('successfulSupply'),
           });
           dispatch({ type: ActionType.Initialize });
         }

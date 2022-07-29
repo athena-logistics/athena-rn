@@ -37,6 +37,10 @@ i18n.translations = {
     movementOut: 'Movements Out',
     itemGroup: 'Item Group',
     unit: 'Unit',
+    yay: 'Yaay',
+    successfulMove: 'successfuly moved',
+    ohNo: 'Oh No!',
+    successfulSupply: 'successfuly supplied',
   },
   de: {
     supply: 'Anlieferung',
@@ -57,6 +61,10 @@ i18n.translations = {
     movementOut: 'ausgehende Verschiebungen',
     itemGroup: 'Artikelgruppe',
     unit: 'Einheit',
+    yay: 'Juhu',
+    successfulMove: 'Erfolgreich verschoben',
+    ohNo: 'Oh Nein!',
+    successfulSupply: 'Erfolgreich angeliefert',
   },
 };
 i18n.fallbacks = true;
