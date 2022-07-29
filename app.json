@@ -10,6 +10,7 @@
     "orientation": "default",
     "primaryColor": "#32ad9a",
     "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
