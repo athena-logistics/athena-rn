@@ -11,6 +11,7 @@ import {
 
 const PERMISSON_KEY = 'permission';
 const PERMISSION_ID_KEY = 'permissionId';
+const API_HOST_KEY = 'apiHost';
 
 const PermissionChangeListener = () => {
   const currentPermission = useSelector(
@@ -21,6 +22,10 @@ const PermissionChangeListener = () => {
     (state: RootState) => state.global.currentPermissionId
   );
 
+  const currentApiHost = useSelector(
+    (state: RootState) => state.global.apiHost
+  );
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -28,13 +33,14 @@ const PermissionChangeListener = () => {
     const loadPermissions = async () => {
       const permission = await AsyncStorage.getItem(PERMISSON_KEY);
       const permissionId = await AsyncStorage.getItem(PERMISSION_ID_KEY);
+      const apiHost = await AsyncStorage.getItem(API_HOST_KEY);
 
-      if (permissionId && permission) {
+      if (permissionId && permission && apiHost) {
         if (permission == PermissionEnum.EventAdmin.toString()) {
-          dispatch(switchToEvent(permissionId));
+          dispatch(switchToEvent(permissionId, apiHost));
         }
         if (permission == PermissionEnum.LocationUser.toString()) {
-          dispatch(switchToLocation(permissionId));
+          dispatch(switchToLocation(permissionId, apiHost));
         }
       }
     };
@@ -55,11 +61,15 @@ const PermissionChangeListener = () => {
           PERMISSION_ID_KEY,
           currentPermissionId?.toString() || ''
         );
+        await AsyncStorage.setItem(
+          API_HOST_KEY,
+          currentApiHost?.toString() || ''
+        );
       }
       if (currentPermission === PermissionEnum.LocationUser) {
         // @ts-ignore
         navigation.navigate('Overview Stack', {
-          screen: 'Location Overview',
+          screen: 'Location Details',
           params: { externalLocationId: currentPermissionId },
         });
         await AsyncStorage.setItem(PERMISSON_KEY, currentPermission.toString());
@@ -67,10 +77,14 @@ const PermissionChangeListener = () => {
           PERMISSION_ID_KEY,
           currentPermissionId?.toString() || ''
         );
+        await AsyncStorage.setItem(
+          API_HOST_KEY,
+          currentApiHost?.toString() || ''
+        );
       }
     };
     setPermissions();
-  }, [currentPermission, currentPermissionId]);
+  }, [currentPermission, currentPermissionId, currentApiHost]);
 
   return null;
 };

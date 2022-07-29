@@ -14,6 +14,7 @@ interface GlobalState {
   };
   currentPermission: PermissionEnum;
   currentPermissionId?: string;
+  apiHost?: string;
 }
 
 const initialState: GlobalState = {
@@ -24,6 +25,7 @@ const initialState: GlobalState = {
   locationStock: {},
   currentPermission: PermissionEnum.Guest,
   currentPermissionId: undefined,
+  apiHost: undefined,
 };
 
 const globalReducer = (
@@ -59,6 +61,7 @@ const globalReducer = (
         ...state,
         currentPermission: PermissionEnum.Guest,
         currentPermissionId: undefined,
+        apiHost: '',
         eventId: '',
       };
     case ActionType.SWITCH_TO_EVENT:
@@ -67,12 +70,14 @@ const globalReducer = (
         currentPermission: PermissionEnum.EventAdmin,
         currentPermissionId: action.payload.eventId,
         eventId: action.payload.eventId,
+        apiHost: action.payload.apiHost,
       };
     case ActionType.SWITCH_TO_LOCATION:
       return {
         ...state,
         currentPermission: PermissionEnum.LocationUser,
         currentPermissionId: action.payload.locationId,
+        apiHost: action.payload.apiHost,
       };
     default:
       return state;

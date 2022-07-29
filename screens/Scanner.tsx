@@ -2,12 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { useDispatch } from 'react-redux';
+import InfoModal from '../components/InfoModal';
 import NativeButton from '../components/native/NativeButton';
 import NativeScreen from '../components/native/NativeScreen';
-import NativeText from '../components/native/NativeText';
-import { API_URL } from '../constants/app';
 import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
@@ -63,23 +62,25 @@ const Scanner = ({}: {}) => {
     setScanned(true);
 
     const locationRegexp = new RegExp(
-      `^${API_URL}/vendor/locations/((\\d|[a-z]|-)+)$`
+      `^https://(.+)/vendor/locations/((\\d|[a-z]|-)+)$`
     );
     const locationMatches = data.match(locationRegexp);
     if (locationMatches) {
-      const locationId = locationMatches[1];
+      const apiHost = locationMatches[1];
+      const locationId = locationMatches[2];
       await dispatch(resetPermissions());
-      return await dispatch(switchToLocation(locationId));
+      return await dispatch(switchToLocation(locationId, apiHost));
     }
 
     const overviewRegexp = new RegExp(
-      `^${API_URL}/logistics/events/((\\d|[a-z]|-)+)/overview$`
+      `^https://(.+)/logistics/events/((\\d|[a-z]|-)+)/overview$`
     );
     const matches = data.match(overviewRegexp);
     if (matches) {
-      const eventId = matches[1];
+      const apiHost = matches[1];
+      const eventId = matches[2];
       await dispatch(resetPermissions());
-      return await dispatch(switchToEvent(eventId));
+      return await dispatch(switchToEvent(eventId, apiHost));
     }
 
     alert('no luck');
@@ -106,28 +107,7 @@ const Scanner = ({}: {}) => {
           onPress={() => setScanned(false)}
         />
       )}
-      {infoOpened && (
-        <Modal
-          animationType={'slide'}
-          onRequestClose={() => {
-            setInfoOpened(false);
-          }}
-          transparent={true}
-        >
-          <View style={style.centeredView}>
-            <View style={style.modalView}>
-              <View style={style.body}>
-                <NativeText>INFO</NativeText>
-                <NativeText>Privacy policy</NativeText>
-              </View>
-              <NativeButton
-                onPress={() => setInfoOpened(false)}
-                title={'Close'}
-              />
-            </View>
-          </View>
-        </Modal>
-      )}
+      <InfoModal isOpen={infoOpened} onClose={() => setInfoOpened(false)} />
     </NativeScreen>
   );
 };
@@ -135,31 +115,6 @@ const Scanner = ({}: {}) => {
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: {},
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
-    },
-    modalView: {
-      width: '80%',
-      height: '80%',
-      margin: 20,
-      backgroundColor: 'white',
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    body: {
-      flex: 1,
-    },
   });
 
 export default Scanner;

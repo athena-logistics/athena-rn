@@ -20,11 +20,14 @@ export const setLocations = (locations: any) => {
 export const setLocationStockData = (id: string, data: any) => {
   return { type: ActionType.SET_LOCATION_STOCK_DATA, payload: { id, data } };
 };
-export const switchToEvent = (eventId: string) => {
-  return { type: ActionType.SWITCH_TO_EVENT, payload: { eventId } };
+export const switchToEvent = (eventId: string, apiHost: string) => {
+  return { type: ActionType.SWITCH_TO_EVENT, payload: { eventId, apiHost } };
 };
-export const switchToLocation = (locationId: string) => {
-  return { type: ActionType.SWITCH_TO_LOCATION, payload: { locationId } };
+export const switchToLocation = (locationId: string, apiHost: string) => {
+  return {
+    type: ActionType.SWITCH_TO_LOCATION,
+    payload: { locationId, apiHost },
+  };
 };
 export const resetPermissions = () => {
   return { type: ActionType.RESET_PERMISSIONS, payload: {} };

@@ -1,10 +1,14 @@
 {
   "expo": {
-    "name": "athena-rn",
+    "name": "Athena",
+    "description": "Athena is an event logistics management app.",
     "slug": "athena-rn",
     "scheme": "athena-rn",
-    "version": "0.0.1",
+    "owner": "athena-logistics",
+    "version": "1.0.0",
+    "githubUrl": "https://github.com/athena-logistics/athena-rn",
     "orientation": "default",
+    "primaryColor": "#32ad9a",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -17,14 +21,18 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.punkah.athenarn"
+      "bundleIdentifier": "io.athena-logistics.athena-rn",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan a QR code",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.punkah.athenarn"
+      "package": "io.athena_logistics.athena_rn"
     },
     "web": {
       "favicon": "./assets/favicon.png"

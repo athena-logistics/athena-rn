@@ -1,19 +1,14 @@
-import { ApolloProvider } from '@apollo/client';
 import {
   OpenSans_400Regular,
   OpenSans_700Bold,
 } from '@expo-google-fonts/open-sans';
-import { NavigationContainer } from '@react-navigation/native';
+import 'expo-asset';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { LogBox, StyleSheet } from 'react-native';
-import 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
-import client from './apollo';
-import Navigation from './components/Navigation';
-import PermissionChangeListener from './screens/PermissionChangeListener';
+import AppContent from './AppContent';
 import store from './store';
 
 if (__DEV__) {
@@ -52,13 +47,7 @@ const App = () => {
 
   return (
     <Provider store={store}>
-      <ApolloProvider client={client}>
-        <NavigationContainer>
-          <Navigation />
-          <PermissionChangeListener />
-        </NavigationContainer>
-      </ApolloProvider>
-      <Toast />
+      <AppContent />
     </Provider>
   );
 };

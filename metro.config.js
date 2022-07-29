@@ -9,5 +9,9 @@ module.exports = (async () => {
     assetExts: config.resolver.assetExts.filter((ext) => ext !== 'svg'),
     sourceExts: [...config.resolver.sourceExts, 'svg'],
   };
+  config.transformer = {
+    ...config.transformer,
+    assetPlugins: ['expo-asset/tools/hashAssetFiles'],
+  };
   return config;
 })();
