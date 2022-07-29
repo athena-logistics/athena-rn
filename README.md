@@ -13,3 +13,4 @@
 - Install Node using [`asdf`](https://asdf-vm.com/) as specified in `.tool-versions`
 - `yarn install`
 - `yarn start`
+test
