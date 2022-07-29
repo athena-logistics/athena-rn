@@ -9,7 +9,7 @@
 
 ## Development
 
-* Run a backend - See https://github.com/athena-logistics/athena-backend
-* Install Node using [`asdf`](https://asdf-vm.com/) as specified in `.tool-versions`
-* `yarn install`
-* `yarn start`
+- Run a backend - See https://github.com/athena-logistics/athena-backend
+- Install Node using [`asdf`](https://asdf-vm.com/) as specified in `.tool-versions`
+- `yarn install`
+- `yarn start`

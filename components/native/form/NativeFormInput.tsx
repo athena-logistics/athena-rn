@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   errorText: {
-    color: colors.red
+    color: colors.red,
     fontSize: 14,
   },
 });

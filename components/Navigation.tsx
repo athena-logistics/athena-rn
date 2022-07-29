@@ -27,7 +27,7 @@ import Scanner from '../screens/Scanner';
 import StockItemDetails from '../screens/StockItemDetails';
 import Supply from '../screens/Supply';
 import { RootState } from '../store';
-import i18n from "i18n-js";
+import i18n from 'i18n-js';
 
 const Navigation = () => {
   const getTabBarIcon =
@@ -149,8 +149,8 @@ const Navigation = () => {
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-list-outline' }),
             headerShown: false,
-            headerTitle: i18n.t("overview"),
-            tabBarLabel: i18n.t("overview"),
+            headerTitle: i18n.t('overview'),
+            tabBarLabel: i18n.t('overview'),
             lazy: true,
             unmountOnBlur: true,
           }}
@@ -164,8 +164,8 @@ const Navigation = () => {
             tabBarIcon: getTabBarIcon({ name: 'ios-log-out-outline' }),
             lazy: true,
             unmountOnBlur: true,
-            headerTitle: i18n.t("move"),
-            tabBarLabel: i18n.t("move"),
+            headerTitle: i18n.t('move'),
+            tabBarLabel: i18n.t('move'),
           }}
         />
       ) : null}
@@ -177,8 +177,8 @@ const Navigation = () => {
             tabBarIcon: getTabBarIcon({ name: 'ios-log-in-outline' }),
             lazy: true,
             unmountOnBlur: true,
-            headerTitle: i18n.t("supply"),
-            tabBarLabel: i18n.t("supply"),
+            headerTitle: i18n.t('supply'),
+            tabBarLabel: i18n.t('supply'),
           }}
         />
       ) : null}
@@ -189,8 +189,8 @@ const Navigation = () => {
           tabBarIcon: getTabBarIcon({ name: 'ios-qr-code-outline' }),
           lazy: true,
           unmountOnBlur: true,
-          headerTitle: i18n.t("scanner"),
-          tabBarLabel: i18n.t("scanner"),
+          headerTitle: i18n.t('scanner'),
+          tabBarLabel: i18n.t('scanner'),
         }}
       />
     </AppTabs.Navigator>
