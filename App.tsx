@@ -4,13 +4,14 @@ import {
 } from '@expo-google-fonts/open-sans';
 import 'expo-asset';
 import { useFonts } from 'expo-font';
+import * as Localization from 'expo-localization';
 import * as SplashScreen from 'expo-splash-screen';
+import i18n from 'i18n-js';
 import React, { useEffect } from 'react';
 import { LogBox, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import AppContent from './AppContent';
 import store from './store';
-import i18n from "i18n-js";
 
 if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
@@ -18,18 +19,19 @@ if (__DEV__) {
 
 i18n.translations = {
   en: {
-    supply: "Supply",
-    scanner: "Scanner",
-    move: "Move",
-    overview: "Overview",
+    supply: 'Supply',
+    scanner: 'Scanner',
+    move: 'Move',
+    overview: 'Overview',
   },
   de: {
-    supply: "Anlieferung",
-    scanner: "Scanner",
-    move: "Verschiebung",
-    overview: "Übersicht",
+    supply: 'Anlieferung',
+    scanner: 'Scanner',
+    move: 'Verschiebung',
+    overview: 'Übersicht',
   },
 };
+i18n.fallbacks = true;
 i18n.locale = Localization.locale;
 
 const App = () => {
