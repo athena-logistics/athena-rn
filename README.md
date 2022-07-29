@@ -2,8 +2,6 @@
 
 # Athena React Native App
 
-[![Main Branch](https://github.com/athena-logistics/athena-rn/actions/workflows/branch_main.yml/badge.svg)](https://github.com/athena-logistics/athena-rn/actions/workflows/branch_main.yml)
-[![Coverage Status](https://coveralls.io/repos/github/athena-logistics/athena-rn/badge.svg?branch=main)](https://coveralls.io/github/athena-logistics/athena-rn?branch=main)
 [![License](https://img.shields.io/github/license/athena-logistics/athena-rn.svg)](https://github.com/athena-logistics/athena-rn/blob/master/LICENSE)
 [![Last Updated](https://img.shields.io/github/last-commit/athena-logistics/athena-rn.svg)](https://github.com/athena-logistics/athena-rn/commits/master)
 
