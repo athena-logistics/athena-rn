@@ -95,7 +95,7 @@ const Scanner = ({}: {}) => {
 
   return (
     <NativeScreen>
-      {!scanned && (
+      {!scanned && hasPermission && (
         <BarCodeScanner
           onBarCodeScanned={handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
