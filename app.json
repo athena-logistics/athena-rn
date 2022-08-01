@@ -10,7 +10,6 @@
     "orientation": "default",
     "primaryColor": "#32ad9a",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -26,7 +25,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan a QR code",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
-      }
+      },
+      "buildNumber": "1.1"
     },
     "android": {
       "adaptiveIcon": {
