@@ -1,5 +1,7 @@
 import { FC, ReactNode } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import colors from '../../constants/colors';
+import isAndroid from '../../constants/isAndroid';
 
 interface NativeScreenProps {
   children?: ReactNode;
@@ -8,7 +10,13 @@ interface NativeScreenProps {
 
 const NativeScreen: FC<NativeScreenProps> = ({ children, style }) => {
   return (
-      <SafeAreaView style={{ ...styles.screen, ...style }}>{children}</SafeAreaView>
+    <View style={{ ...styles.screen, ...style }}>
+      <StatusBar
+        backgroundColor={isAndroid ? colors.primary : 'white'}
+        barStyle={isAndroid ? 'light-content' : 'dark-content'}
+      />
+      {children}
+    </View>
   );
 };
 

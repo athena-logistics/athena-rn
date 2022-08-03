@@ -76,7 +76,6 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     link: {
       color: 'blue',
       textDecorationColor: 'blue',
-      textDecorationStyle: 'dashed',
       textDecorationLine: 'underline',
     },
   });

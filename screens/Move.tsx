@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import i18n from 'i18n-js';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -25,7 +26,6 @@ import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
-import i18n from 'i18n-js';
 
 export interface ItemState {
   stock: string;
@@ -155,7 +155,6 @@ const Move = ({}: {}) => {
       },
     });
 
-  console.log('move error', moveError, moveLoading);
   useMovementSubscription({
     locationId: from,
     onSubscriptionData: (data: any) => {

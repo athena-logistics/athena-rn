@@ -11,6 +11,7 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
+import i18n from 'i18n-js';
 import React from 'react';
 import 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
@@ -27,7 +28,6 @@ import Scanner from '../screens/Scanner';
 import StockItemDetails from '../screens/StockItemDetails';
 import Supply from '../screens/Supply';
 import { RootState } from '../store';
-import i18n from 'i18n-js';
 
 const Navigation = () => {
   const getTabBarIcon =
@@ -43,9 +43,9 @@ const Navigation = () => {
   const isLocationUser = () =>
     currentPermission === PermissionEnum.LocationUser;
 
-  const defaultScreenOptions: BottomTabNavigationOptions = {
+  const defaultScreenOptionsBottomTab: BottomTabNavigationOptions = {
     headerStyle: {
-      backgroundColor: isAndroid ? colors.primary : '',
+      backgroundColor: isAndroid ? colors.primary : colors.white,
     },
     headerTintColor: isAndroid ? 'white' : colors.primary,
     headerShadowVisible: true,
@@ -54,7 +54,7 @@ const Navigation = () => {
     },
     tabBarActiveTintColor: colors.primary,
   };
-  const defaultScreenOptionsTab: MaterialTopTabNavigationOptions = {
+  const defaultScreenOptionsTopTab: MaterialTopTabNavigationOptions = {
     tabBarStyle: {
       backgroundColor: isAndroid ? colors.primary : 'white',
     },
@@ -65,21 +65,23 @@ const Navigation = () => {
     tabBarIndicatorStyle: { backgroundColor: colors.primary },
     tabBarActiveTintColor: isAndroid ? 'white' : colors.primary,
   };
+
   const defaultScreenOptionsStack: NativeStackNavigationOptions = {
     headerStyle: {
-      backgroundColor: isAndroid ? colors.primary : '',
+      backgroundColor: isAndroid ? colors.primary : colors.white,
     },
     headerTintColor: isAndroid ? 'white' : colors.primary,
     headerShadowVisible: true,
     headerTitleStyle: {
       fontFamily: fonts.defaultFontFamilyBold,
+      // color: colors.white
     },
   };
 
   const OverviewTab = createMaterialTopTabNavigator();
   const OverviewTabs: React.FC = () => {
     return (
-      <OverviewTab.Navigator screenOptions={defaultScreenOptionsTab}>
+      <OverviewTab.Navigator screenOptions={defaultScreenOptionsTopTab}>
         <OverviewTab.Screen
           name="By Item"
           component={ItemOverview}
@@ -147,7 +149,7 @@ const Navigation = () => {
   const AppTabs = createBottomTabNavigator();
   const AppTabNavigator = () => (
     <AppTabs.Navigator
-      screenOptions={defaultScreenOptions}
+      screenOptions={defaultScreenOptionsBottomTab}
       initialRouteName="Overview"
     >
       {isEventAdmin() || isLocationUser() ? (

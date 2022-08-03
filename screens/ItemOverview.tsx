@@ -153,14 +153,14 @@ const ItemOverview: React.FC = () => {
             <View style={style.itemContainer} key={group.id}>
               <View style={style.headerItem}>
                 {getGroupNameIcon(group.name)}
-                <NativeText type="bold" style={style.headerText}>
-                  {group.name}
-                </NativeText>
-              </View>
-              {group.children.map((item) => (
-                <Pressable
-                  onPress={handlePress(item)}
-                  key={item.id}
+          <NativeText type="bold" style={style.headerText}>
+            {group.name}
+          </NativeText>
+        </View>
+        {group.children.map((item) => (
+          <Pressable
+            onPress={handlePress(item)}
+            key={item.id}
                   style={style.item}
                 >
                   <NativeText style={style.itemText}>{item.name}</NativeText>
@@ -170,13 +170,13 @@ const ItemOverview: React.FC = () => {
                   <View style={style.numberContainer}>
                     <MaterialCommunityIcons
                       name="home-city"
-                      size={18}
-                      color={colors.primary}
-                    />
-                    <NativeText
-                      style={{
-                        ...style.numberText,
-                        ...style.IMPORTANT,
+                size={18}
+                color={colors.primary}
+              />
+              <NativeText
+                style={{
+                  ...style.numberText,
+                  ...style.IMPORTANT,
                       }}
                       type={'bold'}
                     >
@@ -187,8 +187,8 @@ const ItemOverview: React.FC = () => {
                     </NativeText>
                     <NativeText
                       style={{
-                        ...style.numberText,
-                        ...style.WARNING,
+                  ...style.numberText,
+                  ...style.WARNING,
                       }}
                       type={'bold'}
                     >
@@ -199,14 +199,14 @@ const ItemOverview: React.FC = () => {
                     </NativeText>
                     <NativeText
                       style={{
-                        ...style.numberText,
-                        ...style.NORMAL,
-                      }}
-                      type={'bold'}
-                    >
-                      {getNumberOfItemsPerStatus(item, StockEntryStatus.Normal)}
-                    </NativeText>
-                  </View>
+                  ...style.numberText,
+                  ...style.NORMAL,
+                }}
+                type={'bold'}
+              >
+                {getNumberOfItemsPerStatus(item, StockEntryStatus.Normal)}
+              </NativeText>
+            </View>
                 </Pressable>
               ))}
             </View>

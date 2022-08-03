@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useAllStockQuery } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import OverviewLocationRow from '../components/LocationRow';
+import NativeScreen from '../components/native/NativeScreen';
 import { getLocationData } from '../helpers/getLocationData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { LogisticLocation } from '../models/LogisticLocation';
@@ -45,13 +46,15 @@ const LocationOverview: React.FC = () => {
   };
 
   return (
-    <FlatList
-      data={locationData}
-      onRefresh={fetch}
-      refreshing={loading}
-      renderItem={renderRow}
-      keyExtractor={(row) => row.id}
-    />
+    <NativeScreen>
+      <FlatList
+        data={locationData}
+        onRefresh={fetch}
+        refreshing={loading}
+        renderItem={renderRow}
+        keyExtractor={(row) => row.id}
+      />
+    </NativeScreen>
   );
 };
 
