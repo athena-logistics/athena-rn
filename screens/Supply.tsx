@@ -1,8 +1,15 @@
 import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import i18n from 'i18n-js';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +31,6 @@ import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
-import i18n from 'i18n-js';
 
 interface ItemState {
   stock: string;
@@ -107,7 +113,9 @@ const moveReducer = (state: MoveState, action: MoveAction): MoveState => {
 const Supply = ({}: {}) => {
   const reduxDispatch = useDispatch();
   const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+  const isLargeScreen = Dimensions.get('screen').width > 800;
+
+  const style = styles({ isPortrait, isLandscape, isLargeScreen });
   const [to, setTo] = useState<string>('');
 
   const [moveState, dispatch] = useReducer(moveReducer, {
@@ -140,8 +148,14 @@ const Supply = ({}: {}) => {
 
   const allItems = useSelector((state: RootState) => state.global.allItems);
 
-  let itemById: { [key: string]: Item } = {};
   const availableItems = getGroupedData(allItems);
+  const availableItemsWithUnit = availableItems.map((group) => ({
+    ...group,
+    children: group.children.map((item) => ({
+      ...item,
+      name: `${item.name} (${item.unit})`,
+    })),
+  }));
 
   useMovementSubscription({
     locationId: to,
@@ -240,15 +254,14 @@ const Supply = ({}: {}) => {
     });
   };
 
-  const handleAdd = () => {
-    dispatch({ type: ActionType.Add });
-  };
-
   const setStuffItem = (stuff: ItemState, index: number) => (item: string) => {
     dispatch({
       type: ActionType.Change,
       payload: { item: { ...stuff, item }, index },
     });
+    if (index === moveState.stuff.length - 1) {
+      dispatch({ type: ActionType.Add });
+    }
   };
 
   const setStuffStock =
@@ -257,6 +270,9 @@ const Supply = ({}: {}) => {
         type: ActionType.Change,
         payload: { item: { ...stuff, stock }, index },
       });
+      if (index === moveState.stuff.length - 1) {
+        dispatch({ type: ActionType.Add });
+      }
     };
 
   return (
@@ -277,106 +293,50 @@ const Supply = ({}: {}) => {
             width="100%"
           />
         </View>
-        {!!to &&
-          moveState.stuff.map((stuff, index) => (
-            <React.Fragment key={index}>
-              <View
-                style={[
-                  style.numberContainer,
-                  !stuff.item ? style.pending : null,
-                ]}
-                key={index}
-              >
-                <NativePicker
-                  items={availableItems}
-                  selectedValue={stuff.item}
-                  setSelectedValue={setStuffItem(stuff, index)}
-                  placeholderText={i18n.t('select')}
-                  alreadySelectedItems={moveState.stuff.map(
-                    (stuff) => stuff.item
-                  )}
-                />
-                {!!stuff.item && (
-                  <Ionicons
-                    size={25}
-                    name={'ios-trash'}
-                    color={colors.primary}
-                    style={{ marginLeft: 10 }}
-                    onPress={handleDelete(index)}
-                  />
-                )}
-              </View>
-              {!!stuff.item && (
-                <View style={style.actionContainer}>
-                  <NativeNumberOnlyInput
-                    value={stuff.stock}
-                    onChangeText={setStuffStock(stuff, index)}
-                    unit={itemById[stuff.item]?.unit}
-                  />
-                  {itemById[stuff.item]?.unit && (
-                    <NativeText>[{itemById[stuff.item]?.unit}]</NativeText>
-                  )}
-                </View>
-              )}
-            </React.Fragment>
-          ))}
-        {!!to && (
-          <Pressable
-            style={style.addNewContainer}
-            onPress={handleAdd}
-            android_ripple={{ color: colors.primary }}
-          >
-            <NativeText style={style.addNewText}>
-              {i18n.t('addNewStuff')}
-            </NativeText>
-            <Ionicons
-              size={33}
-              name={'ios-add-circle-outline'}
-              color={'white'}
-              style={{ marginLeft: 5 }}
-            />
-          </Pressable>
-        )}
-        {/* {Object.values(itemById).map((item) => (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '90%',
-              position: 'relative',
-              height: 50,
-            }}
-          >
-            <NativeText>{item.name}</NativeText>
-
+        {moveState.stuff.map((stuff, index) => (
+          <View key={index} style={style.itemContainer}>
             <View
-              style={{
-                width: '50%',
-                position: 'absolute',
-                left: '25%',
-              }}
+              style={[
+                style.numberContainer,
+                !stuff.item ? style.pending : null,
+              ]}
+              key={index}
             >
-              <NativeNumberOnlyInput
-                value={item.requiredStock}
-                onChangeText={(value) => {
-                  itemById[item.id] = { ...item, requiredStock: value };
-                }}
-                unit={item.unit}
+              <NativePicker
+                items={availableItemsWithUnit}
+                selectedValue={stuff.item}
+                setSelectedValue={setStuffItem(stuff, index)}
+                placeholderText={i18n.t('select')}
+                alreadySelectedItems={moveState.stuff.map(
+                  (stuff) => stuff.item
+                )}
               />
+              {!!stuff.item && (
+                <Ionicons
+                  size={25}
+                  name={'ios-trash'}
+                  color={colors.primary}
+                  style={{ marginLeft: 10 }}
+                  onPress={handleDelete(index)}
+                />
+              )}
             </View>
-
-            <NativeText type="bold" style={{ width: '23%' }}>
-              [{item.unit}]
-            </NativeText>
+            {!!stuff.item && (
+              <View style={style.actionContainer}>
+                <NativeNumberOnlyInput
+                  value={stuff.stock}
+                  onChangeText={setStuffStock(stuff, index)}
+                />
+              </View>
+            )}
           </View>
-        ))} */}
+        ))}
       </NativeScreen>
     </ScrollView>
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
+const styles = ({ isPortrait, isLandscape, isLargeScreen }: Orientation) =>
   StyleSheet.create({
     screen: {
       justifyContent: 'flex-start',
@@ -386,17 +346,27 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       width: '100%',
       justifyContent: 'space-between',
       padding: 20,
+      flexDirection: isLargeScreen ? 'row' : 'column',
       borderBottomWidth: 1,
       borderBottomColor: colors.primary,
     },
     arrowDown: {
-      marginVertical: 10,
+      marginVertical: isLargeScreen ? 0 : 10,
+      marginHorizontal: isLargeScreen ? 10 : 0,
+    },
+    itemContainer: {
+      flexDirection: isLargeScreen ? 'row' : 'column',
+      alignContent: 'stretch',
+      alignItems: 'stretch',
+      width: '100%',
+      paddingHorizontal: 20,
+      paddingTop: 20,
     },
     numberContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 20,
+      width: isLargeScreen ? '50%' : '100%',
     },
     pending: {
       opacity: 0.7,
@@ -405,25 +375,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      width: '50%',
-    },
-    addNewContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-
-      borderRadius: 10,
-
-      backgroundColor: colors.primary,
-
-      marginTop: 20,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-    addNewText: {
-      color: 'white',
-    },
-    container: {
-      width: '40%',
+      paddingTop: isLargeScreen ? 0 : 10,
+      width: isLargeScreen ? '50%' : '100%',
     },
   });
 

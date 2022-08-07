@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import i18n from 'i18n-js';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   StyleSheet,
   TextInputProps,
@@ -27,10 +27,6 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   type,
   ...rest
 }) => {
-  const isPressing = useRef(false);
-  const timer = useRef<any>();
-  const timer2 = useRef<any>();
-
   const [currentValue, setCurrentValue] = useState(value);
 
   useEffect(() => {
@@ -44,52 +40,18 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
 
   const add = (up: boolean) => () => {
     const change = up ? 1 : -1;
-    if (Number(currentValue) >= 0) {
-      setCurrentValue((currentValue) => Number(currentValue) + change + '');
-      if (!isPressing.current) {
-        onChangeText(undefined, change);
-      }
-    }
+    console.log('add', change, currentValue);
+    setCurrentValue((currentValue) => Number(currentValue) + change + '');
+    onChangeText(undefined, change);
   };
 
-  const cancelLongPress = async () => {
-    if (isPressing.current) {
-      clearInterval(timer.current);
-      if (Number(currentValue) >= 0) {
-        onChangeText(currentValue);
-      }
-      isPressing.current = false;
-    }
+  const handleBlur = () => {
+    onChangeText && onChangeText(currentValue);
   };
-
-  const onLongPress = (onPress: any) => () => {
-    isPressing.current = true;
-    timer.current = setInterval(onPress, 50);
-  };
-
-  const handleBlur = (props: any) => {
-    if (Number(currentValue) >= 0) {
-      onChangeText && onChangeText(currentValue);
-    }
-  };
-
-  const color =
-    type === StockEntryStatus.Important
-      ? styles.red
-      : type === StockEntryStatus.Warning
-      ? styles.yellow
-      : type === StockEntryStatus.Normal
-      ? styles.green
-      : {};
 
   return (
     <View style={styles.numberContainer}>
-      <TouchableOpacity
-        onPress={add(true)}
-        onLongPress={onLongPress(add(true))}
-        onPressOut={cancelLongPress}
-        disabled={!editable}
-      >
+      <TouchableOpacity onPress={add(true)} disabled={!editable}>
         {editable && (
           <Ionicons size={35} name={'ios-add-circle'} color={colors.primary} />
         )}
@@ -105,12 +67,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         />
         <NativeText style={styles.numberText}>{i18n.t('inStock')}</NativeText>
       </View>
-      <TouchableOpacity
-        onPress={add(false)}
-        onLongPress={onLongPress(add(false))}
-        onPressOut={cancelLongPress}
-        disabled={!editable}
-      >
+      <TouchableOpacity onPress={add(false)} disabled={!editable}>
         {editable && (
           <Ionicons
             size={35}

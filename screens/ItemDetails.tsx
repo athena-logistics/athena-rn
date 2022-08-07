@@ -38,17 +38,19 @@ const ItemDetails = ({}: {}) => {
   const fetchTimer = useRef<any>();
   useMovementSubscription({
     onSubscriptionData: () => {
-      console.log('subscription updated');
+      console.log('subscription updated, refetch stock');
       if (fetchTimer.current) {
         clearTimeout(fetchTimer.current);
       }
-      fetchTimer.current = setTimeout(fetchStock, 500);
+      fetchTimer.current = setTimeout(fetchStock, 1000);
     },
   });
 
   const [createConsumeMutation, { loading: consumeLoading }] =
     useMutation<ConsumeInput>(DO_CONSUME, {
-      onError: (error) => console.log('error', error),
+      onError: (error) => {
+        console.log('error', error);
+      },
       onCompleted: (data) => {
         // @ts-ignore
         console.log('completed messages:', data.consume.messages);
@@ -65,8 +67,9 @@ const ItemDetails = ({}: {}) => {
               });
             }
           });
+          // refetch after an error
+          fetchStock();
         }
-        // fetchStock();
       },
     });
 
@@ -74,7 +77,7 @@ const ItemDetails = ({}: {}) => {
     return (
       <ItemRow
         row={item}
-        loading={loadingStock || consumeLoading}
+        loading={loadingStock}
         createConsumeMutation={createConsumeMutation}
         variant={'location'}
       />
@@ -86,7 +89,7 @@ const ItemDetails = ({}: {}) => {
       <FlatList
         data={locationStock}
         onRefresh={fetchStock}
-        refreshing={loadingStock || consumeLoading}
+        refreshing={loadingStock}
         renderItem={renderRow}
         keyExtractor={(row) => row.locationId}
       />

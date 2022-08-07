@@ -8,7 +8,7 @@ import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput } from '../apollo/schema';
 import {
   useInternalLocationId,
-  useLocationStockQuery
+  useLocationStockQuery,
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import ItemRow from '../components/ItemRow';
@@ -40,14 +40,14 @@ const LocationDetails = ({}: {}) => {
   const fetchTimer = useRef<any>();
   useMovementSubscription({
     onSubscriptionData: () => {
-      console.log('subscription updated');
+      console.log('subscription updated, refetch location stock');
       if (fetchTimer.current) {
         clearTimeout(fetchTimer.current);
       }
-      fetchTimer.current = setTimeout(fetch, 500);
+      fetchTimer.current = setTimeout(fetch, 1000);
     },
   });
-  
+
   useEffect(() => {
     fetch();
   }, [currentLocationId]);
@@ -77,7 +77,10 @@ const LocationDetails = ({}: {}) => {
   }
   const [createConsumeMutation, { loading: consumeLoading }] =
     useMutation<ConsumeInput>(DO_CONSUME, {
-      onError: (error) => console.log('error', error),
+      onError: (error) => {
+        console.log('error', error);
+        fetch();
+      },
       onCompleted: (data) => {
         // @ts-ignore
         console.log('completed messages:', data.consume.messages);
@@ -94,8 +97,9 @@ const LocationDetails = ({}: {}) => {
               });
             }
           });
+          // refetch after an error
+          fetch();
         }
-        // fetch();
       },
     });
 
@@ -107,14 +111,14 @@ const LocationDetails = ({}: {}) => {
           name: x.name,
           data: x.children,
         }))}
-        refreshing={loading || consumeLoading}
+        refreshing={loading}
         onRefresh={fetch}
         // @ts-ignore
         keyExtractor={(item) => item.id + item.locationId}
         renderItem={({ item }) => (
           <ItemRow
             row={item as StockItem}
-            loading={loading || consumeLoading}
+            loading={loading}
             createConsumeMutation={createConsumeMutation}
             variant={'nameAndUnit'}
           />

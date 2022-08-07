@@ -46,7 +46,7 @@ const LocationOverview: React.FC = () => {
   };
 
   return (
-    <NativeScreen>
+    <NativeScreen style={style.screen}>
       <FlatList
         data={locationData}
         onRefresh={fetch}

@@ -3,7 +3,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import i18n from 'i18n-js';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
@@ -117,7 +123,9 @@ export interface ItemGroup {
 const Move = ({}: {}) => {
   const reduxDispatch = useDispatch();
   const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+  const isLargeScreen = Dimensions.get('screen').width > 800;
+
+  const style = styles({ isPortrait, isLandscape, isLargeScreen });
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
 
@@ -190,9 +198,17 @@ const Move = ({}: {}) => {
 
   let itemById: { [key: string]: StockItem } = {};
   let availableItems: AvailableItemGroup[] = [];
+  let availableItemsWithUnit: AvailableItemGroup[] = [];
   if (locationStock) {
     itemById = locationStock.itemById;
     availableItems = getGroupedData(Object.values(locationStock.itemById));
+    availableItemsWithUnit = availableItems.map((group) => ({
+      ...group,
+      children: group.children.map((item) => ({
+        ...item,
+        name: `${item.name} (${item.unit}) [${item.stock}]`,
+      })),
+    }));
   }
 
   const save = useCallback(() => {
@@ -267,16 +283,20 @@ const Move = ({}: {}) => {
       type: MoveActionType.Change,
       payload: { item: { ...stuff, item }, index },
     });
+    if (index === moveState.stuff.length - 1) {
+      dispatch({ type: MoveActionType.Add });
+    }
   };
-  const handleAdd = () => {
-    dispatch({ type: MoveActionType.Add });
-  };
+
   const setStuffStock =
     (stuff: ItemState, index: number) => (stock: string) => {
       dispatch({
         type: MoveActionType.Change,
         payload: { item: { ...stuff, stock }, index },
       });
+      if (index === moveState.stuff.length - 1) {
+        dispatch({ type: MoveActionType.Add });
+      }
     };
 
   return (
@@ -292,7 +312,11 @@ const Move = ({}: {}) => {
           />
           <Ionicons
             size={33}
-            name={'ios-arrow-down-circle'}
+            name={
+              isLargeScreen
+                ? 'ios-arrow-forward-circle'
+                : 'ios-arrow-down-circle'
+            }
             style={style.arrowDown}
             color={colors.primary}
           />
@@ -306,7 +330,7 @@ const Move = ({}: {}) => {
         </View>
         {!!from &&
           moveState.stuff.map((stuff, index) => (
-            <React.Fragment key={index}>
+            <View key={index} style={style.itemContainer}>
               <View
                 style={[
                   style.numberContainer,
@@ -315,13 +339,14 @@ const Move = ({}: {}) => {
                 key={index}
               >
                 <NativePicker
-                  items={availableItems}
+                  items={availableItemsWithUnit}
                   selectedValue={stuff.item}
                   setSelectedValue={setStuffItem(stuff, index)}
                   placeholderText={i18n.t('select')}
                   alreadySelectedItems={moveState.stuff.map(
                     (stuff) => stuff.item
                   )}
+                  itemById={itemById}
                 />
                 {!!stuff.item && (
                   <Ionicons
@@ -339,73 +364,17 @@ const Move = ({}: {}) => {
                     value={stuff.stock}
                     onChangeText={setStuffStock(stuff, index)}
                     max={itemById[stuff.item]?.stock}
-                    unit={itemById[stuff.item]?.unit}
                   />
-                  {itemById[stuff.item]?.unit && (
-                    <NativeText>[{itemById[stuff.item]?.unit}]</NativeText>
-                  )}
                 </View>
               )}
-            </React.Fragment>
-          ))}
-        {!!from && (
-          <Pressable
-            style={style.addNewContainer}
-            onPress={handleAdd}
-            android_ripple={{ color: colors.primary }}
-          >
-            <NativeText style={style.addNewText}>
-              {i18n.t('addNewStuff')}
-            </NativeText>
-            <Ionicons
-              size={33}
-              name={'ios-add-circle-outline'}
-              color={'white'}
-              style={{ marginLeft: 5 }}
-            />
-          </Pressable>
-        )}
-        {/* {Object.values(itemById).map((item) => (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '90%',
-              position: 'relative',
-              height: 50,
-            }}
-          >
-            <NativeText>{item.name}</NativeText>
-
-            <View
-              style={{
-                width: '50%',
-                position: 'absolute',
-                left: '25%',
-              }}
-            >
-              <NativeNumberOnlyInput
-                value={item.requiredStock}
-                onChangeText={(value) => {
-                  itemById[item.id] = { ...item, requiredStock: value };
-                }}
-                max={item.stock}
-                unit={item.unit}
-              />
             </View>
-
-            <NativeText type="bold" style={{ width: '23%' }}>
-              [{item.unit}]
-            </NativeText>
-          </View>
-        ))} */}
+          ))}
       </NativeScreen>
     </ScrollView>
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
+const styles = ({ isPortrait, isLandscape, isLargeScreen }: Orientation) =>
   StyleSheet.create({
     screen: {
       justifyContent: 'flex-start',
@@ -414,18 +383,28 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       alignItems: 'center',
       width: '100%',
       justifyContent: 'space-between',
+      flexDirection: isLargeScreen ? 'row' : 'column',
       padding: 20,
       borderBottomWidth: 1,
       borderBottomColor: colors.primary,
     },
     arrowDown: {
-      marginVertical: 10,
+      marginVertical: isLargeScreen ? 0 : 10,
+      marginHorizontal: isLargeScreen ? 10 : 0,
+    },
+    itemContainer: {
+      flexDirection: isLargeScreen ? 'row' : 'column',
+      alignContent: 'stretch',
+      alignItems: 'stretch',
+      width: '100%',
+      paddingHorizontal: 20,
+      paddingTop: 20,
     },
     numberContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 20,
+      width: isLargeScreen ? '50%' : '100%',
     },
     pending: {
       opacity: 0.7,
@@ -434,25 +413,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      width: '50%',
-    },
-    addNewContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-
-      borderRadius: 10,
-
-      backgroundColor: colors.primary,
-
-      marginTop: 20,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-    addNewText: {
-      color: 'white',
-    },
-    container: {
-      width: '40%',
+      paddingTop: isLargeScreen ? 0 : 10,
+      width: isLargeScreen ? '50%' : '100%',
     },
   });
 

@@ -1,24 +1,17 @@
-import {
-  Entypo,
-  Feather,
-  Ionicons,
-  MaterialCommunityIcons
-} from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { Pressable, RefreshControl, StyleSheet, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { StockEntryStatus } from '../apollo/schema';
 import {
   useAllItemsQuery,
-  useAllStockQuery
+  useAllStockQuery,
 } from '../apolloActions/useQueries';
 import NativeScreen from '../components/native/NativeScreen';
-import NativeText from '../components/native/NativeText';
-import colors from '../constants/colors';
+import OverviewItemRow from '../components/OverviewItemRow';
 import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
 
 const ItemOverview: React.FC = () => {
@@ -49,20 +42,8 @@ const ItemOverview: React.FC = () => {
 
   const groupedItems = getGroupedData(allItems);
 
-  const navigation = useNavigation();
-  const handlePress = (item: Item) => () => {
-    // @ts-ignore
-    navigation.navigate('Item Details', { item });
-  };
-
   const getItemLocationCount = (item: Item) =>
     allStock.filter((stock) => stock.id === item.id).length;
-
-  const getNumberOfItemsPerStatus = (item: Item, status: StockEntryStatus) => {
-    return allStock.filter(
-      (stock) => stock.id === item.id && stock.status === status
-    ).length;
-  };
 
   const getItemStatus = (item: Item) => {
     const allLocationStock = allStock.filter((stock) => stock.id === item.id);
@@ -84,195 +65,32 @@ const ItemOverview: React.FC = () => {
     return StockEntryStatus.Normal;
   };
 
-  const getGroupNameIcon = (name: string) => {
-    switch (name) {
-      case 'Becher':
-        return (
-          <Entypo
-            name={'cup'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Bier':
-        return (
-          <Ionicons
-            name={'beer'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Diverses':
-        return (
-          <Feather
-            name={'box'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Softdrinks':
-        return (
-          <MaterialCommunityIcons
-            name={'bottle-soda'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Wein':
-        return (
-          <MaterialCommunityIcons
-            name={'glass-wine'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-    }
+  const renderGroup = ({ item }: { item: AvailableItemGroup }) => {
+    return <OverviewItemRow group={item} key={item.id} />;
   };
 
   return (
     <NativeScreen style={style.screen}>
-      <ScrollView
-        contentContainerStyle={style.scrollview}
-        style={style.scroll}
-        refreshControl={
-          <RefreshControl
-            refreshing={loadingItems}
-            onRefresh={() => {
-              fetchItems();
-              fetchStock();
-            }}
-          />
-        }
-      >
-          {groupedItems.map((group) => (
-            <View style={style.itemContainer} key={group.id}>
-              <View style={style.headerItem}>
-                {getGroupNameIcon(group.name)}
-          <NativeText type="bold" style={style.headerText}>
-            {group.name}
-          </NativeText>
-        </View>
-        {group.children.map((item) => (
-          <Pressable
-            onPress={handlePress(item)}
-            key={item.id}
-                  style={style.item}
-                >
-                  <NativeText style={style.itemText}>{item.name}</NativeText>
-                  <NativeText style={style.itemSubtitleText}>
-                    {item.unit}
-                  </NativeText>
-                  <View style={style.numberContainer}>
-                    <MaterialCommunityIcons
-                      name="home-city"
-                size={18}
-                color={colors.primary}
-              />
-              <NativeText
-                style={{
-                  ...style.numberText,
-                  ...style.IMPORTANT,
-                      }}
-                      type={'bold'}
-                    >
-                      {getNumberOfItemsPerStatus(
-                        item,
-                        StockEntryStatus.Important
-                      )}
-                    </NativeText>
-                    <NativeText
-                      style={{
-                  ...style.numberText,
-                  ...style.WARNING,
-                      }}
-                      type={'bold'}
-                    >
-                      {getNumberOfItemsPerStatus(
-                        item,
-                        StockEntryStatus.Warning
-                      )}
-                    </NativeText>
-                    <NativeText
-                      style={{
-                  ...style.numberText,
-                  ...style.NORMAL,
-                }}
-                type={'bold'}
-              >
-                {getNumberOfItemsPerStatus(item, StockEntryStatus.Normal)}
-              </NativeText>
-            </View>
-                </Pressable>
-              ))}
-            </View>
-          ))}
-      </ScrollView>
+      <FlatList
+        data={groupedItems}
+        onRefresh={() => {
+          fetchItems();
+          fetchStock();
+        }}
+        refreshing={loadingItems || loadingStock}
+        renderItem={renderGroup}
+        keyExtractor={(row) => row.id}
+      />
     </NativeScreen>
   );
 };
 
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
-    screen: { alignItems: 'stretch', height: 20, justifyContent: 'center' },
-    scroll: { flex: 1, height: '100%' },
-    scrollview: { flex: 1, height: '100%' },
-    itemContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      width: '100%',
-      margin: 10,
-    },
-    headerItem: {
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-      width: 120,
-      height: 100,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.primary,
-      margin: 3,
-      flexDirection: 'row',
-    },
-    item: {
-      paddingVertical: 5,
-      paddingHorizontal: 5,
-      width: 120,
-      height: 100,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.primary,
-      margin: 3,
-      flexDirection: 'column',
-    },
-    bottomContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
-    },
-    numberContainer: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      position: 'absolute',
-      bottom: 0,
-      right: 5,
-    },
-    headerText: { fontSize: 16 },
-    itemText: { fontSize: 16 },
-    itemSubtitleText: { fontSize: 12, color: colors.grey },
-    numberText: { fontSize: 20, marginLeft: 8 },
-
-    NORMAL: { color: colors.green },
-    IMPORTANT: { color: colors.red },
-    WARNING: { color: colors.orange },
-    icon: {
-      // color: 'transparent',
-      textShadowColor: colors.primary,
-      textShadowRadius: 1,
-      marginRight: 2,
+    screen: {
+      // alignItems: 'center',
+      flex: 1,
+      marginVertical: 10,
     },
   });
 

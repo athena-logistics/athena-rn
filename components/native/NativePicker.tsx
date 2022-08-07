@@ -1,5 +1,5 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import colors from '../../constants/colors';
@@ -8,11 +8,13 @@ import NativeText from './NativeText';
 
 interface NativePickerProps {
   selectedValue: any;
-  setSelectedValue: (value: string) => void;
+  setSelectedValue?: (value: string) => void;
   items: any;
   placeholderText?: string;
   width?: string;
   alreadySelectedItems?: string[];
+  disabled?: boolean;
+  itemById?: { [key: string]: StockItem };
 }
 
 const NativePicker: FC<NativePickerProps> = ({
@@ -21,33 +23,44 @@ const NativePicker: FC<NativePickerProps> = ({
   items,
   placeholderText,
   width,
+  disabled,
+  itemById,
   alreadySelectedItems,
 }) => {
   const [currentlySeletectedItem, setCurrentlySeletectedItem] = useState<any>();
+  useEffect(() => {
+    if (itemById || !selectedValue) {
+      setCurrentlySeletectedItem(itemById?.[selectedValue] || selectedValue);
+    }
+  }, [selectedValue]);
   return (
     <View style={[styles.picker, width ? { width } : {}]}>
       <SectionedMultiSelect
-        items={items}
-        // .map((item: any) => ({
-        //   ...item,
-        //   children: item.children.filter(
-        //     (child: any) => !alreadySelectedItems?.includes(child.id)
-        //   ),
-        // }))
-        // .filter((item: any) => item.children.length > 0)}
+        items={items
+          .map((item: any) => ({
+            ...item,
+            children: item.children.filter(
+              (child: any) => !alreadySelectedItems?.includes(child.id)
+            ),
+          }))
+          .filter((item: any) => item.children.length > 0)}
         IconRenderer={MaterialIcons}
         uniqueKey="id"
         subKey="children"
         selectText={placeholderText || 'Select...'}
         showDropDowns={true}
         single={true}
-        onSelectedItemsChange={([item]) => setSelectedValue(item)}
+        onSelectedItemsChange={([item]) =>
+          setSelectedValue && setSelectedValue(item)
+        }
         onSelectedItemObjectsChange={([item]) =>
           setCurrentlySeletectedItem(item)
         }
         searchPlaceholderText="Search..."
         confirmText="OK"
         selectedItems={[selectedValue]}
+        alwaysShowSelectText={true}
+        selectedText={'kkk'}
         dropDownToggleIconUpComponent={() => (
           <Ionicons name={'ios-chevron-up'} color={colors.primary} size={22} />
         )}
@@ -58,6 +71,7 @@ const NativePicker: FC<NativePickerProps> = ({
             size={22}
           />
         )}
+        disabled={disabled}
         modalWithSafeAreaView={true}
         modalWithTouchable={true}
         renderSelectText={({ selectText }) => {

@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
-  BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
+  createMaterialBottomTabNavigator,
+  MaterialBottomTabNavigationOptions,
+} from '@react-navigation/material-bottom-tabs';
 import {
   createMaterialTopTabNavigator,
   MaterialTopTabNavigationOptions,
@@ -43,16 +43,8 @@ const Navigation = () => {
   const isLocationUser = () =>
     currentPermission === PermissionEnum.LocationUser;
 
-  const defaultScreenOptionsBottomTab: BottomTabNavigationOptions = {
-    headerStyle: {
-      backgroundColor: isAndroid ? colors.primary : colors.white,
-    },
-    headerTintColor: isAndroid ? 'white' : colors.primary,
-    headerShadowVisible: true,
-    headerTitleStyle: {
-      fontFamily: fonts.defaultFontFamilyBold,
-    },
-    tabBarActiveTintColor: colors.primary,
+  const defaultScreenOptionsBottomTab: MaterialBottomTabNavigationOptions = {
+    tabBarColor: colors.primary,
   };
   const defaultScreenOptionsTopTab: MaterialTopTabNavigationOptions = {
     tabBarStyle: {
@@ -64,6 +56,7 @@ const Navigation = () => {
     },
     tabBarIndicatorStyle: { backgroundColor: colors.primary },
     tabBarActiveTintColor: isAndroid ? 'white' : colors.primary,
+    lazy: true,
   };
 
   const defaultScreenOptionsStack: NativeStackNavigationOptions = {
@@ -74,7 +67,6 @@ const Navigation = () => {
     headerShadowVisible: true,
     headerTitleStyle: {
       fontFamily: fonts.defaultFontFamilyBold,
-      // color: colors.white
     },
   };
 
@@ -83,19 +75,45 @@ const Navigation = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTopTab}>
         <OverviewTab.Screen
+          name="By Location"
+          component={LocationOverview}
+          options={{
+            lazy: true,
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="home-group"
+                size={24}
+                color={
+                  isAndroid
+                    ? focused
+                      ? colors.white
+                      : colors.primaryLight
+                    : colors.primary
+                }
+              />
+            ),
+            title: i18n.t('byLocation'),
+          }}
+        />
+        <OverviewTab.Screen
           name="By Item"
           component={ItemOverview}
           options={{
             lazy: true,
             title: i18n.t('byItem'),
-          }}
-        />
-        <OverviewTab.Screen
-          name="By Location"
-          component={LocationOverview}
-          options={{
-            lazy: true,
-            title: i18n.t('byLocation'),
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="food-fork-drink"
+                size={24}
+                color={
+                  isAndroid
+                    ? focused
+                      ? colors.white
+                      : colors.primaryLight
+                    : colors.primary
+                }
+              />
+            ),
           }}
         />
       </OverviewTab.Navigator>
@@ -146,70 +164,102 @@ const Navigation = () => {
     </OverviewStack.Navigator>
   );
 
-  const AppTabs = createBottomTabNavigator();
+  const MoveStack = createNativeStackNavigator();
+  const MoveStackNavigatior = () => (
+    <MoveStack.Navigator screenOptions={defaultScreenOptionsStack}>
+      <MoveStack.Screen
+        name="Move"
+        component={Move}
+        options={{
+          headerTitle: i18n.t('move'),
+          title: i18n.t('move'),
+        }}
+      />
+    </MoveStack.Navigator>
+  );
+
+  const SupplyStack = createNativeStackNavigator();
+  const SupplyStackNavigatior = () => (
+    <SupplyStack.Navigator screenOptions={defaultScreenOptionsStack}>
+      <SupplyStack.Screen
+        name="Supply"
+        component={Supply}
+        options={{
+          headerTitle: i18n.t('supply'),
+          title: i18n.t('supply'),
+        }}
+      />
+    </SupplyStack.Navigator>
+  );
+
+  const ScannerStack = createNativeStackNavigator();
+  const ScannerStackNavigatior = () => (
+    <ScannerStack.Navigator screenOptions={defaultScreenOptionsStack}>
+      <ScannerStack.Screen
+        name="Scanner"
+        component={Scanner}
+        options={{
+          headerTitle: i18n.t('scanner'),
+          title: i18n.t('scanner'),
+        }}
+      />
+    </ScannerStack.Navigator>
+  );
+
+  const AppTabs = createMaterialBottomTabNavigator();
   const AppTabNavigator = () => (
     <AppTabs.Navigator
       screenOptions={defaultScreenOptionsBottomTab}
       initialRouteName="Overview"
+      shifting={false}
+      barStyle={{ backgroundColor: colors.primary }}
+      activeColor={colors.white}
+      inactiveColor={colors.primaryLight}
     >
       {isEventAdmin() || isLocationUser() ? (
         <AppTabs.Screen
           name="Overview Stack"
           component={OverviewStackNavigator}
           options={{
-            tabBarIcon: getTabBarIcon({ name: 'ios-list-outline' }),
-            headerShown: false,
-            headerTitle: i18n.t('overview'),
+            tabBarIcon: getTabBarIcon({
+              name: 'ios-list-outline',
+            }),
             tabBarLabel: i18n.t('overview'),
-            lazy: true,
-            unmountOnBlur: true,
+            title: i18n.t('overview'),
           }}
         />
       ) : null}
       {isEventAdmin() ? (
         <AppTabs.Screen
-          name="Move"
-          component={Move}
+          name="Move Stack"
+          component={MoveStackNavigatior}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-log-out-outline' }),
-            lazy: true,
-            unmountOnBlur: true,
-            headerTitle: i18n.t('move'),
             tabBarLabel: i18n.t('move'),
           }}
         />
       ) : null}
       {isEventAdmin() ? (
         <AppTabs.Screen
-          name="Supply"
-          component={Supply}
+          name="Supply Stack"
+          component={SupplyStackNavigatior}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-log-in-outline' }),
-            lazy: true,
-            unmountOnBlur: true,
-            headerTitle: i18n.t('supply'),
             tabBarLabel: i18n.t('supply'),
           }}
         />
       ) : null}
       <AppTabs.Screen
-        name="Scanner"
-        component={Scanner}
+        name="Scanner Stack"
+        component={ScannerStackNavigatior}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'ios-qr-code-outline' }),
-          lazy: true,
-          unmountOnBlur: true,
-          headerTitle: i18n.t('scanner'),
           tabBarLabel: i18n.t('scanner'),
         }}
       />
     </AppTabs.Navigator>
   );
 
-  return (
-    <>
-      <AppTabNavigator />
-    </>
-  );
+  return <AppTabNavigator />;
 };
 export default Navigation;
