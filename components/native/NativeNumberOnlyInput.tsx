@@ -29,7 +29,7 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
 
   const add = (offset: number) => () => {
     if (
-      (!max || Number(currentValue) + offset <= max) &&
+      (max === undefined || Number(currentValue) + offset <= max) &&
       Number(currentValue) + offset > 0
     ) {
       setCurrentValue((cur) => Number(cur) + offset + '');

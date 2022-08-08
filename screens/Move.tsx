@@ -201,7 +201,9 @@ const Move = ({}: {}) => {
   let availableItemsWithUnit: AvailableItemGroup[] = [];
   if (locationStock) {
     itemById = locationStock.itemById;
-    availableItems = getGroupedData(Object.values(locationStock.itemById));
+    availableItems = getGroupedData(
+      Object.values(locationStock.itemById).filter((item) => item.stock > 0)
+    );
     availableItemsWithUnit = availableItems.map((group) => ({
       ...group,
       children: group.children.map((item) => ({
