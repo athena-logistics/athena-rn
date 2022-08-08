@@ -36,6 +36,7 @@ const Scanner = ({}: {}) => {
 
   const openInfo = () => {
     setInfoOpened(true);
+    setScanned(true);
   };
 
   const navigation = useNavigation();
