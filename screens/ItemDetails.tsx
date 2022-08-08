@@ -38,7 +38,6 @@ const ItemDetails = ({}: {}) => {
   const fetchTimer = useRef<any>();
   useMovementSubscription({
     onSubscriptionData: () => {
-      console.log('subscription updated, refetch stock');
       if (fetchTimer.current) {
         clearTimeout(fetchTimer.current);
       }
@@ -52,8 +51,6 @@ const ItemDetails = ({}: {}) => {
         console.log('error', error);
       },
       onCompleted: (data) => {
-        // @ts-ignore
-        console.log('completed messages:', data.consume.messages);
         // @ts-ignore
         if (data.consume.messages.length > 0) {
           // @ts-ignore

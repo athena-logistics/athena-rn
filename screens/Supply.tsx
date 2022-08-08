@@ -171,7 +171,6 @@ const Supply = ({}: {}) => {
   const [createSupplyMutation, { loading: supplyLoading }] =
     useMutation<SupplyInput>(DO_SUPPLY, {
       onCompleted: (data) => {
-        console.log(data);
         // @ts-ignore
         if (data.supply.messages.length > 0) {
           // @ts-ignore
@@ -203,7 +202,6 @@ const Supply = ({}: {}) => {
             locationId,
             itemId,
           };
-          console.log('creating mutation', variables);
           await createSupplyMutation({ variables });
         }
       })
@@ -213,11 +211,7 @@ const Supply = ({}: {}) => {
   const navigation = useNavigation();
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      // @ts-ignore
       headerRight: () => (
-        // <HeaderButtons HeaderButtonComponent={NativeHeaderButton}>
-        //   <Item title="Save" iconName={'ios-checkmark'} />
-        // </HeaderButtons>
         <Pressable onPress={save} disabled={supplyLoading}>
           {supplyLoading && (
             <ActivityIndicator

@@ -142,7 +142,6 @@ const Move = ({}: {}) => {
   const [createRelocateMutation, { loading: moveLoading, error: moveError }] =
     useMutation<RelocateInput>(DO_RELOCATE, {
       onCompleted: (data) => {
-        console.log('done');
         // @ts-ignore
         if (data.relocate.messages.length > 0) {
           // @ts-ignore

@@ -43,12 +43,10 @@ const ItemRow = ({
   };
 
   const consume = async (newValue?: string, change?: number) => {
-    console.log('consume', row.stock, localRow.stock, newValue, change);
     const amount = change ? -change : Number(localRow.stock) - Number(newValue);
     const locationId = row.locationId;
     const itemId = row.id;
     if (!Number.isNaN(amount) && locationId && itemId) {
-      console.log('consume changed', amount, itemId);
       const variables: ConsumeInput = {
         amount,
         locationId,
