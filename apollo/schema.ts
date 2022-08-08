@@ -11,11 +11,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /**
-   * Date Generic Type
-   *
-   * Example: `2021-05-04 11:44:10.858225Z`
-   */
   Datetime: any;
 };
 
@@ -546,7 +541,7 @@ export type GetInternalLocationIdQueryVariables = Exact<{
 }>;
 
 
-export type GetInternalLocationIdQuery = { __typename?: 'RootQueryType', location?: { __typename?: 'Location', id: string, name: string } | null };
+export type GetInternalLocationIdQuery = { __typename?: 'RootQueryType', location?: { __typename?: 'Location', id: string, name: string, event: { __typename?: 'Event', name: string } } | null };
 
 
 export const GetEventLocations = gql`
@@ -663,6 +658,9 @@ export const GetInternalLocationId = gql`
   location(id: $id) {
     id
     name
+    event {
+      name
+    }
   }
 }
     `;

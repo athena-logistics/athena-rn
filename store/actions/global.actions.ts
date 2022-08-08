@@ -6,6 +6,7 @@ export enum ActionType {
   SWITCH_TO_EVENT = 'SWITCH_TO_EVENT',
   SWITCH_TO_LOCATION = 'SWITCH_TO_LOCATION',
   RESET_PERMISSIONS = 'RESET_PERMISSIONS',
+  SET_EVENT_NAME = 'SET_EVENT_NAME',
 }
 
 export const setAllStock = (rows: StockItem[]) => {
@@ -31,4 +32,7 @@ export const switchToLocation = (locationId: string, apiHost: string) => {
 };
 export const resetPermissions = () => {
   return { type: ActionType.RESET_PERMISSIONS, payload: {} };
+};
+export const setEventName = (eventName: string) => {
+  return { type: ActionType.SET_EVENT_NAME, payload: { eventName } };
 };

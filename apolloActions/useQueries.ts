@@ -18,6 +18,7 @@ import { getNodes } from '../helpers/apollo';
 import {
   setAllItems,
   setAllStock,
+  setEventName,
   setLocationStockData,
 } from '../store/actions/global.actions';
 
@@ -52,6 +53,7 @@ export const useAllStockQuery = (eventId: string) => {
           );
 
         dispatch(setAllStock(rowData));
+        dispatch(setEventName(data.event.name));
       }
     },
     fetchPolicy: 'no-cache',
@@ -130,8 +132,15 @@ export const useLocationQuery = (eventId: string) => {
 };
 
 export const useInternalLocationId = (externalLocationId: string) => {
+  const dispatch = useDispatch();
+
   return useQuery<GetInternalLocationIdQuery>(GET_INTERNAL_LOCATION_ID, {
     variables: { id: externalLocationId },
     skip: !externalLocationId,
+    onCompleted: (data) => {
+      if (data) {
+        dispatch(setEventName(data.location?.event.name || ''));
+      }
+    },
   });
 };

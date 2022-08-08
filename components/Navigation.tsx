@@ -28,6 +28,7 @@ import Scanner from '../screens/Scanner';
 import StockItemDetails from '../screens/StockItemDetails';
 import Supply from '../screens/Supply';
 import { RootState } from '../store';
+import NativeText from './native/NativeText';
 
 const Navigation = () => {
   const getTabBarIcon =
@@ -38,6 +39,7 @@ const Navigation = () => {
   const currentPermission = useSelector(
     (state: RootState) => state.global.currentPermission
   );
+  const eventName = useSelector((state: RootState) => state.global.eventName);
 
   const isEventAdmin = () => currentPermission === PermissionEnum.EventAdmin;
   const isLocationUser = () =>
@@ -130,8 +132,15 @@ const Navigation = () => {
         <OverviewStack.Screen
           name="Overview"
           component={OverviewTabs}
-          options={(props) => ({
+          options={() => ({
             title: i18n.t('overview'),
+            headerRight: () => (
+              <NativeText
+                style={{ color: isAndroid ? colors.white : colors.primary }}
+              >
+                {eventName}
+              </NativeText>
+            ),
           })}
         />
       ) : null}

@@ -4,6 +4,7 @@ import { ActionType } from '../actions/global.actions';
 
 interface GlobalState {
   eventId: string;
+  eventName: string;
   allStock: StockItem[];
   allItems: Item[];
   locations: any[];
@@ -19,6 +20,7 @@ interface GlobalState {
 
 const initialState: GlobalState = {
   eventId: '',
+  eventName: '',
   allStock: [],
   allItems: [],
   locations: [],
@@ -63,6 +65,7 @@ const globalReducer = (
         currentPermissionId: undefined,
         apiHost: '',
         eventId: '',
+        eventName: '',
       };
     case ActionType.SWITCH_TO_EVENT:
       return {
@@ -78,6 +81,12 @@ const globalReducer = (
         currentPermission: PermissionEnum.LocationUser,
         currentPermissionId: action.payload.locationId,
         apiHost: action.payload.apiHost,
+      };
+    case ActionType.SET_EVENT_NAME:
+      console.log(action.payload.eventName);
+      return {
+        ...state,
+        eventName: action.payload.eventName,
       };
     default:
       return state;

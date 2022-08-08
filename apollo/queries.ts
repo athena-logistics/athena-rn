@@ -119,6 +119,9 @@ export const GET_INTERNAL_LOCATION_ID = gql`
     location(id: $id) {
       id
       name
+      event {
+        name
+      }
     }
   }
 `;

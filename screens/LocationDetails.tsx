@@ -15,9 +15,11 @@ import ItemRow from '../components/ItemRow';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
+import isAndroid from '../constants/isAndroid';
 import { getGroupedData } from '../helpers/getGroupedData';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { LogisticLocation } from '../models/LogisticLocation';
+import { PermissionEnum } from '../models/PermissionEnum';
 import { RootState } from '../store';
 
 const LocationDetails = ({}: {}) => {
@@ -29,10 +31,14 @@ const LocationDetails = ({}: {}) => {
   // @ts-ignore
   const externalLocationId: string = route.params?.externalLocationId;
 
+  const locationPermissionOnly =
+    useSelector((state: RootState) => state.global.currentPermission) ===
+    PermissionEnum.LocationUser;
+  const eventName = useSelector((state: RootState) => state.global.eventName);
+
   const { data } = useInternalLocationId(externalLocationId);
   const internalLocationId = data?.location?.id;
   const locationName = data?.location?.name;
-
   const currentLocationId = internalLocationId || location?.id;
 
   const [fetch, { loading }] = useLocationStockQuery(currentLocationId);
@@ -53,17 +59,25 @@ const LocationDetails = ({}: {}) => {
 
   const navigation = useNavigation();
   React.useLayoutEffect(() => {
-    if (externalLocationId) {
+    if (locationPermissionOnly) {
       navigation.setOptions({
         headerBackVisible: false,
       });
     }
-    if (locationName) {
+
+    if (eventName && locationPermissionOnly) {
       navigation.setOptions({
-        headerTitle: locationName,
+        title: `${locationName}`,
+        headerRight: () => (
+          <NativeText
+            style={{ color: isAndroid ? colors.white : colors.primary }}
+          >
+            {eventName}
+          </NativeText>
+        ),
       });
     }
-  }, [navigation, externalLocationId, locationName]);
+  }, [navigation, locationName, eventName, locationPermissionOnly]);
 
   const locationData = useSelector(
     (state: RootState) => state.global.locationStock[currentLocationId]
