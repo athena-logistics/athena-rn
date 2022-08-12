@@ -43,7 +43,10 @@ const StockItemDetails = ({}: {}) => {
           <View style={style.status}>
             <Octicons name="dot-fill" size={30} color={iconColor} />
           </View>
-          <NativeText style={style.titleText}>{item.locationName}</NativeText>
+          <View>
+            <NativeText style={style.titleText}>{item.locationName}</NativeText>
+            <NativeText>{item.name}</NativeText>
+          </View>
         </View>
         <View style={style.leftContainer}>
           <View style={style.numberContainer}>

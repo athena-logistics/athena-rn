@@ -130,12 +130,15 @@ const styles = (
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      flexShrink: 1,
     },
     title: { overflow: 'hidden', justifyContent: 'center' },
     titleText: {
       fontSize: 18,
       fontFamily: fonts.defaultFontFamilyBold,
       color: isInverse ? colors.secondary : colors.primary,
+      flex: 1,
+      flexWrap: 'wrap',
     },
     subtitleText: {
       fontSize: 12,
