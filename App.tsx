@@ -40,6 +40,7 @@ i18n.translations = {
     successfulMove: 'Successfuly moved stuff.',
     ohNo: 'Oh No!',
     successfulSupply: 'Successfuly supplied stuff.',
+    map: 'Map',
   },
   de: {
     supply: 'Anlieferung',
@@ -64,6 +65,7 @@ i18n.translations = {
     successfulMove: 'Erfolgreich verschoben',
     ohNo: 'Oh Nein!',
     successfulSupply: 'Erfolgreich angeliefert',
+    map: 'Map',
   },
 };
 i18n.fallbacks = true;
