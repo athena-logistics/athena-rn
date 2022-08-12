@@ -159,6 +159,7 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       paddingVertical: 10,
       width: '100%',
       overflow: 'hidden',
+      backgroundColor: colors.white,
     },
   });
 

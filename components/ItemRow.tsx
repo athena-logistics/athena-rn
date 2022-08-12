@@ -71,26 +71,22 @@ const ItemRow = ({
 
   return (
     <View style={style.row}>
-      <TouchableOpacity onPress={handlePress}>
-        <View style={style.rightContainer}>
-          <View style={style.status}>
-            <Octicons name="dot-fill" size={30} color={color} />
-          </View>
-          <View style={style.title}>
-            {variant === 'nameAndUnit' && (
-              <>
-                <NativeText style={style.titleText}>{row.name}</NativeText>
-                <NativeText style={style.subtitleText}>{row.unit}</NativeText>
-              </>
-            )}
-            {variant === 'location' && (
-              <NativeText style={style.titleText}>
-                {row.locationName}
-              </NativeText>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
+      <View style={style.status}>
+        <Octicons name="dot-fill" size={30} color={color} />
+      </View>
+      <View style={style.title}>
+        <TouchableOpacity onPress={handlePress}>
+          {variant === 'nameAndUnit' && (
+            <>
+              <NativeText style={style.titleText}>{row.name}</NativeText>
+              <NativeText style={style.subtitleText}>{row.unit}</NativeText>
+            </>
+          )}
+          {variant === 'location' && (
+            <NativeText style={style.titleText}>{row.locationName}</NativeText>
+          )}
+        </TouchableOpacity>
+      </View>
       <View style={style.leftContainer}>
         <NativeNumberConsumptionInput
           value={localRow.stock + ''}
@@ -122,23 +118,19 @@ const styles = (
       overflow: 'hidden',
     },
     status: { marginRight: 10 },
-    rightContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    leftContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      flexShrink: 1,
-    },
-    title: { overflow: 'hidden', justifyContent: 'center' },
+    title: { overflow: 'hidden', justifyContent: 'center', flex: 1 },
     titleText: {
       fontSize: 18,
       fontFamily: fonts.defaultFontFamilyBold,
       color: isInverse ? colors.secondary : colors.primary,
       flex: 1,
       flexWrap: 'wrap',
+    },
+    leftContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginLeft: 10,
     },
     subtitleText: {
       fontSize: 12,
