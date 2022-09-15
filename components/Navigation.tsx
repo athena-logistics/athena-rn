@@ -26,6 +26,7 @@ import LocationDetails from '../screens/LocationDetails';
 import LocationOverview from '../screens/LocationOverview';
 import Move from '../screens/Move';
 import Scanner from '../screens/Scanner';
+import StockByStock from '../screens/StockByStock';
 import StockItemDetails from '../screens/StockItemDetails';
 import { RootState } from '../store';
 import NativeText from './native/NativeText';
@@ -70,6 +71,7 @@ const Navigation = () => {
     tabBarInactiveTintColor: isAndroid ? colors.primaryLight : colors.primary,
     tabBarLabelStyle: {
       fontFamily: fonts.defaultFontFamilyBold,
+      fontSize: 10,
     },
     tabBarIndicatorStyle: { backgroundColor: colors.primary },
     tabBarActiveTintColor: isAndroid ? 'white' : colors.primary,
@@ -90,6 +92,27 @@ const Navigation = () => {
   const OverviewTabs: React.FC = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTopTab}>
+        <OverviewTab.Screen
+          name="Overview all"
+          component={StockByStock}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="view-dashboard"
+                size={24}
+                color={
+                  isAndroid
+                    ? focused
+                      ? colors.white
+                      : colors.primaryLight
+                    : colors.primary
+                }
+              />
+            ),
+            swipeEnabled: false,
+            title: i18n.t('overview'),
+          }}
+        />
         <OverviewTab.Screen
           name="By Location"
           component={LocationOverview}
