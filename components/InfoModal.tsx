@@ -3,6 +3,7 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from 'expo-updates';
+import I18n from 'i18n-js';
 import React from 'react';
 import {
   Alert,
@@ -50,20 +51,17 @@ const InfoModal = ({
       if (update.isAvailable) {
         await fetchUpdateAsync();
         Alert.alert(
-          'App successfully updated',
-          'The app has been updated to the latest version. The app will now restart.',
+          I18n.t('appUpdated'),
+          I18n.t('appUpdatedText'),
           [{ text: 'OK', onPress: async () => reloadAsync() }],
           { cancelable: false }
         );
       } else {
-        Alert.alert(
-          'Up to date',
-          'You already have the latest version of the app.'
-        );
+        Alert.alert(I18n.t('upToDate'), I18n.t('upToDateText'));
       }
     } catch (error) {
       console.log(error);
-      Alert.alert('Error', 'An error occurred while checking for updates.');
+      Alert.alert('Error', I18n.t('updateErrorText'));
     }
   };
 
