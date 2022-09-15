@@ -40,8 +40,6 @@ const InfoModal = ({
   }
 
   const checkForUpdates = async () => {
-    console.log('Checking for updates...');
-
     if (__DEV__) {
       return;
     }

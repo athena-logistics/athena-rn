@@ -6,7 +6,6 @@ import 'expo-asset';
 import { useFonts } from 'expo-font';
 import * as Localization from 'expo-localization';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Updates from 'expo-updates';
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,
@@ -114,8 +113,6 @@ const App = () => {
   }, []);
 
   const checkForUpdates = async () => {
-    console.log('Checking for updates...');
-
     if (__DEV__) {
       return;
     }
@@ -136,7 +133,6 @@ const App = () => {
       Alert.alert('Error', 'An error occurred while checking for updates.');
     }
   };
-  Updates.addListener(checkForUpdates);
 
   useEffect(() => {
     const loadAsync = async () => {

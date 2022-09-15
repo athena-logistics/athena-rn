@@ -1,15 +1,15 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   createMaterialBottomTabNavigator,
-  MaterialBottomTabNavigationOptions
+  MaterialBottomTabNavigationOptions,
 } from '@react-navigation/material-bottom-tabs';
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions
+  MaterialTopTabNavigationOptions,
 } from '@react-navigation/material-top-tabs';
 import {
   createNativeStackNavigator,
-  NativeStackNavigationOptions
+  NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import i18n from 'i18n-js';
 import React from 'react';
@@ -44,6 +44,7 @@ const Navigation = () => {
   const eventName = useSelector((state: RootState) => state.global.eventName);
 
   const isEventAdmin = () => currentPermission === PermissionEnum.EventAdmin;
+  console.log('isadmin', isEventAdmin());
   const isLocationUser = () =>
     currentPermission === PermissionEnum.LocationUser;
 
@@ -60,7 +61,6 @@ const Navigation = () => {
     },
     tabBarIndicatorStyle: { backgroundColor: colors.primary },
     tabBarActiveTintColor: isAndroid ? 'white' : colors.primary,
-    lazy: true,
   };
 
   const defaultScreenOptionsStack: NativeStackNavigationOptions = {
@@ -82,7 +82,6 @@ const Navigation = () => {
           name="By Location"
           component={LocationOverview}
           options={{
-            lazy: true,
             tabBarIcon: ({ focused }) => (
               <MaterialCommunityIcons
                 name="home-group"
@@ -103,7 +102,6 @@ const Navigation = () => {
           name="By Item"
           component={ItemOverview}
           options={{
-            lazy: true,
             title: i18n.t('byItem'),
             tabBarIcon: ({ focused }) => (
               <MaterialCommunityIcons
@@ -124,7 +122,6 @@ const Navigation = () => {
           name="Missing items"
           component={EventMissingItems}
           options={{
-            lazy: true,
             title: i18n.t('eventMissingItems'),
             tabBarIcon: ({ focused }) => (
               <MaterialCommunityIcons
@@ -147,10 +144,7 @@ const Navigation = () => {
 
   const OverviewStack = createNativeStackNavigator();
   const OverviewStackNavigator = () => (
-    <OverviewStack.Navigator
-      screenOptions={defaultScreenOptionsStack}
-      defaultScreenOptions={{}}
-    >
+    <OverviewStack.Navigator screenOptions={defaultScreenOptionsStack}>
       {isEventAdmin() ? (
         <OverviewStack.Screen
           name="Overview"
@@ -174,6 +168,14 @@ const Navigation = () => {
           // @ts-ignore
           title: props.route.params?.stockItem?.name,
         })}
+      />
+      <OverviewStack.Screen
+        name="Supply screen"
+        component={Supply}
+        options={{
+          headerTitle: i18n.t('supply'),
+          title: i18n.t('supply'),
+        }}
       />
       <OverviewStack.Screen
         name="Location Details"
@@ -262,7 +264,6 @@ const Navigation = () => {
   const AppTabNavigator = () => (
     <AppTabs.Navigator
       screenOptions={defaultScreenOptionsBottomTab}
-      initialRouteName="Overview"
       shifting={false}
       barStyle={{ backgroundColor: colors.primary }}
       activeColor={colors.white}

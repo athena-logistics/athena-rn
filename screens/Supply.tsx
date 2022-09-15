@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import i18n from 'i18n-js';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import {
@@ -126,6 +126,28 @@ const Supply = ({}: {}) => {
   const eventId = useSelector((state: RootState) => state.global.eventId);
   const { data, loading, error } = useLocationQuery(eventId);
 
+  const route = useRoute();
+  // @ts-ignore
+  const moveItems: StockItem[] | undefined = route.params?.items;
+  // @ts-ignore
+  const moveTo: string | undefined = route.params?.to;
+
+  useEffect(() => {
+    if (moveItems && moveTo && locations) {
+      setTo(moveTo);
+
+      moveItems.forEach((item: StockItem, index: number) => {
+        dispatch({
+          type: ActionType.Change,
+          payload: {
+            index: index,
+            item: { stock: item.missingCount.toString(), item: item.id },
+          },
+        });
+      });
+    }
+  }, [moveItems, moveTo, locations]);
+
   useEffect(() => {
     if (!error && !loading) {
       if (data && data.event?.__typename === 'Event') {
@@ -167,6 +189,8 @@ const Supply = ({}: {}) => {
   useEffect(() => {
     fetch();
   }, []);
+
+  console.log('rendering supply');
 
   const [createSupplyMutation, { loading: supplyLoading }] =
     useMutation<SupplyInput>(DO_SUPPLY, {
