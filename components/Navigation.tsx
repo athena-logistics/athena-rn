@@ -279,7 +279,7 @@ const Navigation = () => {
           }}
         />
       ) : null}
-      {isEventAdmin() || isLocationUser() ? (
+      {/* {isEventAdmin() || isLocationUser() ? (
         <AppTabs.Screen
           name="Map Stack"
           component={MapStackNavigatior}
@@ -288,7 +288,7 @@ const Navigation = () => {
             tabBarLabel: i18n.t('map'),
           }}
         />
-      ) : null}
+      ) : null} */}
       <AppTabs.Screen
         name="Scanner Stack"
         component={ScannerStackNavigatior}
