@@ -1,5 +1,11 @@
+import {
+  checkForUpdateAsync,
+  fetchUpdateAsync,
+  reloadAsync,
+} from 'expo-updates';
 import React from 'react';
 import {
+  Alert,
   Image,
   Linking,
   Modal,
@@ -31,6 +37,35 @@ const InfoModal = ({
   if (!isOpen) {
     return null;
   }
+
+  const checkForUpdates = async () => {
+    console.log('Checking for updates...');
+
+    if (__DEV__) {
+      return;
+    }
+
+    try {
+      const update = await checkForUpdateAsync();
+      if (update.isAvailable) {
+        await fetchUpdateAsync();
+        Alert.alert(
+          'App successfully updated',
+          'The app has been updated to the latest version. The app will now restart.',
+          [{ text: 'OK', onPress: async () => reloadAsync() }],
+          { cancelable: false }
+        );
+      } else {
+        Alert.alert(
+          'Up to date',
+          'You already have the latest version of the app.'
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'An error occurred while checking for updates.');
+    }
+  };
 
   return (
     <Modal animationType={'slide'} onRequestClose={onClose} transparent={true}>
@@ -76,8 +111,13 @@ const InfoModal = ({
               </View>
             </View>
           </View>
-          <View style={style.close}>
-            <NativeButton onPress={onClose} title={'Close'} />
+          <View style={style.buttons}>
+            <NativeButton onPress={checkForUpdates} title="Check for updates" />
+            <NativeButton
+              style={style.close}
+              onPress={onClose}
+              title={'Close'}
+            />
           </View>
         </View>
       </View>
@@ -129,6 +169,11 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     },
     close: {
       alignSelf: 'flex-end',
+    },
+    buttons: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
     },
   });
 

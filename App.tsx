@@ -6,9 +6,15 @@ import 'expo-asset';
 import { useFonts } from 'expo-font';
 import * as Localization from 'expo-localization';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Updates from 'expo-updates';
+import {
+  checkForUpdateAsync,
+  fetchUpdateAsync,
+  reloadAsync,
+} from 'expo-updates';
 import i18n from 'i18n-js';
 import React, { useEffect } from 'react';
-import { LogBox, StyleSheet } from 'react-native';
+import { Alert, LogBox, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import AppContent from './AppContent';
 import store from './store';
@@ -91,7 +97,34 @@ const App = () => {
     }
 
     prepare();
+
+    checkForUpdates();
   }, []);
+
+  const checkForUpdates = async () => {
+    console.log('Checking for updates...');
+
+    if (__DEV__) {
+      return;
+    }
+
+    try {
+      const update = await checkForUpdateAsync();
+      if (update.isAvailable) {
+        await fetchUpdateAsync();
+        Alert.alert(
+          'App successfully updated',
+          'The app has been updated to the latest version. The app will now restart.',
+          [{ text: 'OK', onPress: async () => reloadAsync() }],
+          { cancelable: false }
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'An error occurred while checking for updates.');
+    }
+  };
+  Updates.addListener(checkForUpdates);
 
   useEffect(() => {
     const loadAsync = async () => {
