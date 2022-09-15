@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import I18n from 'i18n-js';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import MissingItemRow from '../components/MissingItemRow';
 import NativeButton from '../components/native/NativeButton';
 import NativePicker from '../components/native/NativePicker';
 import NativeScreen from '../components/native/NativeScreen';
+import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import { getNodes } from '../helpers/apollo';
 import { getGroupedData } from '../helpers/getGroupedData';
@@ -124,24 +125,24 @@ const EventMissingItems: React.FC = () => {
           selectedValue={locationFilter}
           setSelectedValue={handleSetLocationFilter}
           placeholderText={I18n.t('byLocation')}
-          width="30%"
         />
+        <NativeText> </NativeText>
         <NativePicker
           items={availableItemsWithUnit}
           selectedValue={itemFilter}
           setSelectedValue={handleSetItemFilter}
           placeholderText={I18n.t('byItem')}
-          width="30%"
         />
-        <MaterialCommunityIcons
-          name="selection-ellipse-remove"
+        <NativeText> </NativeText>
+        <MaterialIcons
+          name="highlight-remove"
           size={25}
           color={colors.primary}
           onPress={handleReset}
         />
       </View>
       {locationFilter && (
-        <View>
+        <View style={style.buttons}>
           <NativeButton title="Move all" onPress={handleMoveAll}></NativeButton>
         </View>
       )}
@@ -152,6 +153,8 @@ const EventMissingItems: React.FC = () => {
           refreshing={loadingStock}
           renderItem={renderRow}
           keyExtractor={(row) => row.id + row.locationId}
+          style={style.list}
+          contentContainerStyle={style.listContent}
         />
       </View>
     </NativeScreen>
@@ -162,15 +165,30 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: {
       // alignItems: 'center',
-      marginVertical: 20,
+      // marginVertical: 20,
       flex: 1,
+      justifyContent: 'flex-start',
     },
     top: {
-      width: '95%',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: 50,
+      marginVertical: 10,
+      marginHorizontal: 10,
+    },
+    buttons: {
+      alignSelf: 'flex-end',
+      marginHorizontal: 10,
+      marginBottom: 10,
+    },
+    list: {
+      borderColor: colors.primary,
+      borderTopWidth: 1,
+      borderStyle: 'dashed',
+      paddingBottom: 50,
+    },
+    listContent: {
+      paddingBottom: 100,
     },
   });
 

@@ -60,9 +60,10 @@ const Navigation = () => {
     tabBarInactiveTintColor: colors.primaryLight,
     tabBarActiveBackgroundColor: colors.primary,
     tabBarInactiveBackgroundColor: colors.primary,
-    tabBarLabelStyle: {
-      paddingBottom: 5
-    }
+    tabBarStyle: {
+      backgroundColor: colors.primary,
+      paddingBottom: isAndroid ? 5 : 15,
+    },
   };
   const defaultScreenOptionsTopTab: MaterialTopTabNavigationOptions = {
     tabBarStyle: {
@@ -219,7 +220,6 @@ const Navigation = () => {
             headerTitle: i18n.t('overview'),
             tabBarLabel: i18n.t('overview'),
             lazy: true,
-            unmountOnBlur: true,
           }}
         />
       ) : null}
@@ -230,7 +230,6 @@ const Navigation = () => {
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-log-out-outline' }),
             lazy: true,
-            unmountOnBlur: true,
             headerTitle: i18n.t('move'),
             tabBarLabel: i18n.t('move'),
           }}
@@ -243,7 +242,6 @@ const Navigation = () => {
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-log-in-outline' }),
             lazy: true,
-            unmountOnBlur: true,
             headerTitle: i18n.t('supply'),
             tabBarLabel: i18n.t('supply'),
           }}

@@ -8,7 +8,7 @@ import {
   Dimensions,
   Pressable,
   StyleSheet,
-  View,
+  View
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
@@ -17,7 +17,7 @@ import { DO_SUPPLY } from '../apollo/mutations';
 import { SupplyInput } from '../apollo/schema';
 import {
   useAllItemsQuery,
-  useLocationQuery,
+  useLocationQuery
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import NativeNumberOnlyInput from '../components/native/NativeNumberOnlyInput';
@@ -133,9 +133,10 @@ const Supply = ({}: {}) => {
   const moveTo: string | undefined = route.params?.to;
 
   useEffect(() => {
+    // coming from missing items screen
     if (moveItems && moveTo && locations) {
       setTo(moveTo);
-
+      dispatch({ type: ActionType.Initialize });
       moveItems.forEach((item: StockItem, index: number) => {
         dispatch({
           type: ActionType.Change,
