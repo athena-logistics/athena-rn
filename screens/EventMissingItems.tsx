@@ -121,7 +121,7 @@ const EventMissingItems: React.FC = () => {
     // @ts-ignore
     navigation.navigate('Supply', {
       items: [item],
-      to: locationFilter,
+      to: item.locationId,
     });
   };
 

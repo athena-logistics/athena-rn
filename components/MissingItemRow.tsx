@@ -1,13 +1,19 @@
 import i18n from 'i18n-js';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeText from './native/NativeText';
 
-const MissingItemRow = ({ row, onPress }: { row: StockItem, onPress: () => void }) => {
+const MissingItemRow = ({
+  row,
+  onPress,
+}: {
+  row: StockItem;
+  onPress: () => void;
+}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
@@ -23,7 +29,18 @@ const MissingItemRow = ({ row, onPress }: { row: StockItem, onPress: () => void 
         <View style={style.leftContainer}>
           <NativeText style={style.unitText}>{i18n.t('missing')}</NativeText>
           <View style={style.status}>
-            <NativeText style={style.statusTextMissing} type="bold">
+            <NativeText
+              style={{
+                ...style.statusTextMissing,
+                color:
+                  row.status === StockEntryStatus.Important
+                    ? colors.red
+                    : row.status === StockEntryStatus.Warning
+                    ? colors.orange
+                    : colors.primary,
+              }}
+              type="bold"
+            >
               {row.missingCount}
             </NativeText>
             <NativeText style={style.unitText}>{row.unit}</NativeText>
@@ -31,7 +48,7 @@ const MissingItemRow = ({ row, onPress }: { row: StockItem, onPress: () => void 
           <NativeText style={style.unitText}>{i18n.t('outOf')}</NativeText>
           <View style={style.status}>
             <NativeText style={style.statusTextTotal} type="bold">
-              {row.missingCount + row.stock}
+              {row.missingCount + (row.inverse ? -row.stock : row.stock)}
             </NativeText>
             <NativeText style={style.unitText}>TOTAL</NativeText>
           </View>
@@ -84,7 +101,6 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     },
     statusTextMissing: {
       fontSize: 20,
-      color: colors.red,
     },
     statusTextTotal: {
       fontSize: 20,

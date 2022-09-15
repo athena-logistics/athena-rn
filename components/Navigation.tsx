@@ -43,7 +43,6 @@ const Navigation = () => {
   const eventName = useSelector((state: RootState) => state.global.eventName);
 
   const isEventAdmin = () => currentPermission === PermissionEnum.EventAdmin;
-  console.log('isadmin', isEventAdmin());
   const isLocationUser = () =>
     currentPermission === PermissionEnum.LocationUser;
 

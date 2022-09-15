@@ -191,7 +191,6 @@ const Supply = ({}: {}) => {
     fetch();
   }, []);
 
-  console.log('rendering supply');
 
   const [createSupplyMutation, { loading: supplyLoading }] =
     useMutation<SupplyInput>(DO_SUPPLY, {

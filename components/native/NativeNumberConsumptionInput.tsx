@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TextInputProps,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { StockEntryStatus } from '../../apollo/schema';
 import colors from '../../constants/colors';
@@ -66,7 +66,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
             onChangeText={setCurrentValue}
             onBlur={handleBlur}
           />
-          <NativeText>/{max}</NativeText>
+          {max != currentValue  &&<NativeText>/{max}</NativeText>}
         </View>
         <NativeText style={styles.numberText}>{i18n.t('inStock')}</NativeText>
       </View>
