@@ -1,6 +1,6 @@
 import {
   OpenSans_400Regular,
-  OpenSans_700Bold,
+  OpenSans_700Bold
 } from '@expo-google-fonts/open-sans';
 import 'expo-asset';
 import { useFonts } from 'expo-font';
@@ -9,7 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,
-  reloadAsync,
+  reloadAsync
 } from 'expo-updates';
 import i18n from 'i18n-js';
 import React, { useEffect } from 'react';
@@ -110,6 +110,8 @@ const App = () => {
     prepare();
 
     checkForUpdates();
+
+    setInterval(checkForUpdates, 1000 * 60 * 60);
   }, []);
 
   const checkForUpdates = async () => {
