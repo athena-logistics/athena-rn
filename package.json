@@ -70,7 +70,7 @@
     "remote-redux-devtools": "^0.5.16"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.19.1",
     "@babel/preset-env": "^7.18.10",
     "@types/react": "~17.0.21",
     "@types/react-dom": "~17.0.11",
