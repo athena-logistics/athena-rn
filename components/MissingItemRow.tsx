@@ -1,17 +1,18 @@
 import i18n from 'i18n-js';
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeText from './native/NativeText';
 
-const MissingItemRow = ({ row }: { row: StockItem }) => {
+const MissingItemRow = ({ row, onPress }: { row: StockItem, onPress: () => void }) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
   return (
-    <Pressable>
+    <TouchableOpacity onPress={onPress}>
       <View style={style.row}>
         <View style={style.title}>
           <View style={style.titleRow}>
@@ -36,7 +37,7 @@ const MissingItemRow = ({ row }: { row: StockItem }) => {
           </View>
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

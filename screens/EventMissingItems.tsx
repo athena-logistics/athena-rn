@@ -86,7 +86,7 @@ const EventMissingItems: React.FC = () => {
   });
 
   const renderRow = ({ item }: { item: StockItem }) => {
-    return <MissingItemRow row={item} />;
+    return <MissingItemRow row={item} onPress={handleRowClick(item)}/>;
   };
 
   const filteredStock = allStock.filter(
@@ -117,6 +117,14 @@ const EventMissingItems: React.FC = () => {
     });
   };
 
+  const handleRowClick = (item: StockItem) => () => {
+    // @ts-ignore
+    navigation.navigate('Supply', {
+      items: [item],
+      to: locationFilter,
+    });
+  };
+
   return (
     <NativeScreen style={style.screen}>
       <View style={style.top}>
@@ -143,7 +151,7 @@ const EventMissingItems: React.FC = () => {
       </View>
       {locationFilter && (
         <View style={style.buttons}>
-          <NativeButton title="Move all" onPress={handleMoveAll}></NativeButton>
+          <NativeButton title="Supply all" onPress={handleMoveAll}></NativeButton>
         </View>
       )}
       <View>
@@ -184,7 +192,7 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     list: {
       borderColor: colors.primary,
       borderTopWidth: 1,
-      borderStyle: 'dashed',
+      borderStyle: 'dotted',
       paddingBottom: 50,
     },
     listContent: {
