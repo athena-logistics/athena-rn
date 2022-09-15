@@ -24,6 +24,7 @@ if (__DEV__) {
 
 i18n.translations = {
   en: {
+    supply: 'Supply',
     scanner: 'Scanner',
     move: 'Move',
     overview: 'Overview',
@@ -57,6 +58,7 @@ i18n.translations = {
     initialSupply: 'Initial Supply',
   },
   de: {
+    supply: 'Anlieferung',
     scanner: 'Scanner',
     move: 'Verschiebung',
     overview: 'Übersicht',
