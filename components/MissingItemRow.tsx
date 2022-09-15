@@ -27,7 +27,7 @@ const MissingItemRow = ({
           <NativeText style={style.subtitleText}>{row.locationName}</NativeText>
         </View>
         <View style={style.leftContainer}>
-          <NativeText style={style.unitText}>{i18n.t('missing')}</NativeText>
+          {!row.inverse && <NativeText style={style.unitText}>{i18n.t('missing')}</NativeText>}
           <View style={style.status}>
             <NativeText
               style={{
@@ -48,7 +48,7 @@ const MissingItemRow = ({
           <NativeText style={style.unitText}>{i18n.t('outOf')}</NativeText>
           <View style={style.status}>
             <NativeText style={style.statusTextTotal} type="bold">
-              {row.missingCount + (row.inverse ? -row.stock : row.stock)}
+              {row.inverse ? 0 : row.stock + row.missingCount}
             </NativeText>
             <NativeText style={style.unitText}>TOTAL</NativeText>
           </View>
