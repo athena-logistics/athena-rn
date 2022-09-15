@@ -165,7 +165,8 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: {
       // alignItems: 'center',
-      marginVertical: 10,
+      marginVertical: 20,
+      flex: 1,
     },
     top: {
       width: '95%',

@@ -14,7 +14,7 @@ interface NativePickerProps {
   width?: string;
   alreadySelectedItems?: string[];
   disabled?: boolean;
-  itemById?: { [key: string]: StockItem };
+  itemById?: { [key: string]: StockItem | Location };
 }
 
 const NativePicker: FC<NativePickerProps> = ({

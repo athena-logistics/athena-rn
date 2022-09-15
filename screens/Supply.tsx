@@ -293,6 +293,22 @@ const Supply = ({}: {}) => {
       }
     };
 
+  let itemById: { [key: string]: StockItem } = {};
+  availableItemsWithUnit.forEach((item) => {
+    item.children.forEach((child) => {
+      // @ts-ignore
+      itemById[child.id] = child;
+    });
+  });
+
+  let locationsById: { [key: string]: Location } = {};
+  locations.forEach((item) => {
+    item.children.forEach((location: any) => {
+      // @ts-ignore
+      locationsById[location.id] = location;
+    });
+  });
+
   return (
     <ScrollView style={{ flex: 1 }}>
       <NativeScreen style={style.screen}>
@@ -309,6 +325,7 @@ const Supply = ({}: {}) => {
             setSelectedValue={handleSetTo}
             placeholderText={i18n.t('to')}
             width="100%"
+            itemById={locationsById}
           />
         </View>
         {moveState.stuff.map((stuff, index) => (
@@ -328,6 +345,7 @@ const Supply = ({}: {}) => {
                 alreadySelectedItems={moveState.stuff.map(
                   (stuff) => stuff.item
                 )}
+                itemById={itemById}
               />
               {!!stuff.item && (
                 <Ionicons
