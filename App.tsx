@@ -88,7 +88,7 @@ i18n.translations = {
     upToDate: 'App ist auf dem neusten Stand',
     upToDateText: 'Sie haben bereits die neueste Version der App.',
     updateErrorText: 'Beim Suchen nach Updates ist ein Fehler aufgetreten.',
-    initialSupply: 'Erstversorgung',
+    initialSupply: 'Anfängliche Versorgung',
   },
 };
 i18n.fallbacks = true;
@@ -132,7 +132,6 @@ const App = () => {
       }
     } catch (error) {
       console.log(error);
-      Alert.alert('Error', 'An error occurred while checking for updates.');
     }
   };
 
