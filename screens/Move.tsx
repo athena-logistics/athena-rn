@@ -78,7 +78,6 @@ export type MoveAction =
   | InitializeAction;
 
 export const defaultItem = { item: '', stock: '1' };
-const emptyLocation = { name: i18n.t('initialSupply'), id: '-1' };
 
 export const moveReducer = (
   state: MoveState,
@@ -122,7 +121,11 @@ export interface ItemGroup {
 }
 
 const Move = ({}: {}) => {
-  const emptyLocation = { name: i18n.t('initialSupply'), id: '-1' };
+  const emptyLocation = {
+    name: i18n.t('initialSupply'),
+    id: '-1',
+    children: [{ name: i18n.t('initialSupply'), id: '-1' }],
+  };
 
   const reduxDispatch = useDispatch();
   const { isPortrait, isLandscape } = useOrientation();
@@ -248,6 +251,7 @@ const Move = ({}: {}) => {
     });
     locationsById['-1'] = emptyLocation;
   });
+
   if (locationStock) {
     itemById = locationStock.itemById;
     availableItems = getGroupedData(
@@ -286,12 +290,6 @@ const Move = ({}: {}) => {
   }, [moveItems, moveTo, locations]);
 
   const save = useCallback(() => {
-    if (moveState.stuff.length == 0) {
-      return Toast.show({
-        type: 'error',
-        text2: 'Please select items',
-      });
-    }
     Promise.all(
       moveState.stuff.map(async (stuff) => {
         const amount = Number(stuff.stock);
@@ -314,6 +312,12 @@ const Move = ({}: {}) => {
           return Toast.show({
             type: 'error',
             text2: 'Please select destination location',
+          });
+        }
+        if (!stuff.item) {
+          return Toast.show({
+            type: 'error',
+            text2: 'Please select an item',
           });
         }
 
@@ -348,11 +352,7 @@ const Move = ({}: {}) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      // @ts-ignore
       headerRight: () => (
-        // <HeaderButtons HeaderButtonComponent={NativeHeaderButton}>
-        //   <Item title="Save" iconName={'ios-checkmark'} />
-        // </HeaderButtons>
         <Pressable onPress={save} disabled={moveLoading || supplyLoading}>
           {(moveLoading || supplyLoading) && (
             <ActivityIndicator
@@ -414,10 +414,7 @@ const Move = ({}: {}) => {
       }
     };
 
-  const fromLocations = locations.map((location) => ({
-    ...location,
-    children: [emptyLocation].concat(location.children),
-  }));
+  const fromLocations = [emptyLocation].concat(locations);
 
   return (
     <ScrollView style={{ flex: 1 }}>
