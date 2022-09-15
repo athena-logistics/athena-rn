@@ -41,6 +41,9 @@ i18n.translations = {
     ohNo: 'Oh No!',
     successfulSupply: 'Successfuly supplied stuff.',
     map: 'Map',
+    eventMissingItems: 'Missing Items',
+    missing: 'Missing',
+    outOf: 'out of',
   },
   de: {
     supply: 'Anlieferung',
@@ -66,6 +69,9 @@ i18n.translations = {
     ohNo: 'Oh Nein!',
     successfulSupply: 'Erfolgreich angeliefert',
     map: 'Map',
+    eventMissingItems: 'Fehlende Artikel',
+    missing: 'Fehlen',
+    outOf: 'von',
   },
 };
 i18n.fallbacks = true;

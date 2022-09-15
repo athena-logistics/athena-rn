@@ -83,7 +83,6 @@ const globalReducer = (
         apiHost: action.payload.apiHost,
       };
     case ActionType.SET_EVENT_NAME:
-      console.log(action.payload.eventName);
       return {
         ...state,
         eventName: action.payload.eventName,

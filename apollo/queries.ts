@@ -48,6 +48,7 @@ export const GET_LOCATION_STOCK = gql`
               movementIn
               movementOut
               status
+              missingCount
             }
           }
         }
@@ -84,6 +85,7 @@ export const GET_ALL_STOCK = gql`
             movementIn
             movementOut
             status
+            missingCount
           }
         }
       }

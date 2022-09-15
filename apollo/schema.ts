@@ -42,6 +42,20 @@ export type Consumption = Movement & Node & Resource & {
   updatedAt: Scalars['Datetime'];
 };
 
+export type DeleteStockExpectationInput = {
+  id: Scalars['ID'];
+};
+
+export type DeleteStockExpectationPayload = {
+  __typename?: 'DeleteStockExpectationPayload';
+  /** A list of failed validations. May be blank or null if mutation succeeded. */
+  messages?: Maybe<Array<Maybe<ValidationMessage>>>;
+  /** The object created/updated/deleted by the mutation. May be null if mutation failed. */
+  result?: Maybe<Ok>;
+  /** Indicates if the mutation completed successfully or not. */
+  successful: Scalars['Boolean'];
+};
+
 export type Event = Node & Resource & {
   __typename?: 'Event';
   /** The ID of an object */
@@ -49,10 +63,14 @@ export type Event = Node & Resource & {
   insertedAt: Scalars['Datetime'];
   itemGroups?: Maybe<ItemGroupConnection>;
   items?: Maybe<ItemConnection>;
+  /** Get a timeline of stock for this event per location (granularity: 15 minutes) */
+  locationTotals?: Maybe<LocationTotalConnection>;
   locations?: Maybe<LocationConnection>;
   movements?: Maybe<MovementConnection>;
   name: Scalars['String'];
   stock?: Maybe<StockEntryConnection>;
+  /** Get a timeline of stock for this event (granularity: 15 minutes) */
+  totals?: Maybe<EventTotalConnection>;
   updatedAt: Scalars['Datetime'];
 };
 
@@ -68,6 +86,15 @@ export type EventItemGroupsArgs = {
 export type EventItemsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type EventLocationTotalsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filters?: InputMaybe<LocationTotalFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
 };
@@ -96,19 +123,80 @@ export type EventStockArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+
+export type EventTotalsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filters?: InputMaybe<EventTotalFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+export type EventTotal = {
+  __typename?: 'EventTotal';
+  amount: Scalars['Int'];
+  date: Scalars['Datetime'];
+  delta: Scalars['Int'];
+  event: Event;
+  item: Item;
+  itemGroup: ItemGroup;
+};
+
+export type EventTotalConnection = {
+  __typename?: 'EventTotalConnection';
+  edges: Array<EventTotalEdge>;
+  pageInfo: PageInfo;
+};
+
+export type EventTotalEdge = {
+  __typename?: 'EventTotalEdge';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<EventTotal>;
+};
+
+export type EventTotalFilter = {
+  dateFrom?: InputMaybe<Scalars['Datetime']>;
+  dateTo?: InputMaybe<Scalars['Datetime']>;
+  includeZeroDeltas?: InputMaybe<Scalars['Boolean']>;
+  locationIdEquals?: InputMaybe<Scalars['ID']>;
+};
+
 export type Item = Node & Resource & {
   __typename?: 'Item';
   event: Event;
+  /** Get a timeline of stock of this item in the whole event (granularity: 15 minutes) */
+  eventTotals?: Maybe<EventTotalConnection>;
   /** The ID of an object */
   id: Scalars['ID'];
   insertedAt: Scalars['Datetime'];
   inverse: Scalars['Boolean'];
   itemGroup: ItemGroup;
+  /** Get a timeline of stock of this item per location (granularity: 15 minutes) */
+  locationTotals?: Maybe<LocationTotalConnection>;
   movements?: Maybe<MovementConnection>;
   name: Scalars['String'];
   stock?: Maybe<StockEntryConnection>;
+  stockExpectations?: Maybe<StockExpectationConnection>;
   unit: Scalars['String'];
   updatedAt: Scalars['Datetime'];
+};
+
+
+export type ItemEventTotalsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filters?: InputMaybe<EventTotalFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ItemLocationTotalsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filters?: InputMaybe<LocationTotalFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -121,6 +209,14 @@ export type ItemMovementsArgs = {
 
 
 export type ItemStockArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ItemStockExpectationsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -200,6 +296,9 @@ export type Location = Node & Resource & {
   movementsOut?: Maybe<MovementConnection>;
   name: Scalars['String'];
   stock?: Maybe<StockEntryConnection>;
+  stockExpectations?: Maybe<StockExpectationConnection>;
+  /** Get a timeline of stock for this location (granularity: 15 minutes) */
+  totals?: Maybe<LocationTotalConnection>;
   updatedAt: Scalars['Datetime'];
 };
 
@@ -243,6 +342,23 @@ export type LocationStockArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+
+export type LocationStockExpectationsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type LocationTotalsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filters?: InputMaybe<LocationTotalFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
 export type LocationConnection = {
   __typename?: 'LocationConnection';
   edges: Array<LocationEdge>;
@@ -253,6 +369,36 @@ export type LocationEdge = {
   __typename?: 'LocationEdge';
   cursor?: Maybe<Scalars['String']>;
   node?: Maybe<Location>;
+};
+
+export type LocationTotal = {
+  __typename?: 'LocationTotal';
+  amount: Scalars['Int'];
+  date: Scalars['Datetime'];
+  delta: Scalars['Int'];
+  event: Event;
+  item: Item;
+  itemGroup: ItemGroup;
+  location: Location;
+};
+
+export type LocationTotalConnection = {
+  __typename?: 'LocationTotalConnection';
+  edges: Array<LocationTotalEdge>;
+  pageInfo: PageInfo;
+};
+
+export type LocationTotalEdge = {
+  __typename?: 'LocationTotalEdge';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<LocationTotal>;
+};
+
+export type LocationTotalFilter = {
+  dateFrom?: InputMaybe<Scalars['Datetime']>;
+  dateTo?: InputMaybe<Scalars['Datetime']>;
+  includeZeroDeltas?: InputMaybe<Scalars['Boolean']>;
+  locationIdEquals?: InputMaybe<Scalars['ID']>;
 };
 
 export type Movement = {
@@ -280,6 +426,14 @@ export type Node = {
   /** The ID of the object. */
   id: Scalars['ID'];
 };
+
+/**
+ * Enum to suggest that action was executed successfully, no details are
+ * provided.
+ */
+export enum Ok {
+  Ok = 'OK'
+}
 
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -332,7 +486,9 @@ export type Resource = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   consume?: Maybe<ConsumePayload>;
+  deleteStockExpectation?: Maybe<DeleteStockExpectationPayload>;
   relocate?: Maybe<RelocatePayload>;
+  setStockExpectation?: Maybe<SetStockExpectationPayload>;
   supply?: Maybe<SupplyPayload>;
 };
 
@@ -342,8 +498,18 @@ export type RootMutationTypeConsumeArgs = {
 };
 
 
+export type RootMutationTypeDeleteStockExpectationArgs = {
+  input: DeleteStockExpectationInput;
+};
+
+
 export type RootMutationTypeRelocateArgs = {
   input: RelocateInput;
+};
+
+
+export type RootMutationTypeSetStockExpectationArgs = {
+  input: SetStockExpectationInput;
 };
 
 
@@ -386,12 +552,30 @@ export type RootSubscriptionTypeMovementCreatedArgs = {
   locationId?: InputMaybe<Scalars['ID']>;
 };
 
+export type SetStockExpectationInput = {
+  importantThreshold: Scalars['Int'];
+  itemId: Scalars['ID'];
+  locationId: Scalars['ID'];
+  warningThreshold: Scalars['Int'];
+};
+
+export type SetStockExpectationPayload = {
+  __typename?: 'SetStockExpectationPayload';
+  /** A list of failed validations. May be blank or null if mutation succeeded. */
+  messages?: Maybe<Array<Maybe<ValidationMessage>>>;
+  /** The object created/updated/deleted by the mutation. May be null if mutation failed. */
+  result?: Maybe<StockExpectation>;
+  /** Indicates if the mutation completed successfully or not. */
+  successful: Scalars['Boolean'];
+};
+
 export type StockEntry = {
   __typename?: 'StockEntry';
   consumption: Scalars['Int'];
   item: Item;
   itemGroup: ItemGroup;
   location: Location;
+  missingCount: Scalars['Int'];
   movementIn: Scalars['Int'];
   movementOut: Scalars['Int'];
   status: StockEntryStatus;
@@ -416,6 +600,32 @@ export enum StockEntryStatus {
   Normal = 'NORMAL',
   Warning = 'WARNING'
 }
+
+export type StockExpectation = Node & Resource & {
+  __typename?: 'StockExpectation';
+  event: Event;
+  /** The ID of an object */
+  id: Scalars['ID'];
+  importantThreshold: Scalars['Int'];
+  insertedAt: Scalars['Datetime'];
+  item: Item;
+  itemGroup: ItemGroup;
+  location: Location;
+  updatedAt: Scalars['Datetime'];
+  warningThreshold: Scalars['Int'];
+};
+
+export type StockExpectationConnection = {
+  __typename?: 'StockExpectationConnection';
+  edges: Array<StockExpectationEdge>;
+  pageInfo: PageInfo;
+};
+
+export type StockExpectationEdge = {
+  __typename?: 'StockExpectationEdge';
+  cursor?: Maybe<Scalars['String']>;
+  node?: Maybe<StockExpectation>;
+};
 
 export type Supply = Movement & Node & Resource & {
   __typename?: 'Supply';
@@ -520,14 +730,14 @@ export type GetLocationStockQueryVariables = Exact<{
 }>;
 
 
-export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string, inverse: boolean }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
+export type GetLocationStockQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, missingCount: number, item: { __typename?: 'Item', id: string, name: string, unit: string, inverse: boolean }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | { __typename: 'Relocation', id: string } | { __typename: 'StockExpectation', id: string } | { __typename: 'Supply', id: string } | null };
 
 export type GetAllStockQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetAllStockQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, item: { __typename?: 'Item', id: string, name: string, unit: string, inverse: boolean }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | null };
+export type GetAllStockQuery = { __typename?: 'RootQueryType', event?: { __typename?: 'Event', name: string, id: string, stock?: { __typename?: 'StockEntryConnection', edges: Array<{ __typename?: 'StockEntryEdge', node?: { __typename?: 'StockEntry', stock: number, supply: number, consumption: number, movementIn: number, movementOut: number, status: StockEntryStatus, missingCount: number, item: { __typename?: 'Item', id: string, name: string, unit: string, inverse: boolean }, itemGroup: { __typename?: 'ItemGroup', id: string, name: string }, location: { __typename?: 'Location', id: string, name: string } } | null }> } | null } | null };
 
 export type GetAllItemsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -590,6 +800,7 @@ export const GetLocationStock = gql`
             movementIn
             movementOut
             status
+            missingCount
           }
         }
       }
@@ -625,6 +836,7 @@ export const GetAllStock = gql`
           movementIn
           movementOut
           status
+          missingCount
         }
       }
     }

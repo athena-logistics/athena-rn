@@ -17,6 +17,7 @@ interface NativeNumberConsumptionInputProps extends TextInputProps {
   onChangeText: (newValue?: string, change?: number) => void;
   loading: boolean;
   type: StockEntryStatus;
+  max?: number;
 }
 
 const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
@@ -25,6 +26,7 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   editable,
   loading,
   type,
+  max,
   ...rest
 }) => {
   const [currentValue, setCurrentValue] = useState(value);
@@ -55,14 +57,17 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         )}
       </TouchableOpacity>
       <View style={styles.numberColumn}>
-        <NativeInput
-          style={styles.number}
-          keyboardType="number-pad"
-          {...rest}
-          value={currentValue}
-          onChangeText={setCurrentValue}
-          onBlur={handleBlur}
-        />
+        <View style={styles.numbers}>
+          <NativeInput
+            style={styles.number}
+            keyboardType="number-pad"
+            {...rest}
+            value={currentValue}
+            onChangeText={setCurrentValue}
+            onBlur={handleBlur}
+          />
+          <NativeText>/{max}</NativeText>
+        </View>
         <NativeText style={styles.numberText}>{i18n.t('inStock')}</NativeText>
       </View>
       <TouchableOpacity onPress={add(false)} disabled={!editable}>
@@ -87,6 +92,10 @@ const styles = StyleSheet.create({
   numberColumn: {
     alignItems: 'center',
     marginHorizontal: 10,
+  },
+  numbers: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   numberText: {
     fontSize: 12,

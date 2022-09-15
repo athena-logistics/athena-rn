@@ -13,4 +13,5 @@ interface StockItem {
   supply: number;
   unit: string;
   inverse: boolean;
+  missingCount: number;
 }

@@ -1,15 +1,15 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   createMaterialBottomTabNavigator,
-  MaterialBottomTabNavigationOptions,
+  MaterialBottomTabNavigationOptions
 } from '@react-navigation/material-bottom-tabs';
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions,
+  MaterialTopTabNavigationOptions
 } from '@react-navigation/material-top-tabs';
 import {
   createNativeStackNavigator,
-  NativeStackNavigationOptions,
+  NativeStackNavigationOptions
 } from '@react-navigation/native-stack';
 import i18n from 'i18n-js';
 import React from 'react';
@@ -19,6 +19,7 @@ import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import isAndroid from '../constants/isAndroid';
 import { PermissionEnum } from '../models/PermissionEnum';
+import EventMissingItems from '../screens/EventMissingItems';
 import ItemDetails from '../screens/ItemDetails';
 import ItemOverview from '../screens/ItemOverview';
 import LocationDetails from '../screens/LocationDetails';
@@ -107,6 +108,27 @@ const Navigation = () => {
             tabBarIcon: ({ focused }) => (
               <MaterialCommunityIcons
                 name="food-fork-drink"
+                size={24}
+                color={
+                  isAndroid
+                    ? focused
+                      ? colors.white
+                      : colors.primaryLight
+                    : colors.primary
+                }
+              />
+            ),
+          }}
+        />
+        <OverviewTab.Screen
+          name="Missing items"
+          component={EventMissingItems}
+          options={{
+            lazy: true,
+            title: i18n.t('eventMissingItems'),
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="crosshairs-gps"
                 size={24}
                 color={
                   isAndroid

@@ -90,6 +90,7 @@ const ItemRow = ({
       <View style={style.leftContainer}>
         <NativeNumberConsumptionInput
           value={localRow.stock + ''}
+          max={localRow.stock + localRow.missingCount}
           onChangeText={consume}
           loading={loading}
           editable={true}
