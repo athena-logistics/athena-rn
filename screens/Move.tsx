@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DO_RELOCATE, DO_SUPPLY } from '../apollo/mutations';
 import { RelocateInput, SupplyInput } from '../apollo/schema';
 import {
+  useAllItemsQuery,
   useLocationQuery,
   useLocationStockQuery,
 } from '../apolloActions/useQueries';
@@ -121,6 +122,8 @@ export interface ItemGroup {
 }
 
 const Move = ({}: {}) => {
+  const emptyLocation = { name: i18n.t('initialSupply'), id: '-1' };
+
   const reduxDispatch = useDispatch();
   const { isPortrait, isLandscape } = useOrientation();
   const isLargeScreen = Dimensions.get('screen').width > 800;
@@ -187,16 +190,17 @@ const Move = ({}: {}) => {
   useMovementSubscription({
     locationId: from,
     onSubscriptionData: (data: any) => {
-      fetch();
+      fetchLocationStock();
     },
   });
 
   const navigation = useNavigation();
   const { data, loading, error } = useLocationQuery(eventId);
-  const [fetch] = useLocationStockQuery(from);
+  const [fetchLocationStock] = useLocationStockQuery(from);
 
   useEffect(() => {
-    fetch();
+    fetchAllItems();
+    fetchLocationStock();
   }, []);
 
   useEffect(() => {
@@ -217,6 +221,7 @@ const Move = ({}: {}) => {
     }
   }, [data, error, loading]);
 
+  const [fetchAllItems] = useAllItemsQuery(eventId);
   const allItems = useSelector((state: RootState) => state.global.allItems);
   let availableItems = getGroupedData(allItems);
   let availableItemsWithUnit = availableItems.map((group) => ({

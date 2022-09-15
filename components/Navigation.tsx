@@ -1,15 +1,15 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   BottomTabNavigationOptions,
-  createBottomTabNavigator
+  createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions
+  MaterialTopTabNavigationOptions,
 } from '@react-navigation/material-top-tabs';
 import {
   createNativeStackNavigator,
-  NativeStackNavigationOptions
+  NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import i18n from 'i18n-js';
 import React from 'react';
@@ -27,7 +27,6 @@ import LocationOverview from '../screens/LocationOverview';
 import Move from '../screens/Move';
 import Scanner from '../screens/Scanner';
 import StockItemDetails from '../screens/StockItemDetails';
-import Supply from '../screens/Supply';
 import { RootState } from '../store';
 import NativeText from './native/NativeText';
 
@@ -234,18 +233,7 @@ const Navigation = () => {
           }}
         />
       ) : null}
-      {isEventAdmin() ? (
-        <AppTabs.Screen
-          name="Supply"
-          component={Supply}
-          options={{
-            tabBarIcon: getTabBarIcon({ name: 'ios-log-in-outline' }),
-            lazy: true,
-            headerTitle: i18n.t('supply'),
-            tabBarLabel: i18n.t('supply'),
-          }}
-        />
-      ) : null}
+
       {/* {isEventAdmin() || isLocationUser() ? (
         <AppTabs.Screen
           name="Map Stack"
