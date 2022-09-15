@@ -23,6 +23,7 @@ import EventMissingItems from '../screens/EventMissingItems';
 import ItemDetails from '../screens/ItemDetails';
 import ItemOverview from '../screens/ItemOverview';
 import LocationDetails from '../screens/LocationDetails';
+import LocationOverview from '../screens/LocationOverview';
 import Move from '../screens/Move';
 import Scanner from '../screens/Scanner';
 import StockItemDetails from '../screens/StockItemDetails';
@@ -90,6 +91,26 @@ const Navigation = () => {
   const OverviewTabs: React.FC = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTopTab}>
+        <OverviewTab.Screen
+          name="By Location"
+          component={LocationOverview}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialCommunityIcons
+                name="home-group"
+                size={24}
+                color={
+                  isAndroid
+                    ? focused
+                      ? colors.white
+                      : colors.primaryLight
+                    : colors.primary
+                }
+              />
+            ),
+            title: i18n.t('byLocation'),
+          }}
+        />
         <OverviewTab.Screen
           name="By Item"
           component={ItemOverview}
@@ -161,7 +182,6 @@ const Navigation = () => {
           title: props.route.params?.stockItem?.name,
         })}
       />
-   
       <OverviewStack.Screen
         name="Location Details"
         component={LocationDetails}
@@ -253,6 +273,10 @@ const Navigation = () => {
     </AppTabs.Navigator>
   );
 
-  return <AppTabNavigator />;
+  return (
+    <>
+      <AppTabNavigator />
+    </>
+  );
 };
 export default Navigation;
