@@ -496,6 +496,7 @@ const styles = ({ isPortrait, isLandscape, isLargeScreen }: Orientation) =>
   StyleSheet.create({
     screen: {
       justifyContent: 'flex-start',
+      paddingBottom: 20,
     },
     fromToContainer: {
       alignItems: 'center',
