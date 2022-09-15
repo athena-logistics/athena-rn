@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   useAllItemsQuery,
   useAllStockQuery,
-  useLocationQuery,
+  useLocationQuery
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import MissingItemRow from '../components/MissingItemRow';
@@ -110,13 +110,10 @@ const EventMissingItems: React.FC = () => {
   const navigation = useNavigation();
   const handleMoveAll = () => {
     // @ts-ignore
-    navigation.navigate('Supply screen', {
+    navigation.navigate('Supply', {
       items: filteredStock,
       to: locationFilter,
     });
-    // screen: 'Supply',
-    // params: { items: filteredStock, to: locationFilter },
-    // });
   };
 
   return (
