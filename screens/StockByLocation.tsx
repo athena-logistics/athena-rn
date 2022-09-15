@@ -7,7 +7,6 @@ import {
   useAllStockQuery,
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import LocationRow2 from '../components/LocationRow2';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
@@ -52,10 +51,6 @@ const StockByLocation = ({}: {}) => {
     fetch();
     fetchAllItems();
   }, [eventId]);
-
-  const renderRow = ({ item }: { item: LogisticLocation }) => {
-    return <LocationRow2 row={item} key={item.id} />;
-  };
 
   const handlePress = (location: LogisticLocation) => {
     // @ts-ignore
