@@ -1,6 +1,6 @@
 import {
   OpenSans_400Regular,
-  OpenSans_700Bold
+  OpenSans_700Bold,
 } from '@expo-google-fonts/open-sans';
 import 'expo-asset';
 import { useFonts } from 'expo-font';
@@ -9,7 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,
-  reloadAsync
+  reloadAsync,
 } from 'expo-updates';
 import i18n from 'i18n-js';
 import React, { useEffect } from 'react';
@@ -43,7 +43,7 @@ i18n.translations = {
     unit: 'Unit',
     yay: 'Yaay',
     successfulMove: 'Successfuly moved stuff.',
-    ohNo: 'Oh No!',
+    ohNo: 'Oh no!',
     successfulSupply: 'Successfuly supplied stuff.',
     map: 'Map',
     eventMissingItems: 'Missing Items',
@@ -55,6 +55,7 @@ i18n.translations = {
     upToDate: 'Up to date',
     upToDateText: 'You already have the latest version of the app.',
     updateErrorText: 'An error occurred while checking for updates.',
+    initialSupply: 'Initial Supply',
   },
   de: {
     supply: 'Anlieferung',
@@ -89,6 +90,7 @@ i18n.translations = {
     upToDate: 'App ist auf dem neusten Stand',
     upToDateText: 'Sie haben bereits die neueste Version der App.',
     updateErrorText: 'Beim Suchen nach Updates ist ein Fehler aufgetreten.',
+    initialSupply: 'Erstversorgung',
   },
 };
 i18n.fallbacks = true;

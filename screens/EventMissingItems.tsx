@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   useAllItemsQuery,
   useAllStockQuery,
-  useLocationQuery
+  useLocationQuery,
 } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import MissingItemRow from '../components/MissingItemRow';
@@ -86,7 +86,7 @@ const EventMissingItems: React.FC = () => {
   });
 
   const renderRow = ({ item }: { item: StockItem }) => {
-    return <MissingItemRow row={item} onPress={handleRowClick(item)}/>;
+    return <MissingItemRow row={item} onPress={handleRowClick(item)} />;
   };
 
   const filteredStock = allStock.filter(
@@ -111,7 +111,7 @@ const EventMissingItems: React.FC = () => {
   const navigation = useNavigation();
   const handleMoveAll = () => {
     // @ts-ignore
-    navigation.navigate('Supply', {
+    navigation.navigate('Move', {
       items: filteredStock,
       to: locationFilter,
     });
@@ -119,7 +119,7 @@ const EventMissingItems: React.FC = () => {
 
   const handleRowClick = (item: StockItem) => () => {
     // @ts-ignore
-    navigation.navigate('Supply', {
+    navigation.navigate('Move', {
       items: [item],
       to: item.locationId,
     });
@@ -151,7 +151,10 @@ const EventMissingItems: React.FC = () => {
       </View>
       {locationFilter && (
         <View style={style.buttons}>
-          <NativeButton title="Supply all" onPress={handleMoveAll}></NativeButton>
+          <NativeButton
+            title="Supply all"
+            onPress={handleMoveAll}
+          ></NativeButton>
         </View>
       )}
       <View>
