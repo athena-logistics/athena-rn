@@ -17,7 +17,7 @@
     "@graphql-codegen/cli": "^2.11.8",
     "@graphql-codegen/typescript": "^2.7.3",
     "@graphql-codegen/typescript-document-nodes": "^2.2.5",
-    "@graphql-codegen/typescript-operations": "^2.5.2",
+    "@graphql-codegen/typescript-operations": "^2.5.3",
     "@graphql-codegen/typescript-react-apollo": "^3.3.3",
     "@gregfrench/react-native-wheel-picker": "^1.2.18",
     "@openspacelabs/react-native-zoomable-view": "^2.0.4",
