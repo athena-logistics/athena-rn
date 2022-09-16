@@ -92,7 +92,7 @@ const StockItemDetails = ({}: {}) => {
 
   return (
     <NativeScreen style={style.screen}>
-      <View style={style.item} collapsable={false}>
+      <View style={style.item}>
         <View style={style.title}>
           <View style={style.status}>
             <Octicons name="dot-fill" size={30} color={iconColor} />

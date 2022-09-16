@@ -1,6 +1,13 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { Fragment, useEffect } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   useAllItemsQuery,
@@ -84,7 +91,28 @@ const StockByStock = ({}: {}) => {
     <ScrollView horizontal={true} contentContainerStyle={style.container}>
       <View style={style.row}>
         <View style={style.header}>
-          <View style={style.headerCell}></View>
+          <TouchableOpacity
+            style={style.cornerCell}
+            onPress={() => {
+              if (!loading) {
+                fetch();
+                fetchAllItems();
+              }
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator size={'small'} color={colors.primary} />
+            ) : (
+              <Ionicons
+                size={19}
+                name={'ios-refresh-circle-outline'}
+                color={colors.primary}
+              />
+            )}
+            <NativeText style={{ fontSize: 10 }}>
+              {loading ? 'Refreshing' : 'Refresh'}
+            </NativeText>
+          </TouchableOpacity>
         </View>
         {locationData.map((location) => (
           <TouchableOpacity
@@ -187,6 +215,10 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       // paddingHorizontal: 20,
       // paddingVertical: 10,
     },
+    cornerCell: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     groupCell: {
       backgroundColor: colors.primaryLight,
       minWidth: 40,
@@ -206,6 +238,9 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       width: 40,
       minHeight: 60,
       padding: 5,
+      borderColor: colors.primary,
+      borderLeftWidth: StyleSheet.hairlineWidth,
+      borderStyle: 'solid',
     },
     topCellText: { fontSize: 12 },
     header: { width: 80, justifyContent: 'center' },
