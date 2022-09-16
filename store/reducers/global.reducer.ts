@@ -13,9 +13,6 @@ interface GlobalState {
       itemById: { [key: string]: StockItem };
     };
   };
-  itemLocationTotalsById: {
-    [key: string]: Total[];
-  };
   currentPermission: PermissionEnum;
   currentPermissionId?: string;
   apiHost?: string;
@@ -28,7 +25,6 @@ const initialState: GlobalState = {
   allItems: [],
   locations: [],
   locationStock: {},
-  itemLocationTotalsById: {},
   currentPermission: PermissionEnum.Guest,
   currentPermissionId: undefined,
   apiHost: undefined,
@@ -90,15 +86,6 @@ const globalReducer = (
       return {
         ...state,
         eventName: action.payload.eventName,
-      };
-    case ActionType.SET_ITEM_LOCATION_TOTALS:
-      return {
-        ...state,
-        itemLocationTotalsById: {
-          ...state.itemLocationTotalsById,
-          [action.payload.itemId + action.payload.locationId]:
-            action.payload.data,
-        },
       };
     default:
       return state;

@@ -127,26 +127,3 @@ export const GET_INTERNAL_LOCATION_ID = gql`
     }
   }
 `;
-
-export const GET_ITEM_LOCATION_TOTALS = gql`
-  query GetItemLocationTotals($itemId: ID!, $locationId: ID!) {
-    node(id: $itemId) {
-      id
-
-      __typename
-      ... on Item {
-        locationTotals(
-          first: 1000
-          filters: { locationIdEquals: $locationId, includeZeroDeltas: false }
-        ) {
-          edges {
-            node {
-              date
-              amount
-            }
-          }
-        }
-      }
-    }
-  }
-`;

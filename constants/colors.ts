@@ -1,8 +1,8 @@
 export default {
-  primary: '#c88a11',
-  primaryDark: '#644508',
-  primaryLight: '#f3c977',
-  secondary: '#32ad9a',
+  primary: '#32ad9a',
+  primaryDark: '#288a7b',
+  primaryLight: '#63d1c0',
+  secondary: '#AD9A32',
   accent: '#c2185b',
   pink: '#c2185b',
   grey: '#919191',
