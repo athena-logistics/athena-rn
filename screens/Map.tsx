@@ -26,7 +26,7 @@ const Map = ({}: {}) => {
       contentHeight={2734}
     >
       <View>
-        <Image source={require('../assets/map.jpg')} />
+        <Image source={require('../assets/buskers-map.jpg')} />
       </View>
     </ReactNativeZoomableView>
   );

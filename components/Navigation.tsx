@@ -24,6 +24,7 @@ import ItemDetails from '../screens/ItemDetails';
 import ItemOverview from '../screens/ItemOverview';
 import LocationDetails from '../screens/LocationDetails';
 import LocationOverview from '../screens/LocationOverview';
+import Map from '../screens/Map';
 import Move from '../screens/Move';
 import Scanner from '../screens/Scanner';
 import StockByStock from '../screens/StockByStock';
@@ -257,16 +258,16 @@ const Navigation = () => {
         />
       ) : null}
 
-      {/* {isEventAdmin() || isLocationUser() ? (
+      {isEventAdmin() || isLocationUser() ? (
         <AppTabs.Screen
-          name="Map Stack"
-          component={MapStackNavigatior}
+          name="Map"
+          component={Map}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'ios-map-outline' }),
             tabBarLabel: i18n.t('map'),
           }}
         />
-      ) : null} */}
+      ) : null}
       <AppTabs.Screen
         name="Scanner"
         component={Scanner}

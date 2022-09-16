@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
@@ -71,7 +71,7 @@ const StockByStock = ({}: {}) => {
       </View>
       <ScrollView>
         {availableItems.map((item) => (
-          <>
+          <Fragment key={item.id}>
             <View style={style.row}>
               <View style={style.topGroupCell}>
                 <TouchableOpacity
@@ -83,12 +83,12 @@ const StockByStock = ({}: {}) => {
                   </NativeText>
                 </TouchableOpacity>
               </View>
-              {locationData.map(() => (
-                <View style={style.groupCell}></View>
+              {locationData.map((d, index) => (
+                <View style={style.groupCell} key={index}></View>
               ))}
             </View>
             {item.children.map((child) => (
-              <View style={style.row}>
+              <View style={style.row} key={child.id}>
                 <View style={style.header}>
                   <View style={style.headerCell}>
                     <NativeText style={style.titleText}>
@@ -119,7 +119,7 @@ const StockByStock = ({}: {}) => {
                 })}
               </View>
             ))}
-          </>
+          </Fragment>
         ))}
       </ScrollView>
     </ScrollView>
@@ -129,7 +129,13 @@ const StockByStock = ({}: {}) => {
 const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: { flexDirection: 'row' },
-    container: { flexDirection: 'column' },
+    container: {
+      flexDirection: 'column',
+      marginLeft: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flex: 1,
+    },
 
     row: {
       flexDirection: 'row',
@@ -140,7 +146,6 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     cell: {
       minWidth: 40,
       minHeight: 40,
-      padding: 5,
       alignItems: 'center',
       justifyContent: 'center',
       borderColor: colors.primary,
@@ -157,13 +162,12 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     },
     groupCell: {
       backgroundColor: colors.primaryLight,
-      width: 40,
-      height: 25,
-      padding: 5,
+      minWidth: 40,
+      minHeight: 25,
     },
     topGroupCell: {
-      width: 80,
-      height: 25,
+      minWidth: 80,
+      minHeight: 25,
       padding: 5,
       backgroundColor: colors.primaryLight,
     },
@@ -173,11 +177,11 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
     },
     topCell: {
       width: 40,
-      height: 60,
+      minHeight: 60,
       padding: 5,
     },
     topCellText: { fontSize: 12 },
-    header: { width: 80, justifyContent: 'center', marginLeft: 5 },
+    header: { width: 80, justifyContent: 'center' },
     list: {
       alignSelf: 'flex-start',
     },
