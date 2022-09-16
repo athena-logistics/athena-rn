@@ -70,6 +70,16 @@ const StockByStock = ({}: {}) => {
     });
   };
 
+  const handleStockItemPress = (row?: StockItem) => () => {
+    if (row) {
+      // @ts-ignore
+      navigation.navigate('Overview Stack', {
+        screen: 'Stock Item Details',
+        params: { stockItem: row },
+      });
+    }
+  };
+
   return (
     <ScrollView horizontal={true} contentContainerStyle={style.container}>
       <View style={style.row}>
@@ -119,10 +129,11 @@ const StockByStock = ({}: {}) => {
                   );
                   const status = stockAtLocation?.status;
                   return (
-                    <View
+                    <TouchableOpacity
                       // @ts-ignore
                       style={[style.cell, style[status]]}
                       key={child.id + location.id}
+                      onPress={handleStockItemPress(stockAtLocation)}
                     >
                       <NativeText
                         // @ts-ignore
@@ -130,7 +141,7 @@ const StockByStock = ({}: {}) => {
                       >
                         {stockAtLocation?.stock}
                       </NativeText>
-                    </View>
+                    </TouchableOpacity>
                   );
                 })}
               </View>

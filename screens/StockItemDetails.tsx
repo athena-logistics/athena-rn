@@ -1,21 +1,27 @@
+import { useMutation } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 import i18n from 'i18n-js';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { StockEntryStatus } from '../apollo/schema';
+import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
+import { DO_CONSUME } from '../apollo/mutations';
+import { ConsumeInput, StockEntryStatus } from '../apollo/schema';
+import { useAllStockQuery } from '../apolloActions/useQueries';
+import NativeNumberConsumptionInput from '../components/native/NativeNumberConsumptionInput';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { RootState } from '../store';
 
 const StockItemDetails = ({}: {}) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
 
   const route = useRoute();
-
   // @ts-ignore
   const item: StockItem = route.params?.stockItem;
   if (!item) {
@@ -34,11 +40,59 @@ const StockItemDetails = ({}: {}) => {
     }
   };
 
+  // @ts-ignore
+  const eventIdFromParams: string | undefined = route.params?.eventId;
+  let eventId: string;
+  if (eventIdFromParams) {
+    eventId = eventIdFromParams;
+  } else {
+    eventId = useSelector((state: RootState) => state.global.eventId);
+  }
+
   const { iconColor } = getStatusIcon();
+  const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
+
+  const [createConsumeMutation, { loading: consumeLoading }] =
+    useMutation<ConsumeInput>(DO_CONSUME, {
+      onError: (error) => {
+        console.log('error', error);
+      },
+      onCompleted: (data) => {
+        // @ts-ignore
+        if (data.consume.messages.length > 0) {
+          // @ts-ignore
+          data.consume.messages.forEach((message) => {
+            if (message.__typename === 'ValidationMessage') {
+              console.log('error', message.field + ' ' + message.message);
+              Toast.show({
+                type: 'error',
+                text1: 'error',
+                text2: message.field + ' ' + message.message,
+              });
+            }
+          });
+          // refetch after an error
+          fetchStock();
+        }
+      },
+    });
+  const consume = async (newValue?: string, change?: number) => {
+    const amount = change ? -change : Number(item.stock) - Number(newValue);
+    const locationId = item.locationId;
+    const itemId = item.id;
+    if (!Number.isNaN(amount) && locationId && itemId) {
+      const variables: ConsumeInput = {
+        amount,
+        locationId,
+        itemId,
+      };
+      await createConsumeMutation({ variables });
+    }
+  };
 
   return (
     <NativeScreen style={style.screen}>
-      <View style={style.item}>
+      <View style={style.item} collapsable={false}>
         <View style={style.title}>
           <View style={style.status}>
             <Octicons name="dot-fill" size={30} color={iconColor} />
@@ -94,6 +148,17 @@ const StockItemDetails = ({}: {}) => {
             </NativeText>
           </View>
         </View>
+        <View style={style.bottomContainer}>
+          <NativeNumberConsumptionInput
+            value={item.stock + ''}
+            max={item.inverse ? 0 : item.stock + item.missingCount}
+            onChangeText={consume}
+            loading={loadingStock}
+            editable={true}
+            type={item.status as StockEntryStatus}
+            style={style.numberInputStyle}
+          />
+        </View>
       </View>
     </NativeScreen>
   );
@@ -136,6 +201,15 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       flexBasis: '50%',
       textAlign: 'right',
       paddingRight: 5,
+    },
+    bottomContainer: {
+      marginTop: 20,
+      alignItems: 'center',
+    },
+    numberInputStyle: {
+      fontSize: 36,
+      color: colors.primary,
+      fontFamily: fonts.defaultFontFamily,
     },
   });
 
