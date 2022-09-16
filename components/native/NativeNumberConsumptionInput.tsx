@@ -51,9 +51,13 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
 
   return (
     <View style={styles.numberContainer}>
-      <TouchableOpacity onPress={add(true)} disabled={!editable}>
+      <TouchableOpacity onPress={add(false)} disabled={!editable}>
         {editable && (
-          <Ionicons size={35} name={'ios-add-circle'} color={colors.primary} />
+          <Ionicons
+            size={35}
+            name={'ios-remove-circle'}
+            color={colors.primary}
+          />
         )}
       </TouchableOpacity>
       <View style={styles.numberColumn}>
@@ -70,13 +74,9 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
         </View>
         <NativeText style={styles.numberText}>{i18n.t('inStock')}</NativeText>
       </View>
-      <TouchableOpacity onPress={add(false)} disabled={!editable}>
+      <TouchableOpacity onPress={add(true)} disabled={!editable}>
         {editable && (
-          <Ionicons
-            size={35}
-            name={'ios-remove-circle'}
-            color={colors.primary}
-          />
+          <Ionicons size={35} name={'ios-add-circle'} color={colors.primary} />
         )}
       </TouchableOpacity>
     </View>
