@@ -4,8 +4,9 @@ import {
   reloadAsync,
 } from 'expo-updates';
 import I18n from 'i18n-js';
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Linking,
@@ -21,6 +22,8 @@ import {
   PUNKAH_URL,
   TERMS_AND_CONDITIONS_URL,
 } from '../constants/app';
+import colors from '../constants/colors';
+import isAndroid from '../constants/isAndroid';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeButton from './native/NativeButton';
 import NativeText from './native/NativeText';
@@ -34,7 +37,7 @@ const InfoModal = ({
 }) => {
   const { isPortrait, isLandscape } = useOrientation();
   const style = styles({ isPortrait, isLandscape });
-
+  const [isUpdating, setIsUpdating] = useState(false);
   if (!isOpen) {
     return null;
   }
@@ -45,6 +48,7 @@ const InfoModal = ({
     }
 
     try {
+      setIsUpdating(true);
       const update = await checkForUpdateAsync();
       if (update.isAvailable) {
         await fetchUpdateAsync();
@@ -61,6 +65,7 @@ const InfoModal = ({
       console.log(error);
       Alert.alert('Error', I18n.t('updateErrorText'));
     }
+    setIsUpdating(false);
   };
 
   return (
@@ -108,7 +113,20 @@ const InfoModal = ({
             </View>
           </View>
           <View style={style.buttons}>
-            <NativeButton onPress={checkForUpdates} title="Check for updates" />
+            {isUpdating ? (
+              <ActivityIndicator
+                size={'small'}
+                color={isAndroid ? colors.white : colors.primary}
+                style={{
+                  paddingRight: 20,
+                }}
+              />
+            ) : (
+              <NativeButton
+                onPress={checkForUpdates}
+                title="Check for updates"
+              />
+            )}
             <NativeButton
               style={style.close}
               onPress={onClose}
