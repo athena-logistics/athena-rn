@@ -99,7 +99,6 @@ const StockByLocation = ({}: {}) => {
                   const stockAtLocation = location.stockItems.find(
                     (stockItem) => stockItem.id === child.id
                   );
-                  console.log(stockAtLocation?.status);
                   const status = stockAtLocation?.status;
                   return (
                     <View

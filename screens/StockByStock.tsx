@@ -52,9 +52,22 @@ const StockByStock = ({}: {}) => {
     fetchAllItems();
   }, [eventId]);
 
-  const handlePress = (location: LogisticLocation) => {
+  const handleLocationPress = (location: LogisticLocation) => () => {
     // @ts-ignore
     // navigation.navigate('Location Stock By Item', { location });
+    navigation.navigate('Overview Stack', {
+      screen: 'Location Details',
+      params: { location },
+    });
+  };
+
+  const handleItemPress = (item: Item) => () => {
+    // @ts-ignore
+    // navigation.navigate('Location Stock By Item', { location });
+    navigation.navigate('Overview Stack', {
+      screen: 'Item Details',
+      params: { item },
+    });
   };
 
   return (
@@ -64,9 +77,13 @@ const StockByStock = ({}: {}) => {
           <View style={style.headerCell}></View>
         </View>
         {locationData.map((location) => (
-          <View style={style.topCell} key={location.id}>
+          <TouchableOpacity
+            style={style.topCell}
+            key={location.id}
+            onPress={handleLocationPress(location)}
+          >
             <NativeText style={style.topCellText}>{location.name}</NativeText>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
       <ScrollView>
@@ -74,14 +91,11 @@ const StockByStock = ({}: {}) => {
           <Fragment key={item.id}>
             <View style={style.row}>
               <View style={style.topGroupCell}>
-                <TouchableOpacity
-                  key={item.id}
-                  // onPress={() => handlePress(item)}
-                >
+                <View key={item.id}>
                   <NativeText style={style.topGroupCellText}>
                     {item.name}
                   </NativeText>
-                </TouchableOpacity>
+                </View>
               </View>
               {locationData.map((d, index) => (
                 <View style={style.groupCell} key={index}></View>
@@ -90,17 +104,19 @@ const StockByStock = ({}: {}) => {
             {item.children.map((child) => (
               <View style={style.row} key={child.id}>
                 <View style={style.header}>
-                  <View style={style.headerCell}>
+                  <TouchableOpacity
+                    style={style.headerCell}
+                    onPress={handleItemPress(child)}
+                  >
                     <NativeText style={style.titleText}>
                       {child.name}
                     </NativeText>
-                  </View>
+                  </TouchableOpacity>
                 </View>
                 {locationData.map((location) => {
                   const stockAtLocation = location.stockItems.find(
                     (stockItem) => stockItem.id === child.id
                   );
-                  console.log(stockAtLocation?.status);
                   const status = stockAtLocation?.status;
                   return (
                     <View
