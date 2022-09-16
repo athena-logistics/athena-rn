@@ -87,6 +87,12 @@ const StockItemDetails = ({}: {}) => {
             <NativeText style={style.number}>{item.supply}</NativeText>
             <NativeText style={style.numberText}>{i18n.t('supply')}</NativeText>
           </View>
+          <View style={style.numberContainer}>
+            <NativeText style={style.number}>{item.missingCount}</NativeText>
+            <NativeText style={style.numberText}>
+              {i18n.t('missing')}
+            </NativeText>
+          </View>
         </View>
       </View>
     </NativeScreen>
