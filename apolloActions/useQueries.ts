@@ -5,21 +5,24 @@ import {
   GET_ALL_STOCK,
   GET_EVENT_LOCATIONS,
   GET_INTERNAL_LOCATION_ID,
-  GET_LOCATION_STOCK
+  GET_ITEM_LOCATION_TOTALS,
+  GET_LOCATION_STOCK,
 } from '../apollo/queries';
 import {
   GetAllItemsQuery,
   GetAllStockQuery,
   GetEventLocationsQuery,
   GetInternalLocationIdQuery,
-  GetLocationStockQuery
+  GetItemLocationTotalsQuery,
+  GetLocationStockQuery,
 } from '../apollo/schema';
 import { getNodes } from '../helpers/apollo';
 import {
   setAllItems,
   setAllStock,
   setEventName,
-  setLocationStockData
+  setItemLocationTotals,
+  setLocationStockData,
 } from '../store/actions/global.actions';
 
 export const useAllStockQuery = (eventId: string) => {
@@ -44,7 +47,7 @@ export const useAllStockQuery = (eventId: string) => {
             movementOut: stock.movementOut,
             status: stock.status,
             unit: stock.item.unit,
-            missingCount: stock.missingCount
+            missingCount: stock.missingCount,
           }))
           // .sort(
           //   (row1, row2) =>
@@ -112,7 +115,7 @@ export const useLocationStockQuery = (to: string | undefined) => {
             consumption: stock.consumption,
             movementIn: stock.movementIn,
             movementOut: stock.movementOut,
-            missingCount: stock.missingCount
+            missingCount: stock.missingCount,
           };
         });
         dispatch(
@@ -120,6 +123,30 @@ export const useLocationStockQuery = (to: string | undefined) => {
             itemById,
           })
         );
+      }
+    },
+    fetchPolicy: 'no-cache',
+  });
+};
+
+export const useItemLocationTotalQuery = (
+  itemId: string,
+  locationId: string
+) => {
+  const dispatch = useDispatch();
+
+  return useQuery<GetItemLocationTotalsQuery>(GET_ITEM_LOCATION_TOTALS, {
+    variables: { itemId, locationId },
+
+    onCompleted: (data) => {
+      if (data && data.node?.__typename === 'Item') {
+        const itemLocationTotals = getNodes(data.node.locationTotals).map(
+          (locationTotal) => ({
+            amount: locationTotal.amount,
+            date: locationTotal.date,
+          })
+        );
+        dispatch(setItemLocationTotals(itemId, locationId, itemLocationTotals));
       }
     },
     fetchPolicy: 'no-cache',

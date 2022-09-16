@@ -284,6 +284,10 @@ export type ItemGroupEdge = {
   node?: Maybe<ItemGroup>;
 };
 
+export type ItemLocationTotalsFilter = {
+  locationIdEquals?: InputMaybe<Scalars['ID']>;
+};
+
 export type Location = Node & Resource & {
   __typename?: 'Location';
   event: Event;
@@ -753,6 +757,14 @@ export type GetInternalLocationIdQueryVariables = Exact<{
 
 export type GetInternalLocationIdQuery = { __typename?: 'RootQueryType', location?: { __typename?: 'Location', id: string, name: string, event: { __typename?: 'Event', name: string } } | null };
 
+export type GetItemLocationTotalsQueryVariables = Exact<{
+  itemId: Scalars['ID'];
+  locationId: Scalars['ID'];
+}>;
+
+
+export type GetItemLocationTotalsQuery = { __typename?: 'RootQueryType', node?: { __typename: 'Consumption', id: string } | { __typename: 'Event', id: string } | { __typename: 'Item', id: string, locationTotals?: { __typename?: 'LocationTotalConnection', edges: Array<{ __typename?: 'LocationTotalEdge', node?: { __typename?: 'LocationTotal', date: any, amount: number } | null }> } | null } | { __typename: 'ItemGroup', id: string } | { __typename: 'Location', id: string } | { __typename: 'Relocation', id: string } | { __typename: 'Supply', id: string } | null };
+
 
 export const GetEventLocations = gql`
     query GetEventLocations($id: ID!) {
@@ -872,6 +884,24 @@ export const GetInternalLocationId = gql`
     name
     event {
       name
+    }
+  }
+}
+    `;
+export const GetItemLocationTotals = gql`
+    query GetItemLocationTotals($itemId: ID!, $locationId: ID!) {
+  node(id: $itemId) {
+    id
+    __typename
+    ... on Item {
+      locationTotals(first: 1000, filters: {locationIdEquals: $locationId}) {
+        edges {
+          node {
+            date
+            amount
+          }
+        }
+      }
     }
   }
 }

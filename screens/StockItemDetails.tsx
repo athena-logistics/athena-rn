@@ -2,13 +2,18 @@ import { useMutation } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
 import i18n from 'i18n-js';
+import moment from 'moment';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { DO_CONSUME } from '../apollo/mutations';
 import { ConsumeInput, StockEntryStatus } from '../apollo/schema';
-import { useAllStockQuery } from '../apolloActions/useQueries';
+import {
+  useAllStockQuery,
+  useItemLocationTotalQuery,
+} from '../apolloActions/useQueries';
 import NativeNumberConsumptionInput from '../components/native/NativeNumberConsumptionInput';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
@@ -27,6 +32,13 @@ const StockItemDetails = ({}: {}) => {
   if (!item) {
     return null;
   }
+
+  useItemLocationTotalQuery(item.id, item.locationId);
+
+  const totals = useSelector(
+    (state: RootState) =>
+      state.global.itemLocationTotalsById[item.id + item.locationId]
+  );
 
   const getStatusIcon = (): { iconColor: string } => {
     switch (item.status as StockEntryStatus) {
@@ -92,7 +104,7 @@ const StockItemDetails = ({}: {}) => {
 
   return (
     <NativeScreen style={style.screen}>
-      <View style={style.item} collapsable={false}>
+      <View style={style.item}>
         <View style={style.title}>
           <View style={style.status}>
             <Octicons name="dot-fill" size={30} color={iconColor} />
@@ -159,6 +171,26 @@ const StockItemDetails = ({}: {}) => {
             style={style.numberInputStyle}
           />
         </View>
+        <View style={style.chartContainer}>
+          {totals && (
+            <LineChart
+              data={{
+                labels: totals.map((total) => total.date),
+                datasets: [{ data: totals.map((total) => total.amount) }],
+              }}
+              width={Dimensions.get('window').width}
+              height={300}
+              chartConfig={{
+                backgroundGradientFrom: '#644508',
+                backgroundGradientTo: '#c88a11',
+                color: (opacity = 3) => `rgba(255, 255, 255, ${opacity})`,
+              }}
+              formatYLabel={(value) => Number(value).toFixed(0)}
+              formatXLabel={(value) => moment(value).format('MMM DD HH:mm')}
+              fromZero={true}
+            />
+          )}
+        </View>
       </View>
     </NativeScreen>
   );
@@ -168,14 +200,20 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
   StyleSheet.create({
     screen: { alignItems: 'stretch', justifyContent: 'flex-start' },
     item: {
-      paddingHorizontal: 20,
-      paddingVertical: 10,
+      // justifyContent: 'space-between',
+      flex: 1,
     },
     leftContainer: {
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-    title: { flexDirection: 'row', marginBottom: 20, alignItems: 'center' },
+    title: {
+      flexDirection: 'row',
+      marginBottom: 20,
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+    },
     status: { marginRight: 10 },
     titleText: {
       fontSize: 20,
@@ -210,6 +248,11 @@ const styles = ({ isPortrait, isLandscape }: Orientation) =>
       fontSize: 36,
       color: colors.primary,
       fontFamily: fonts.defaultFontFamily,
+    },
+    chartContainer: {
+      alignSelf: 'flex-end',
+      justifyContent: 'flex-end',
+      flex: 1,
     },
   });
 
