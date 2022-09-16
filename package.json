@@ -29,7 +29,7 @@
     "@react-navigation/material-bottom-tabs": "^6.2.2",
     "@react-navigation/material-top-tabs": "^6.2.2",
     "@react-navigation/native": "^6.0.12",
-    "@react-navigation/native-stack": "^6.7.0",
+    "@react-navigation/native-stack": "^6.8.0",
     "@types/i18n-js": "^3.8.2",
     "@types/remote-redux-devtools": "^0.5.5",
     "apollo-link-logger": "^2.0.0",
