@@ -3407,10 +3407,10 @@
   dependencies:
     "@react-navigation/elements" "^1.3.4"
 
-"@react-navigation/material-top-tabs@^6.2.2":
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/material-top-tabs/-/material-top-tabs-6.2.2.tgz#48d1669745b82b7b5bb59a2ae18260805704d56a"
-  integrity sha512-kRBQdaP3DGnd09RNX1EwVEMrk4jP7cwxO0K0TLFA4yTt9HxVPrVhs+u1UVIXjGcsFKHmopQWpdREg+6tMWNJ0w==
+"@react-navigation/material-top-tabs@^6.2.4":
+  version "6.2.4"
+  resolved "https://registry.yarnpkg.com/@react-navigation/material-top-tabs/-/material-top-tabs-6.2.4.tgz#1db5a1bf32525e1c9dd8aa77cd549366034d4f77"
+  integrity sha512-Il9rPA3jXAFTPBzk88sjCbSRHRRrr1e6HFRx3G+ttSr6q5HQkasksQiEe28euouSwv8M7ChEbXnhNWIR+Sroqg==
   dependencies:
     color "^4.2.3"
     warn-once "^0.1.0"
