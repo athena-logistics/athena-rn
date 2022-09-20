@@ -38,7 +38,7 @@
     "expo-barcode-scanner": "~11.4.0",
     "expo-font": "~10.2.0",
     "expo-localization": "~13.1.0",
-    "expo-modules-autolinking": "^0.10.3",
+    "expo-modules-autolinking": "~0.10.1",
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.0",
     "expo-updates": "~0.14.5",
