@@ -27,7 +27,7 @@
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.9.0",
     "@types/i18n-js": "^3.8.2",
-    "@types/node": "^18.7.18",
+    "@types/node": "^18.7.23",
     "@types/remote-redux-devtools": "^0.5.5",
     "apollo-link-logger": "^2.0.0",
     "expo": "^46.0.10",
