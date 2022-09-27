@@ -24,7 +24,7 @@
     "@react-native-picker/picker": "2.4.2",
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/material-top-tabs": "^6.2.4",
-    "@react-navigation/native": "^6.0.12",
+    "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.0",
     "@types/i18n-js": "^3.8.2",
     "@types/node": "^18.7.23",
