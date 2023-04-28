@@ -1,10 +1,19 @@
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      commentDeployment:
+        type: boolean
+        default: false
+    secrets:
+      EXPO_TOKEN:
+        required: true
+
 jobs:
   publish:
+    name: 'Publish'
+
     runs-on: ubuntu-latest
+
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -26,4 +35,11 @@ jobs:
         run: npm ci
 
       - name: 🚀 Publish app
+        if: '${{ !inputs.commentDeployment }}'
         run: eas update --auto --non-interactive
+
+      - name: 🚀 Publish app
+        if: '${{ inputs.commentDeployment }}'
+        uses: expo/expo-github-action/preview@v8
+        with:
+          command: 'eas update --branch="${{ github.ref }}" --message="${{ github.sha }}" --non-interactive'

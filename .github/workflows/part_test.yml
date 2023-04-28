@@ -1,0 +1,127 @@
+on:
+  workflow_call: {}
+
+name: 'Test'
+
+jobs:
+  types:
+    name: 'Types'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+
+      - id: cache-npm
+        uses: actions/cache@v3.2.3
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Run Typescript
+        run: npm run test:types
+
+  lint:
+    name: 'Lint'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+
+      - id: cache-npm
+        uses: actions/cache@v3.2.3
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Run Linter
+        run: npm run test:lint
+
+  format:
+    name: 'Format'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+
+      - id: cache-npm
+        uses: actions/cache@v3.2.3
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Run Formatter
+        run: npm run test:format
+
+  expo_deps_valid:
+    name: 'Expo Dependencies Consistent'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+
+      - id: cache-npm
+        uses: actions/cache@v3.2.3
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Validate Expo Deps Consistent
+        run: npx expo install --check
+
+  # TODO: Add E2E
