@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import i18n from 'i18n-js';
+import i18n from '../../helpers/i18n';
 import React, { FC, useEffect, useState } from 'react';
 import {
   StyleSheet,

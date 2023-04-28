@@ -3,7 +3,7 @@ import {
   fetchUpdateAsync,
   reloadAsync,
 } from 'expo-updates';
-import I18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -53,17 +53,17 @@ const InfoModal = ({
       if (update.isAvailable) {
         await fetchUpdateAsync();
         Alert.alert(
-          I18n.t('appUpdated'),
-          I18n.t('appUpdatedText'),
+          i18n.t('appUpdated'),
+          i18n.t('appUpdatedText'),
           [{ text: 'OK', onPress: async () => reloadAsync() }],
           { cancelable: false }
         );
       } else {
-        Alert.alert(I18n.t('upToDate'), I18n.t('upToDateText'));
+        Alert.alert(i18n.t('upToDate'), i18n.t('upToDateText'));
       }
     } catch (error) {
       console.log(error);
-      Alert.alert('Error', I18n.t('updateErrorText'));
+      Alert.alert('Error', i18n.t('updateErrorText'));
     }
     setIsUpdating(false);
   };
