@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
 import { useRoute } from '@react-navigation/native';
-import i18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';

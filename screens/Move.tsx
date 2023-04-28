@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import i18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   ActivityIndicator,

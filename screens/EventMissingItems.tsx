@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import I18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,7 +47,7 @@ const EventMissingItems: React.FC = () => {
       if (data && data.event?.__typename === 'Event') {
         const locations = [
           {
-            name: I18n.t('locations'),
+            name: i18n.t('locations'),
             id: 0,
             children: getNodes(data.event.locations).map((location: any) => ({
               name: location.name,
@@ -132,14 +132,14 @@ const EventMissingItems: React.FC = () => {
           items={locations}
           selectedValue={locationFilter}
           setSelectedValue={handleSetLocationFilter}
-          placeholderText={I18n.t('byLocation')}
+          placeholderText={i18n.t('byLocation')}
         />
         <NativeText> </NativeText>
         <NativePicker
           items={availableItemsWithUnit}
           selectedValue={itemFilter}
           setSelectedValue={handleSetItemFilter}
-          placeholderText={I18n.t('byItem')}
+          placeholderText={i18n.t('byItem')}
         />
         <NativeText> </NativeText>
         <MaterialIcons

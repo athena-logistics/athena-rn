@@ -1,4 +1,4 @@
-import ReactNativeZoomableView from '@openspacelabs/react-native-zoomable-view/src/ReactNativeZoomableView';
+import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import colors from '../constants/colors';

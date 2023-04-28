@@ -11,7 +11,7 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import i18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React from 'react';
 import 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';

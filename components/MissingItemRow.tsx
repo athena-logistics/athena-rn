@@ -1,4 +1,4 @@
-import i18n from 'i18n-js';
+import i18n from '../helpers/i18n';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { StockEntryStatus } from '../apollo/schema';
