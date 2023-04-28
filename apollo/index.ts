@@ -8,7 +8,6 @@ import {
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
-// import apolloLogger from 'apollo-link-logger';
 
 export default function client(host?: string) {
   const wsLink = new GraphQLWsLink(
@@ -34,10 +33,7 @@ export default function client(host?: string) {
   );
 
   const baseClient = new ApolloClient({
-    link: ApolloLink.from([
-      // apolloLogger,
-      splitLink,
-    ]),
+    link: splitLink,
     cache: new InMemoryCache(),
     connectToDevTools: true,
   });
