@@ -43,7 +43,8 @@ const NativeNumberOnlyInput: FC<NativeNumberOnlyInputProps> = ({
   };
 
   useEffect(() => {
-    onChangeText && onChangeText(currentValue!);
+    if (!currentValue) return;
+    onChangeText && onChangeText(currentValue);
   }, [currentValue]);
 
   return (

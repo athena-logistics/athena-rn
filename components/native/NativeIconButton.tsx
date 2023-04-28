@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+  GestureResponderEvent,
   Platform,
   StyleSheet,
   TouchableNativeFeedback,
@@ -14,11 +15,11 @@ const NativeButtonIcon = ({
   name,
   size,
 }: {
-  onPress: (event: any) => void;
-  name: any;
+  onPress: (event: GestureResponderEvent) => void;
+  name: React.ComponentProps<typeof Ionicons>['name'];
   size: number;
 }) => {
-  const ButtonComponent: React.ComponentClass<any> =
+  const ButtonComponent: React.ComponentClass =
     Platform.OS === 'android' && Platform.Version >= 21
       ? TouchableNativeFeedback
       : TouchableOpacity;

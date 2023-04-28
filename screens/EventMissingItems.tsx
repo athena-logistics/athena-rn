@@ -1,5 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import i18n from '../helpers/i18n';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
@@ -18,24 +23,20 @@ import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import { getNodes } from '../helpers/apollo';
 import { getGroupedData } from '../helpers/getGroupedData';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
+import { StockItem } from '../models/StockItem';
+import {
+  OverviewTabsParamsList,
+  RootParamsList,
+} from '../components/Navigation';
 
 const EventMissingItems: React.FC = () => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
-  const route = useRoute();
+  const route = useRoute<RouteProp<OverviewTabsParamsList, 'Missing items'>>();
 
-  let eventId: string;
-
-  // @ts-ignore
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
+  const eventId =
+    route.params?.eventId ??
+    useSelector((state: RootState) => state.global.eventId);
 
   const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
   const { data, loading, error } = useLocationQuery(eventId);
@@ -48,8 +49,8 @@ const EventMissingItems: React.FC = () => {
         const locations = [
           {
             name: i18n.t('locations'),
-            id: 0,
-            children: getNodes(data.event.locations).map((location: any) => ({
+            id: '0',
+            children: getNodes(data.event.locations).map((location) => ({
               name: location.name,
               id: location.id,
             })),
@@ -79,7 +80,7 @@ const EventMissingItems: React.FC = () => {
   }));
 
   useMovementSubscription({
-    onSubscriptionData: () => {
+    onData: () => {
       fetchStock();
       fetchAllItems();
     },
@@ -96,10 +97,10 @@ const EventMissingItems: React.FC = () => {
       (itemFilter ? stock.id == itemFilter : true)
   );
 
-  const handleSetLocationFilter = (value: any) => {
+  const handleSetLocationFilter = (value: string | null) => {
     setLocationFilter(value);
   };
-  const handleSetItemFilter = (value: any) => {
+  const handleSetItemFilter = (value: string | null) => {
     setItemFilter(value);
   };
 
@@ -108,17 +109,15 @@ const EventMissingItems: React.FC = () => {
     setItemFilter(null);
   };
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootParamsList>>();
   const handleMoveAll = () => {
-    // @ts-ignore
     navigation.navigate('Move', {
       items: filteredStock,
-      to: locationFilter,
+      to: locationFilter ?? undefined,
     });
   };
 
   const handleRowClick = (item: StockItem) => () => {
-    // @ts-ignore
     navigation.navigate('Move', {
       items: [item],
       to: item.locationId,
@@ -126,8 +125,8 @@ const EventMissingItems: React.FC = () => {
   };
 
   return (
-    <NativeScreen style={style.screen}>
-      <View style={style.top}>
+    <NativeScreen style={styles.screen}>
+      <View style={styles.top}>
         <NativePicker
           items={locations}
           selectedValue={locationFilter}
@@ -150,7 +149,7 @@ const EventMissingItems: React.FC = () => {
         />
       </View>
       {locationFilter && (
-        <View style={style.buttons}>
+        <View style={styles.buttons}>
           <NativeButton
             title="Supply all"
             onPress={handleMoveAll}
@@ -164,43 +163,42 @@ const EventMissingItems: React.FC = () => {
           refreshing={loadingStock}
           renderItem={renderRow}
           keyExtractor={(row) => row.id + row.locationId}
-          style={style.list}
-          contentContainerStyle={style.listContent}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
         />
       </View>
     </NativeScreen>
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: {
-      // alignItems: 'center',
-      // marginVertical: 20,
-      flex: 1,
-      justifyContent: 'flex-start',
-    },
-    top: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginVertical: 10,
-      marginHorizontal: 10,
-    },
-    buttons: {
-      alignSelf: 'flex-end',
-      marginHorizontal: 10,
-      marginBottom: 10,
-    },
-    list: {
-      borderColor: colors.primary,
-      borderTopWidth: 1,
-      borderStyle: 'dotted',
-      paddingBottom: 50,
-    },
-    listContent: {
-      paddingBottom: 100,
-    },
-  });
+const styles = StyleSheet.create({
+  screen: {
+    // alignItems: 'center',
+    // marginVertical: 20,
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  top: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+    marginHorizontal: 10,
+  },
+  buttons: {
+    alignSelf: 'flex-end',
+    marginHorizontal: 10,
+    marginBottom: 10,
+  },
+  list: {
+    borderColor: colors.primary,
+    borderTopWidth: 1,
+    borderStyle: 'dotted',
+    paddingBottom: 50,
+  },
+  listContent: {
+    paddingBottom: 100,
+  },
+});
 
 export default EventMissingItems;

@@ -1,3 +1,5 @@
+import { GlobalState } from '../reducers/global.reducer';
+
 export enum ActionType {
   SET_ALL_STOCK = 'SET_ALL_STOCK',
   SET_ALL_ITEMS = 'SET_ALL_ITEMS',
@@ -9,22 +11,31 @@ export enum ActionType {
   SET_EVENT_NAME = 'SET_EVENT_NAME',
 }
 
-export const setAllStock = (rows: StockItem[]) => {
+export const setAllStock = (rows: GlobalState['allStock']) => {
   return { type: ActionType.SET_ALL_STOCK, payload: { rows } };
 };
-export const setAllItems = (rows: Item[]) => {
+export const setAllItems = (rows: GlobalState['allItems']) => {
   return { type: ActionType.SET_ALL_ITEMS, payload: { rows } };
 };
-export const setLocations = (locations: any) => {
+export const setLocations = (locations: GlobalState['locations']) => {
   return { type: ActionType.SET_LOCATIONS, payload: { locations } };
 };
-export const setLocationStockData = (id: string, data: any) => {
+export const setLocationStockData = (
+  id: string,
+  data: GlobalState['locationStock'][string]
+) => {
   return { type: ActionType.SET_LOCATION_STOCK_DATA, payload: { id, data } };
 };
-export const switchToEvent = (eventId: string, apiHost: string) => {
+export const switchToEvent = (
+  eventId: GlobalState['eventId'],
+  apiHost: GlobalState['apiHost']
+) => {
   return { type: ActionType.SWITCH_TO_EVENT, payload: { eventId, apiHost } };
 };
-export const switchToLocation = (locationId: string, apiHost: string) => {
+export const switchToLocation = (
+  locationId: string,
+  apiHost: GlobalState['apiHost']
+) => {
   return {
     type: ActionType.SWITCH_TO_LOCATION,
     payload: { locationId, apiHost },

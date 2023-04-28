@@ -3,21 +3,26 @@ import React, { FC } from 'react';
 import { StyleSheet, View } from 'react-native';
 import colors from '../../constants/colors';
 
-interface NativeInlinePickerProps {
-  selectedValue: any;
+interface BaseItem {
+  id: string;
+  name: string;
+}
+
+interface NativeInlinePickerProps<Item> {
+  selectedValue: string;
   setSelectedValue: (value: string) => void;
-  items: any;
-  placeholderText?: string;
+  items: Item[];
   width?: string;
 }
 
-const NativeInlinePicker: FC<NativeInlinePickerProps> = ({
+const NativeInlinePicker: FC<NativeInlinePickerProps<BaseItem>> = <
+  Item extends BaseItem
+>({
   selectedValue,
   setSelectedValue,
   items,
-  placeholderText,
   width,
-}) => {
+}: NativeInlinePickerProps<Item>) => {
   return (
     <View style={[styles.picker, width ? { width } : {}]}>
       <Picker
@@ -32,7 +37,7 @@ const NativeInlinePicker: FC<NativeInlinePickerProps> = ({
         }}
         dropdownIconColor={colors.red}
       >
-        {items.map((item: any) => (
+        {items.map((item) => (
           <Picker.Item label={item.name} value={item.id} key={item.id} />
         ))}
         <Picker.Item label="Java" value="java" />

@@ -1,14 +1,14 @@
 import { FC, ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import colors from '../../constants/colors';
 
 interface NativeCardProps {
   children?: ReactNode;
-  style?: Object;
+  style?: StyleProp<ViewStyle>;
 }
 
 const NativeCard: FC<NativeCardProps> = ({ children, style }) => {
-  return <View style={{ ...styles.card, ...style }}>{children}</View>;
+  return <View style={[styles.card, style]}>{children}</View>;
 };
 
 const styles = StyleSheet.create({

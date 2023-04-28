@@ -718,6 +718,34 @@ export type ValidationOption = {
   value: Scalars['String'];
 };
 
+export type DoRelocateMutationVariables = Exact<{
+  amount: Scalars['Int'];
+  itemId: Scalars['ID'];
+  sourceLocationId: Scalars['ID'];
+  destinationLocationId: Scalars['ID'];
+}>;
+
+
+export type DoRelocateMutation = { __typename?: 'RootMutationType', relocate?: { __typename?: 'RelocatePayload', successful: boolean, messages?: Array<{ __typename?: 'ValidationMessage', field?: string | null, message?: string | null, template?: string | null } | null> | null } | null };
+
+export type DoSupplyMutationVariables = Exact<{
+  amount: Scalars['Int'];
+  itemId: Scalars['ID'];
+  locationId: Scalars['ID'];
+}>;
+
+
+export type DoSupplyMutation = { __typename?: 'RootMutationType', supply?: { __typename?: 'SupplyPayload', successful: boolean, messages?: Array<{ __typename?: 'ValidationMessage', field?: string | null, message?: string | null, template?: string | null } | null> | null } | null };
+
+export type DoConsumeMutationVariables = Exact<{
+  amount: Scalars['Int'];
+  itemId: Scalars['ID'];
+  locationId: Scalars['ID'];
+}>;
+
+
+export type DoConsumeMutation = { __typename?: 'RootMutationType', consume?: { __typename?: 'ConsumePayload', successful: boolean, messages?: Array<{ __typename?: 'ValidationMessage', field?: string | null, message?: string | null, template?: string | null } | null> | null } | null };
+
 export type GetEventLocationsQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -753,7 +781,53 @@ export type GetInternalLocationIdQueryVariables = Exact<{
 
 export type GetInternalLocationIdQuery = { __typename?: 'RootQueryType', location?: { __typename?: 'Location', id: string, name: string, event: { __typename?: 'Event', name: string } } | null };
 
+export type MovementSubscriptionSubscriptionVariables = Exact<{
+  eventId?: InputMaybe<Scalars['ID']>;
+  locationId?: InputMaybe<Scalars['ID']>;
+}>;
 
+
+export type MovementSubscriptionSubscription = { __typename?: 'RootSubscriptionType', movementCreated?: { __typename: 'Consumption' } | { __typename: 'Relocation' } | { __typename: 'Supply' } | null };
+
+
+export const DoRelocate = gql`
+    mutation DoRelocate($amount: Int!, $itemId: ID!, $sourceLocationId: ID!, $destinationLocationId: ID!) {
+  relocate(
+    input: {amount: $amount, itemId: $itemId, sourceLocationId: $sourceLocationId, destinationLocationId: $destinationLocationId}
+  ) {
+    messages {
+      field
+      message
+      template
+    }
+    successful
+  }
+}
+    `;
+export const DoSupply = gql`
+    mutation DoSupply($amount: Int!, $itemId: ID!, $locationId: ID!) {
+  supply(input: {amount: $amount, itemId: $itemId, locationId: $locationId}) {
+    messages {
+      field
+      message
+      template
+    }
+    successful
+  }
+}
+    `;
+export const DoConsume = gql`
+    mutation DoConsume($amount: Int!, $itemId: ID!, $locationId: ID!) {
+  consume(input: {amount: $amount, itemId: $itemId, locationId: $locationId}) {
+    messages {
+      field
+      message
+      template
+    }
+    successful
+  }
+}
+    `;
 export const GetEventLocations = gql`
     query GetEventLocations($id: ID!) {
   event(id: $id) {
@@ -873,6 +947,13 @@ export const GetInternalLocationId = gql`
     event {
       name
     }
+  }
+}
+    `;
+export const MovementSubscription = gql`
+    subscription MovementSubscription($eventId: ID, $locationId: ID) {
+  movementCreated(eventId: $eventId, locationId: $locationId) {
+    __typename
   }
 }
     `;

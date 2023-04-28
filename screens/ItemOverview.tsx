@@ -1,32 +1,25 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
   useAllItemsQuery,
-  useAllStockQuery
+  useAllStockQuery,
 } from '../apolloActions/useQueries';
 import NativeScreen from '../components/native/NativeScreen';
 import OverviewItemRow from '../components/OverviewItemRow';
 import { getGroupedData } from '../helpers/getGroupedData';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
+import { OverviewTabsParamsList } from '../components/Navigation';
+import { Item } from '../models/Item';
 
 const ItemOverview: React.FC = () => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
-  const route = useRoute();
+  const route = useRoute<RouteProp<OverviewTabsParamsList, 'By Item'>>();
 
-  let eventId: string;
-
-  // @ts-ignore
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
+  const eventId =
+    route.params?.eventId ??
+    useSelector((state: RootState) => state.global.eventId);
 
   const [fetchItems, { loading: loadingItems }] = useAllItemsQuery(eventId);
   const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
@@ -40,12 +33,12 @@ const ItemOverview: React.FC = () => {
 
   const groupedItems = getGroupedData(allItems);
 
-  const renderGroup = ({ item }: { item: AvailableItemGroup }) => {
+  const renderGroup = ({ item }: { item: AvailableItemGroup<Item> }) => {
     return <OverviewItemRow group={item} key={item.id} />;
   };
 
   return (
-    <NativeScreen style={style.screen}>
+    <NativeScreen style={styles.screen}>
       <FlatList
         data={groupedItems}
         onRefresh={() => {
@@ -60,13 +53,12 @@ const ItemOverview: React.FC = () => {
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: {
-      // alignItems: 'center',
-      flex: 1,
-      marginVertical: 10,
-    },
-  });
+const styles = StyleSheet.create({
+  screen: {
+    // alignItems: 'center',
+    flex: 1,
+    marginVertical: 10,
+  },
+});
 
 export default ItemOverview;

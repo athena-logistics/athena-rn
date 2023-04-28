@@ -1,11 +1,11 @@
 import { FC, ReactNode } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 
 interface NativeTitleProps {
   children: ReactNode;
-  style?: Object;
+  style?: StyleProp<TextStyle>;
 }
 
 const NativeTitleText: FC<NativeTitleProps> = ({ style, children }) => {

@@ -1,13 +1,16 @@
 import { AnyAction } from 'redux';
 import { PermissionEnum } from '../../models/PermissionEnum';
 import { ActionType } from '../actions/global.actions';
+import { StockItem } from '../../models/StockItem';
+import { Item } from '../../models/Item';
+import { Location } from '../../models/Location';
 
-interface GlobalState {
+export interface GlobalState {
   eventId: string;
   eventName: string;
   allStock: StockItem[];
   allItems: Item[];
-  locations: any[];
+  locations: Location[];
   locationStock: {
     [key: string]: {
       itemById: { [key: string]: StockItem };

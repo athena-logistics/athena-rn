@@ -5,22 +5,25 @@ import {
   GET_ALL_STOCK,
   GET_EVENT_LOCATIONS,
   GET_INTERNAL_LOCATION_ID,
-  GET_LOCATION_STOCK
+  GET_LOCATION_STOCK,
 } from '../apollo/queries';
 import {
   GetAllItemsQuery,
   GetAllStockQuery,
   GetEventLocationsQuery,
   GetInternalLocationIdQuery,
-  GetLocationStockQuery
+  GetInternalLocationIdQueryVariables,
+  GetLocationStockQuery,
 } from '../apollo/schema';
 import { getNodes } from '../helpers/apollo';
 import {
   setAllItems,
   setAllStock,
   setEventName,
-  setLocationStockData
+  setLocationStockData,
 } from '../store/actions/global.actions';
+import { StockItem } from '../models/StockItem';
+import { Item } from '../models/Item';
 
 export const useAllStockQuery = (eventId: string) => {
   const dispatch = useDispatch();
@@ -44,7 +47,7 @@ export const useAllStockQuery = (eventId: string) => {
             movementOut: stock.movementOut,
             status: stock.status,
             unit: stock.item.unit,
-            missingCount: stock.missingCount
+            missingCount: stock.missingCount,
           }))
           // .sort(
           //   (row1, row2) =>
@@ -112,14 +115,15 @@ export const useLocationStockQuery = (to: string | undefined) => {
             consumption: stock.consumption,
             movementIn: stock.movementIn,
             movementOut: stock.movementOut,
-            missingCount: stock.missingCount
+            missingCount: stock.missingCount,
           };
         });
-        dispatch(
-          setLocationStockData(to!, {
-            itemById,
-          })
-        );
+        to &&
+          dispatch(
+            setLocationStockData(to, {
+              itemById,
+            })
+          );
       }
     },
     fetchPolicy: 'no-cache',
@@ -136,9 +140,12 @@ export const useLocationQuery = (eventId: string) => {
 export const useInternalLocationId = (externalLocationId: string) => {
   const dispatch = useDispatch();
 
-  return useQuery<GetInternalLocationIdQuery>(GET_INTERNAL_LOCATION_ID, {
+  return useQuery<
+    GetInternalLocationIdQuery,
+    GetInternalLocationIdQueryVariables
+  >(GET_INTERNAL_LOCATION_ID, {
     variables: { id: externalLocationId },
-    skip: !externalLocationId,
+    skip: externalLocationId === '',
     onCompleted: (data) => {
       if (data) {
         dispatch(setEventName(data.location?.event.name || ''));

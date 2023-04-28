@@ -1,14 +1,8 @@
-import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import colors from '../constants/colors';
-import fonts from '../constants/fonts';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { Image, View } from 'react-native';
 
-const Map = ({}: {}) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
-
+const Map = () => {
   return (
     <ReactNativeZoomableView
       //   maxZoom={2}
@@ -31,41 +25,5 @@ const Map = ({}: {}) => {
     </ReactNativeZoomableView>
   );
 };
-
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: { flexDirection: 'row' },
-    row: {
-      flexDirection: 'row',
-      borderColor: colors.primary,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderStyle: 'solid',
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-    },
-    cell: {
-      width: 60,
-    },
-    cellText: {
-      transform: [{ rotate: '-45 deg' }],
-      fontSize: 12,
-    },
-    headerCell: {
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-    },
-
-    header: {
-      paddingTop: 70,
-      flexDirection: 'column',
-    },
-    list: {
-      alignSelf: 'flex-start',
-    },
-    titleText: {
-      fontSize: 16,
-      fontFamily: fonts.defaultFontFamilyBold,
-    },
-  });
 
 export default Map;

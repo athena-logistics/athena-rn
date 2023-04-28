@@ -5,5 +5,8 @@ export function getNodes<Node>(
   connection: Connection<Node> | undefined | null
 ): Node[] {
   if (!connection) return [];
-  return connection.edges.map((edge) => edge.node!);
+
+  return connection.edges
+    .filter((edge): edge is { node: Node } => edge.node !== undefined)
+    .map((edge) => edge.node);
 }

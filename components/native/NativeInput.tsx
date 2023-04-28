@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 import fonts from '../../constants/fonts';
 
-interface NativeInput extends TextInputProps {}
+type NativeInput = TextInputProps;
 
 const NativeInput: FC<NativeInput> = ({ style, ...rest }) => {
   return (

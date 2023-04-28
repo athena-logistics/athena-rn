@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -7,24 +7,16 @@ import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import OverviewLocationRow from '../components/LocationRow';
 import NativeScreen from '../components/native/NativeScreen';
 import { getLocationData } from '../helpers/getLocationData';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { LogisticLocation } from '../models/LogisticLocation';
 import { RootState } from '../store';
+import { OverviewTabsParamsList } from '../components/Navigation';
 
 const LocationOverview: React.FC = () => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+  const route = useRoute<RouteProp<OverviewTabsParamsList, 'By Location'>>();
 
-  let eventId: string;
-
-  const route = useRoute();
-  // @ts-ignore
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
+  const eventId =
+    route.params?.eventId ??
+    useSelector((state: RootState) => state.global.eventId);
 
   const [fetch, { loading }] = useAllStockQuery(eventId);
 
@@ -32,9 +24,7 @@ const LocationOverview: React.FC = () => {
   const locationData = getLocationData(allStock);
 
   useMovementSubscription({
-    onSubscriptionData: () => {
-      fetch();
-    },
+    onData: () => fetch(),
   });
 
   useEffect(() => {
@@ -46,7 +36,7 @@ const LocationOverview: React.FC = () => {
   };
 
   return (
-    <NativeScreen style={style.screen}>
+    <NativeScreen style={styles.screen}>
       <FlatList
         data={locationData}
         onRefresh={fetch}
@@ -58,9 +48,8 @@ const LocationOverview: React.FC = () => {
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: { alignItems: 'stretch' },
-  });
+const styles = StyleSheet.create({
+  screen: { alignItems: 'stretch' },
+});
 
 export default LocationOverview;

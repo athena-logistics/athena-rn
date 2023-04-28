@@ -1,12 +1,17 @@
 import { FetchResult, MutationFunctionOptions } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ConsumeInput, StockEntryStatus } from '../apollo/schema';
+import {
+  DoConsumeMutation,
+  DoConsumeMutationVariables,
+  StockEntryStatus,
+} from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { StockItem } from '../models/StockItem';
+import { OverviewStackParamsList } from './Navigation';
 import NativeNumberConsumptionInput from './native/NativeNumberConsumptionInput';
 import NativeText from './native/NativeText';
 
@@ -19,8 +24,11 @@ const ItemRow = ({
   row: StockItem;
   loading: boolean;
   createConsumeMutation: (
-    options?: MutationFunctionOptions
-  ) => Promise<FetchResult>;
+    options?: MutationFunctionOptions<
+      DoConsumeMutation,
+      DoConsumeMutationVariables
+    >
+  ) => Promise<FetchResult<DoConsumeMutation>>;
   variant: 'nameAndUnit' | 'location';
 }) => {
   const [localRow, setLocalRow] = useState(row);
@@ -29,16 +37,13 @@ const ItemRow = ({
     setLocalRow(row);
   }, [row]);
 
-  const { isPortrait, isLandscape } = useOrientation();
   const isInverse = row.inverse;
-  const style = styles(
-    { isPortrait, isLandscape },
-    { isInverse: variant === 'nameAndUnit' ? isInverse : false }
-  );
+  const style = styles({
+    isInverse: variant === 'nameAndUnit' ? isInverse : false,
+  });
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<OverviewStackParamsList>>();
   const handlePress = () => {
-    // @ts-ignore
     navigation.navigate('Stock Item Details', { stockItem: row });
   };
 
@@ -47,7 +52,7 @@ const ItemRow = ({
     const locationId = row.locationId;
     const itemId = row.id;
     if (!Number.isNaN(amount) && locationId && itemId) {
-      const variables: ConsumeInput = {
+      const variables: DoConsumeMutationVariables = {
         amount,
         locationId,
         itemId,
@@ -90,21 +95,17 @@ const ItemRow = ({
       <View style={style.leftContainer}>
         <NativeNumberConsumptionInput
           value={localRow.stock + ''}
-          max= {localRow.inverse ? 0 : localRow.stock + localRow.missingCount}
+          max={localRow.inverse ? 0 : localRow.stock + localRow.missingCount}
           onChangeText={consume}
           loading={loading}
           editable={true}
-          type={row.status as StockEntryStatus}
         />
       </View>
     </View>
   );
 };
 
-const styles = (
-  { isPortrait, isLandscape }: Orientation,
-  { isInverse }: { isInverse: boolean }
-) =>
+const styles = ({ isInverse }: { isInverse: boolean }) =>
   StyleSheet.create({
     row: {
       flexDirection: 'row',

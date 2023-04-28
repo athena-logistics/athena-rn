@@ -1,7 +1,6 @@
 import { ApolloProvider } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import client from './apollo';
@@ -23,7 +22,5 @@ const AppContent = () => {
     </>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default AppContent;
