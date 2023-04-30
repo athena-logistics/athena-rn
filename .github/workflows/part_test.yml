@@ -21,7 +21,7 @@ jobs:
           cache: npm
 
       - id: cache-npm
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -51,7 +51,7 @@ jobs:
           cache: npm
 
       - id: cache-npm
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -81,7 +81,7 @@ jobs:
           cache: npm
 
       - id: cache-npm
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -111,7 +111,7 @@ jobs:
           cache: npm
 
       - id: cache-npm
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
