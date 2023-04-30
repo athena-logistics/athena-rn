@@ -1,5 +1,6 @@
 import { StockEntryStatus } from '../apollo/schema';
 import { LogisticLocation } from '../models/LogisticLocation';
+import { StockItem } from '../models/StockItem';
 
 export const getLocationData = (allStock: StockItem[]) => {
   const locationData: LogisticLocation[] = [];
@@ -31,7 +32,7 @@ export const getLocationData = (allStock: StockItem[]) => {
   return locationData;
 };
 
-const RowOrder = [
+export const RowOrder = [
   StockEntryStatus.Important,
   StockEntryStatus.Warning,
   StockEntryStatus.Normal,

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PermissionEnum } from '../models/PermissionEnum';
@@ -8,6 +8,7 @@ import {
   switchToEvent,
   switchToLocation,
 } from '../store/actions/global.actions';
+import { RootParamsList } from '../components/Navigation';
 
 const PERMISSON_KEY = 'permission';
 const PERMISSION_ID_KEY = 'permissionId';
@@ -26,7 +27,7 @@ const PermissionChangeListener = () => {
     (state: RootState) => state.global.apiHost
   );
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootParamsList>>();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,7 +52,6 @@ const PermissionChangeListener = () => {
   useEffect(() => {
     const setPermissions = async () => {
       if (currentPermission === PermissionEnum.EventAdmin) {
-        // @ts-ignore
         navigation.navigate('Overview Stack', {
           screen: 'Overview',
           eventId: currentPermissionId,
@@ -67,7 +67,6 @@ const PermissionChangeListener = () => {
         );
       }
       if (currentPermission === PermissionEnum.LocationUser) {
-        // @ts-ignore
         navigation.navigate('Overview Stack', {
           screen: 'Location Details',
           params: { externalLocationId: currentPermissionId },

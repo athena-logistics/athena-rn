@@ -41,8 +41,8 @@ const inputReducer = (state: InputState, action: InputAction): InputState => {
     case ActionType.Change:
       return {
         ...state,
-        value: action.payload!.value,
-        isValid: action.payload!.isValid,
+        value: action.payload?.value ?? '',
+        isValid: action.payload?.isValid ?? false,
       };
     case ActionType.Blur:
       return {
@@ -55,7 +55,6 @@ const inputReducer = (state: InputState, action: InputAction): InputState => {
 };
 const NativeFormInput: FC<NativeFormInputProps> = ({
   label,
-  style,
   errorText,
   onInputChange,
   defaultValue,
@@ -81,6 +80,7 @@ const NativeFormInput: FC<NativeFormInputProps> = ({
 
   const handleTextChange = (text: string) => {
     const emailRegex =
+      // eslint-disable-next-line no-useless-escape
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let isValid = true;
     if (required && text.trim().length === 0) {

@@ -1,37 +1,43 @@
 import i18n from '../helpers/i18n';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeText from './native/NativeText';
+import { StockItem } from '../models/StockItem';
 
 const MissingItemRow = ({
   row,
   onPress,
 }: {
   row: StockItem;
-  onPress: () => void;
+  onPress: (event: GestureResponderEvent) => void;
 }) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
-
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={style.row}>
-        <View style={style.title}>
-          <View style={style.titleRow}>
-            <NativeText style={style.titleText}>{row.name}</NativeText>
+      <View style={styles.row}>
+        <View style={styles.title}>
+          <View style={styles.titleRow}>
+            <NativeText style={styles.titleText}>{row.name}</NativeText>
           </View>
-          <NativeText style={style.subtitleText}>{row.locationName}</NativeText>
+          <NativeText style={styles.subtitleText}>
+            {row.locationName}
+          </NativeText>
         </View>
-        <View style={style.leftContainer}>
-          {!row.inverse && <NativeText style={style.unitText}>{i18n.t('missing')}</NativeText>}
-          <View style={style.status}>
+        <View style={styles.leftContainer}>
+          {!row.inverse && (
+            <NativeText style={styles.unitText}>{i18n.t('missing')}</NativeText>
+          )}
+          <View style={styles.status}>
             <NativeText
               style={{
-                ...style.statusTextMissing,
+                ...styles.statusTextMissing,
                 color:
                   row.status === StockEntryStatus.Important
                     ? colors.red
@@ -43,14 +49,14 @@ const MissingItemRow = ({
             >
               {row.missingCount}
             </NativeText>
-            <NativeText style={style.unitText}>{row.unit}</NativeText>
+            <NativeText style={styles.unitText}>{row.unit}</NativeText>
           </View>
-          <NativeText style={style.unitText}>{i18n.t('outOf')}</NativeText>
-          <View style={style.status}>
-            <NativeText style={style.statusTextTotal} type="bold">
+          <NativeText style={styles.unitText}>{i18n.t('outOf')}</NativeText>
+          <View style={styles.status}>
+            <NativeText style={styles.statusTextTotal} type="bold">
               {row.inverse ? 0 : row.stock + row.missingCount}
             </NativeText>
-            <NativeText style={style.unitText}>TOTAL</NativeText>
+            <NativeText style={styles.unitText}>TOTAL</NativeText>
           </View>
         </View>
       </View>
@@ -58,53 +64,52 @@ const MissingItemRow = ({
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    row: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      borderColor: colors.primary,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderStyle: 'solid',
-      paddingVertical: 10,
-      width: '100%',
-      overflow: 'hidden',
-    },
-    leftContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    titleRow: { flexDirection: 'row', alignItems: 'flex-end' },
-    title: { overflow: 'hidden', flex: 1 },
-    titleText: {
-      fontSize: 18,
-      fontFamily: fonts.defaultFontFamilyBold,
-    },
-    unitText: {
-      fontSize: 12,
-      textTransform: 'uppercase',
-    },
-    subtitleText: {
-      fontSize: 14,
-    },
-    numberContainer: { alignItems: 'center' },
-    numberText: { fontSize: 12, textTransform: 'uppercase' },
-    number: { fontSize: 20, fontFamily: fonts.defaultFontFamilyBold },
-    status: {
-      width: 60,
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      color: colors.primary,
-    },
-    statusTextMissing: {
-      fontSize: 20,
-    },
-    statusTextTotal: {
-      fontSize: 20,
-    },
-  });
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    borderColor: colors.primary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+    paddingVertical: 10,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-end' },
+  title: { overflow: 'hidden', flex: 1 },
+  titleText: {
+    fontSize: 18,
+    fontFamily: fonts.defaultFontFamilyBold,
+  },
+  unitText: {
+    fontSize: 12,
+    textTransform: 'uppercase',
+  },
+  subtitleText: {
+    fontSize: 14,
+  },
+  numberContainer: { alignItems: 'center' },
+  numberText: { fontSize: 12, textTransform: 'uppercase' },
+  number: { fontSize: 20, fontFamily: fonts.defaultFontFamilyBold },
+  status: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    color: colors.primary,
+  },
+  statusTextMissing: {
+    fontSize: 20,
+  },
+  statusTextTotal: {
+    fontSize: 20,
+  },
+});
 
 export default MissingItemRow;

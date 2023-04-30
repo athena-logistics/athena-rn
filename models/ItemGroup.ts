@@ -1,4 +1,4 @@
-interface ItemGroup {
+export interface ItemGroup {
   id: string;
   name: string;
 }

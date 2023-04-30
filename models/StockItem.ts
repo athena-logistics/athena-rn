@@ -1,17 +1,16 @@
-interface StockItem {
-  consumption: number;
-  id: string;
+import { StockEntry } from '../apollo/schema';
+
+export type StockItem = Pick<
+  StockEntry,
+  'consumption' | 'movementIn' | 'movementOut' | 'status' | 'stock' | 'supply'
+> & {
   name: string;
+  id: string;
   itemGroupId: string;
   itemGroupName: string;
   locationId: string;
   locationName: string;
-  movementIn: number;
-  movementOut: number;
-  status: string;
-  stock: number;
-  supply: number;
   unit: string;
   inverse: boolean;
   missingCount: number;
-}
+};

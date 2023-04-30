@@ -1,43 +1,38 @@
 import { useMutation } from '@apollo/client';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useRef } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { DO_CONSUME } from '../apollo/mutations';
-import { ConsumeInput } from '../apollo/schema';
+import {
+  DoConsumeMutation,
+  DoConsumeMutationVariables,
+} from '../apollo/schema';
 import { useAllStockQuery } from '../apolloActions/useQueries';
 import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import ItemRow from '../components/ItemRow';
+import { OverviewStackParamsList } from '../components/Navigation';
 import NativeScreen from '../components/native/NativeScreen';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { RootState } from '../store';
+import { StockItem } from '../models/StockItem';
 
-const ItemDetails = ({}: {}) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+const ItemDetails = () => {
+  const route = useRoute<RouteProp<OverviewStackParamsList, 'Item Details'>>();
 
-  let eventId: string;
-
-  const route = useRoute();
-  // @ts-ignore
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
+  const eventId =
+    route.params?.eventId ??
+    useSelector((state: RootState) => state.global.eventId);
 
   const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
-  // @ts-ignore
-  const item: Item = route.params?.item;
+  const item = route.params?.item;
 
   const allStock = useSelector((state: RootState) => state.global.allStock);
   const locationStock = allStock.filter((stock) => stock.id === item.id);
 
-  const fetchTimer = useRef<any>();
+  const fetchTimer = useRef<NodeJS.Timeout>();
   useMovementSubscription({
-    onSubscriptionData: () => {
+    onData: () => {
       if (fetchTimer.current) {
         clearTimeout(fetchTimer.current);
       }
@@ -45,30 +40,33 @@ const ItemDetails = ({}: {}) => {
     },
   });
 
-  const [createConsumeMutation, { loading: consumeLoading }] =
-    useMutation<ConsumeInput>(DO_CONSUME, {
-      onError: (error) => {
-        console.log('error', error);
-      },
-      onCompleted: (data) => {
-        // @ts-ignore
-        if (data.consume.messages.length > 0) {
-          // @ts-ignore
-          data.consume.messages.forEach((message) => {
-            if (message.__typename === 'ValidationMessage') {
-              console.log('error', message.field + ' ' + message.message);
-              Toast.show({
-                type: 'error',
-                text1: 'error',
-                text2: message.field + ' ' + message.message,
-              });
-            }
+  const [createConsumeMutation] = useMutation<
+    DoConsumeMutation,
+    DoConsumeMutationVariables
+  >(DO_CONSUME, {
+    onError: (error) => {
+      console.log('error', error);
+    },
+    onCompleted: (data) => {
+      if (
+        data.consume &&
+        data.consume.messages &&
+        data.consume.messages.length > 0
+      ) {
+        data.consume.messages.forEach((message) => {
+          if (!message) return;
+          console.log('error', message.field + ' ' + message.message);
+          Toast.show({
+            type: 'error',
+            text1: 'error',
+            text2: message.field + ' ' + message.message,
           });
-          // refetch after an error
-          fetchStock();
-        }
-      },
-    });
+        });
+        // refetch after an error
+        fetchStock();
+      }
+    },
+  });
 
   const renderRow = ({ item }: { item: StockItem }) => {
     return (
@@ -82,7 +80,7 @@ const ItemDetails = ({}: {}) => {
   };
 
   return (
-    <NativeScreen style={style.screen}>
+    <NativeScreen style={styles.screen}>
       <FlatList
         data={locationStock}
         onRefresh={fetchStock}
@@ -94,9 +92,8 @@ const ItemDetails = ({}: {}) => {
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: { alignItems: 'stretch' },
-  });
+const styles = StyleSheet.create({
+  screen: { alignItems: 'stretch' },
+});
 
 export default ItemDetails;

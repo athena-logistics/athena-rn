@@ -9,20 +9,17 @@ import NativeButton from '../components/native/NativeButton';
 import NativeScreen from '../components/native/NativeScreen';
 import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import {
   resetPermissions,
   switchToEvent,
   switchToLocation,
 } from '../store/actions/global.actions';
 
-const Scanner = ({}: {}) => {
+const Scanner = () => {
   const dispatch = useDispatch();
   const [hasPermission, setHasPermission] = useState<boolean>();
   const [scanned, setScanned] = useState(false);
   const [infoOpened, setInfoOpened] = useState(false);
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
 
   useEffect(() => {
     const load = async () => {
@@ -42,7 +39,6 @@ const Scanner = ({}: {}) => {
   const navigation = useNavigation();
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      // @ts-ignore
       headerRight: () => (
         <Pressable onPress={openInfo}>
           <Ionicons
@@ -57,6 +53,7 @@ const Scanner = ({}: {}) => {
   }, [navigation, openInfo]);
 
   const handleBarCodeScanned: BarCodeScannedCallback = async ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type,
     data,
   }) => {
@@ -112,10 +109,5 @@ const Scanner = ({}: {}) => {
     </NativeScreen>
   );
 };
-
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: {},
-  });
 
 export default Scanner;

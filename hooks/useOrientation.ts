@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 
 export interface Orientation {
-  isPortrait: Boolean;
-  isLandscape: Boolean;
-  isLargeScreen?: Boolean;
+  isPortrait: boolean;
+  isLandscape: boolean;
+  isLargeScreen?: boolean;
 }
 /**
  * Returns true if the screen is in portrait mode

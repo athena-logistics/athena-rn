@@ -6,18 +6,20 @@ import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import NativeText from './NativeText';
 
-interface NativePickerProps {
-  selectedValue: any;
+export type BaseItem = { id: string; name: string; children?: BaseItem[] };
+
+interface NativePickerProps<Item extends BaseItem> {
+  selectedValue: string | null | undefined;
   setSelectedValue?: (value: string) => void;
-  items: any;
+  items: Item[];
   placeholderText?: string;
   width?: string;
   alreadySelectedItems?: string[];
   disabled?: boolean;
-  itemById?: { [key: string]: StockItem | Location };
+  itemById?: { [key: string]: Item };
 }
 
-const NativePicker: FC<NativePickerProps> = ({
+const NativePicker: FC<NativePickerProps<BaseItem>> = <Item extends BaseItem>({
   selectedValue,
   setSelectedValue,
   items,
@@ -26,25 +28,34 @@ const NativePicker: FC<NativePickerProps> = ({
   disabled,
   itemById,
   alreadySelectedItems,
-}) => {
-  const [currentlySeletectedItem, setCurrentlySeletectedItem] = useState<any>();
+}: NativePickerProps<Item>) => {
+  const [currentlySeletectedItem, setCurrentlySeletectedItem] =
+    useState<Item>();
   useEffect(() => {
     if (itemById || !selectedValue) {
-      setCurrentlySeletectedItem(itemById?.[selectedValue] || selectedValue);
+      setCurrentlySeletectedItem(
+        selectedValue ? itemById?.[selectedValue] : undefined
+      );
     }
   }, [selectedValue]);
+
+  const newItems = items
+    .map((item) => ({
+      ...item,
+      children: item.children
+        ? item.children.filter(
+            (child) => !alreadySelectedItems?.includes(child.id)
+          )
+        : [],
+    }))
+    .filter((item) => item.children.length > 0);
+
   return (
     <View style={[styles.picker, width ? { width } : {}]}>
       <SectionedMultiSelect
-        items={items
-          .map((item: any) => ({
-            ...item,
-            children: item.children.filter(
-              (child: any) => !alreadySelectedItems?.includes(child.id)
-            ),
-          }))
-          .filter((item: any) => item.children.length > 0)}
-        IconRenderer={MaterialIcons}
+        items={newItems}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        IconRenderer={MaterialIcons as any}
         uniqueKey="id"
         subKey="children"
         selectText={placeholderText || 'Select...'}
@@ -61,16 +72,16 @@ const NativePicker: FC<NativePickerProps> = ({
         selectedItems={[selectedValue]}
         alwaysShowSelectText={true}
         selectedText={'kkk'}
-        dropDownToggleIconUpComponent={() => (
-          <Ionicons name={'ios-chevron-up'} color={colors.primary} size={22} />
-        )}
-        dropDownToggleIconDownComponent={() => (
+        dropDownToggleIconUpComponent={
+          <Ionicons name="ios-chevron-up" color={colors.primary} size={22} />
+        }
+        dropDownToggleIconDownComponent={
           <Ionicons
             name={'ios-chevron-down'}
             color={colors.primary}
             size={22}
           />
-        )}
+        }
         disabled={disabled}
         modalWithSafeAreaView={true}
         modalWithTouchable={true}
@@ -89,23 +100,23 @@ const NativePicker: FC<NativePickerProps> = ({
         //   ),
         // }}
         selectedIconOnLeft={true}
-        selectedIconComponent={() => (
+        selectedIconComponent={
           <Ionicons
             name={'ios-heart-dislike-circle'}
             color={colors.primary}
             size={22}
           />
-        )}
+        }
         expandDropDowns={true}
         readOnlyHeadings={true}
         showCancelButton={true}
-        selectToggleIconComponent={() => (
+        selectToggleIconComponent={
           <Ionicons
             name={'ios-chevron-down'}
             color={colors.primary}
             size={22}
           />
-        )}
+        }
         styles={{
           button: {
             backgroundColor: colors.primary,

@@ -9,8 +9,8 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ children }) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
+  const { isPortrait } = useOrientation();
+  const style = styles({ isPortrait });
 
   return (
     <View
@@ -27,13 +27,7 @@ const Header: FC<HeaderProps> = ({ children }) => {
   );
 };
 
-const styles = ({
-  isPortrait,
-  isLandscape,
-}: {
-  isPortrait: Boolean;
-  isLandscape: Boolean;
-}) =>
+const styles = ({ isPortrait }: { isPortrait: boolean }) =>
   StyleSheet.create({
     headerBase: {
       width: '100%',

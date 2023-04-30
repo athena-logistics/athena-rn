@@ -1,7 +1,6 @@
 import { useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import i18n from '../helpers/i18n';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,7 +13,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { DO_RELOCATE, DO_SUPPLY } from '../apollo/mutations';
-import { RelocateInput, SupplyInput } from '../apollo/schema';
+import {
+  DoRelocateMutation,
+  DoRelocateMutationVariables,
+  DoSupplyMutation,
+  DoSupplyMutationVariables,
+} from '../apollo/schema';
 import {
   useAllItemsQuery,
   useLocationQuery,
@@ -29,9 +33,13 @@ import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
 import { getNodes } from '../helpers/apollo';
 import { getGroupedData } from '../helpers/getGroupedData';
+import i18n from '../helpers/i18n';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
+import { StockItem } from '../models/StockItem';
 import { RootState } from '../store';
 import { setLocations } from '../store/actions/global.actions';
+import { RootParamsList } from '../components/Navigation';
+import { Location } from '../models/Location';
 
 export interface ItemState {
   stock: string;
@@ -91,6 +99,7 @@ export const moveReducer = (
       };
 
     case MoveActionType.Change:
+      // eslint-disable-next-line no-case-declarations
       const stuffs1 = [...state.stuff];
       stuffs1.splice(action.payload.index, 1, action.payload.item);
       return {
@@ -98,6 +107,7 @@ export const moveReducer = (
         stuff: stuffs1,
       };
     case MoveActionType.Delete:
+      // eslint-disable-next-line no-case-declarations
       const stuffs2 = [...state.stuff];
       stuffs2.splice(action.payload.index, 1);
       return {
@@ -120,7 +130,7 @@ export interface ItemGroup {
   name: string;
 }
 
-const Move = ({}: {}) => {
+const Move = () => {
   const emptyLocation = {
     name: i18n.t('initialSupply'),
     id: '-1',
@@ -145,56 +155,64 @@ const Move = ({}: {}) => {
     (state: RootState) => state.global.locationStock[from]
   );
 
-  const [createSupplyMutation, { loading: supplyLoading }] =
-    useMutation<SupplyInput>(DO_SUPPLY, {
-      onCompleted: (data) => {
-        // @ts-ignore
-        if (data.supply.messages.length > 0) {
-          // @ts-ignore
-          data.supply.messages.forEach((message) => {
-            Toast.show({
-              type: 'error',
-              text1: i18n.t('ohNo'),
-              text2: message.field + ' ' + message.message,
-            });
-          });
-        } else {
+  const [createSupplyMutation, { loading: supplyLoading }] = useMutation<
+    DoSupplyMutation,
+    DoSupplyMutationVariables
+  >(DO_SUPPLY, {
+    onCompleted: (data) => {
+      if (
+        data.supply &&
+        data.supply.messages &&
+        data.supply.messages.length > 0
+      ) {
+        data.supply.messages.forEach((message) => {
+          if (!message) return;
           Toast.show({
-            text1: i18n.t('yay'),
-            text2: i18n.t('successfulSupply'),
+            type: 'error',
+            text1: i18n.t('ohNo'),
+            text2: message.field + ' ' + message.message,
           });
-          dispatch({ type: MoveActionType.Initialize });
-        }
-      },
-    });
-  const [createRelocateMutation, { loading: moveLoading, error: moveError }] =
-    useMutation<RelocateInput>(DO_RELOCATE, {
-      onCompleted: (data) => {
-        // @ts-ignore
-        if (data.relocate.messages.length > 0) {
-          // @ts-ignore
-          data.relocate.messages.forEach((message) => {
-            Toast.show({
-              type: 'error',
-              text1: i18n.t('ohNo'),
-              text2: message.field + ' ' + message.message,
-            });
-          });
-        } else {
+        });
+      } else {
+        Toast.show({
+          text1: i18n.t('yay'),
+          text2: i18n.t('successfulSupply'),
+        });
+        dispatch({ type: MoveActionType.Initialize });
+      }
+    },
+  });
+  const [createRelocateMutation, { loading: moveLoading }] = useMutation<
+    DoRelocateMutation,
+    DoRelocateMutationVariables
+  >(DO_RELOCATE, {
+    onCompleted: (data) => {
+      if (
+        data.relocate &&
+        data.relocate.messages &&
+        data.relocate.messages.length > 0
+      ) {
+        data.relocate.messages.forEach((message) => {
+          if (!message) return;
           Toast.show({
-            text1: i18n.t('yay'),
-            text2: i18n.t('successfulMove'),
+            type: 'error',
+            text1: i18n.t('ohNo'),
+            text2: message.field + ' ' + message.message,
           });
-          dispatch({ type: MoveActionType.Initialize });
-        }
-      },
-    });
+        });
+      } else {
+        Toast.show({
+          text1: i18n.t('yay'),
+          text2: i18n.t('successfulMove'),
+        });
+        dispatch({ type: MoveActionType.Initialize });
+      }
+    },
+  });
 
   useMovementSubscription({
     locationId: from,
-    onSubscriptionData: (data: any) => {
-      fetchLocationStock();
-    },
+    onData: () => fetchLocationStock(),
   });
 
   const navigation = useNavigation();
@@ -212,8 +230,8 @@ const Move = ({}: {}) => {
         const locations = [
           {
             name: i18n.t('locations'),
-            id: 0,
-            children: getNodes(data.event.locations).map((location: any) => ({
+            id: '0',
+            children: getNodes(data.event.locations).map((location) => ({
               name: location.name,
               id: location.id,
             })),
@@ -235,20 +253,24 @@ const Move = ({}: {}) => {
     })),
   }));
 
-  let itemById: { [key: string]: StockItem } = {};
-  availableItemsWithUnit.forEach((item) => {
-    item.children.forEach((child) => {
-      // @ts-ignore
-      itemById[child.id] = child;
-    });
-  });
+  type GroupedItemType = Omit<
+    (typeof availableItemsWithUnit)[number],
+    'children'
+  > & {
+    children?: (typeof availableItemsWithUnit)[number]['children'];
+    stock?: number;
+  };
 
-  let locationsById: { [key: string]: any } = {};
+  let itemById: Record<string, GroupedItemType> = Object.fromEntries(
+    availableItemsWithUnit.map((item) => [item.id, item])
+  );
+
+  const locationsById: { [key: string]: Location } = {};
   locations.forEach((item) => {
-    item.children.forEach((location: any) => {
-      // @ts-ignore
-      locationsById[location.id] = location;
-    });
+    item.children &&
+      item.children.forEach((location) => {
+        locationsById[location.id] = location;
+      });
     locationsById['-1'] = emptyLocation;
   });
 
@@ -266,11 +288,9 @@ const Move = ({}: {}) => {
     }));
   }
 
-  const route = useRoute();
-  // @ts-ignore
-  const moveItems: StockItem[] | undefined = route.params?.items;
-  // @ts-ignore
-  const moveTo: string | undefined = route.params?.to;
+  const route = useRoute<RouteProp<RootParamsList, 'Move'>>();
+  const moveItems = route.params?.items;
+  const moveTo = route.params?.to;
 
   useEffect(() => {
     // coming from missing items screen
@@ -323,7 +343,7 @@ const Move = ({}: {}) => {
 
         if (amount && sourceLocationId && destinationLocationId && itemId) {
           if (sourceLocationId == '-1') {
-            const variables: SupplyInput = {
+            const variables: DoSupplyMutationVariables = {
               amount,
               locationId: destinationLocationId,
               itemId,
@@ -337,7 +357,7 @@ const Move = ({}: {}) => {
                 text2: 'Source and destination cannot be the same',
               });
             }
-            const variables: RelocateInput = {
+            const variables: DoRelocateMutationVariables = {
               amount,
               sourceLocationId,
               destinationLocationId,
@@ -378,11 +398,11 @@ const Move = ({}: {}) => {
     });
   }, [navigation, save, moveLoading, supplyLoading]);
 
-  const handleSetTo = (value: any) => {
+  const handleSetTo = (value: string) => {
     setTo(value);
   };
 
-  const handleSetFrom = (value: any) => {
+  const handleSetFrom = (value: string) => {
     setFrom(value);
   };
 
@@ -414,7 +434,7 @@ const Move = ({}: {}) => {
       }
     };
 
-  const fromLocations = [emptyLocation].concat(locations);
+  const fromLocations = [emptyLocation, ...locations];
 
   return (
     <ScrollView style={{ flex: 1 }}>
@@ -492,7 +512,7 @@ const Move = ({}: {}) => {
   );
 };
 
-const styles = ({ isPortrait, isLandscape, isLargeScreen }: Orientation) =>
+const styles = ({ isLargeScreen }: Orientation) =>
   StyleSheet.create({
     screen: {
       justifyContent: 'flex-start',

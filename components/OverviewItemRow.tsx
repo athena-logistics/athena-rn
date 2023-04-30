@@ -4,21 +4,19 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { StockEntryStatus } from '../apollo/schema';
 import colors from '../constants/colors';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import { AvailableItemGroup } from '../models/AvailableItemGroup';
 import { RootState } from '../store';
 import NativeText from './native/NativeText';
+import { Item } from '../models/Item';
+import { OverviewStackParamsList } from './Navigation';
 
-const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
-
+const OverviewItemRow = ({ group }: { group: AvailableItemGroup<Item> }) => {
   const getGroupNameIcon = (name: string) => {
     switch (name) {
       case 'Becher':
@@ -75,35 +73,34 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
     ).length;
   };
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<OverviewStackParamsList>>();
   const handlePress = (item: Item) => () => {
-    // @ts-ignore
     navigation.navigate('Item Details', { item });
   };
 
   return (
-    <View style={style.itemContainer}>
-      <View style={style.headerItem}>
+    <View style={styles.itemContainer}>
+      <View style={styles.headerItem}>
         {getGroupNameIcon(group.name)}
-        <NativeText type="bold" style={style.headerText}>
+        <NativeText type="bold" style={styles.headerText}>
           {group.name}
         </NativeText>
       </View>
-      <View style={style.items}>
+      <View style={styles.items}>
         {group.children.map((item) => (
           <Pressable
             onPress={handlePress(item)}
             key={item.id}
-            style={style.item}
+            style={styles.item}
           >
-            <View style={style.texts}>
-              <NativeText style={style.itemText}>{item.name}</NativeText>
+            <View style={styles.texts}>
+              <NativeText style={styles.itemText}>{item.name}</NativeText>
 
-              <NativeText style={style.itemSubtitleText}>
+              <NativeText style={styles.itemSubtitleText}>
                 {item.unit}
               </NativeText>
             </View>
-            <View style={style.numberContainer}>
+            <View style={styles.numberContainer}>
               {/* <MaterialCommunityIcons
               name="home-group"
               size={18}
@@ -112,8 +109,8 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
               {/* <Entypo name={'cup'} size={20} color={colors.red} /> */}
               <NativeText
                 style={{
-                  ...style.numberText,
-                  ...style.IMPORTANT,
+                  ...styles.numberText,
+                  ...styles.IMPORTANT,
                   fontSize: 20,
                 }}
                 type={'bold'}
@@ -122,8 +119,8 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
               </NativeText>
               <NativeText
                 style={{
-                  ...style.numberText,
-                  ...style.WARNING,
+                  ...styles.numberText,
+                  ...styles.WARNING,
                   fontSize: 16,
                 }}
               >
@@ -131,8 +128,8 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
               </NativeText>
               <NativeText
                 style={{
-                  ...style.numberText,
-                  ...style.NORMAL,
+                  ...styles.numberText,
+                  ...styles.NORMAL,
                   fontSize: 12,
                 }}
               >
@@ -146,47 +143,46 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup }) => {
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    itemContainer: {
-      width: '100%',
-    },
-    headerItem: {
-      paddingHorizontal: 5,
-      margin: 3,
-      flexDirection: 'row',
-    },
-    items: { flexWrap: 'wrap', flexDirection: 'row' },
-    texts: { flex: 8, justifyContent: 'space-between' },
-    item: {
-      paddingVertical: 5,
-      paddingHorizontal: 5,
-      width: 120,
-      // height: 80,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.primary,
-      margin: 3,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    numberContainer: {
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    headerText: { fontSize: 16 },
-    itemText: { fontSize: 14 },
-    itemSubtitleText: { fontSize: 12, color: colors.grey },
-    numberText: { fontSize: 16, marginLeft: 8 },
+const styles = StyleSheet.create({
+  itemContainer: {
+    width: '100%',
+  },
+  headerItem: {
+    paddingHorizontal: 5,
+    margin: 3,
+    flexDirection: 'row',
+  },
+  items: { flexWrap: 'wrap', flexDirection: 'row' },
+  texts: { flex: 8, justifyContent: 'space-between' },
+  item: {
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    width: 120,
+    // height: 80,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.primary,
+    margin: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  numberContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  headerText: { fontSize: 16 },
+  itemText: { fontSize: 14 },
+  itemSubtitleText: { fontSize: 12, color: colors.grey },
+  numberText: { fontSize: 16, marginLeft: 8 },
 
-    NORMAL: { color: colors.green },
-    IMPORTANT: { color: colors.red },
-    WARNING: { color: colors.orange },
-    icon: {
-      // color: 'transparent',
-      textShadowColor: colors.primary,
-      textShadowRadius: 1,
-      marginRight: 2,
-    },
-  });
+  NORMAL: { color: colors.green },
+  IMPORTANT: { color: colors.red },
+  WARNING: { color: colors.orange },
+  icon: {
+    // color: 'transparent',
+    textShadowColor: colors.primary,
+    textShadowRadius: 1,
+    marginRight: 2,
+  },
+});
 
 export default OverviewItemRow;

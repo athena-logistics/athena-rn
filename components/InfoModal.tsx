@@ -24,7 +24,6 @@ import {
 } from '../constants/app';
 import colors from '../constants/colors';
 import isAndroid from '../constants/isAndroid';
-import { Orientation, useOrientation } from '../hooks/useOrientation';
 import NativeButton from './native/NativeButton';
 import NativeText from './native/NativeText';
 
@@ -35,8 +34,6 @@ const InfoModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { isPortrait, isLandscape } = useOrientation();
-  const style = styles({ isPortrait, isLandscape });
   const [isUpdating, setIsUpdating] = useState(false);
   if (!isOpen) {
     return null;
@@ -70,18 +67,18 @@ const InfoModal = ({
 
   return (
     <Modal animationType={'slide'} onRequestClose={onClose} transparent={true}>
-      <View style={style.centeredView}>
-        <View style={style.modalView}>
-          <View style={style.body}>
-            <View style={style.row}>
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <View style={styles.body}>
+            <View style={styles.row}>
               <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
                 <Image
-                  style={style.logo}
+                  style={styles.logo}
                   source={require('../assets/logo.png')}
                 />
               </TouchableOpacity>
               <View>
-                <NativeText style={style.title} type="bold">
+                <NativeText style={styles.title} type="bold">
                   Athena Event Logistics
                 </NativeText>
                 <NativeText>
@@ -89,30 +86,34 @@ const InfoModal = ({
                   and Buskers Chur Festivals by @punkah and @maennchen.
                 </NativeText>
                 <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
-                  <NativeText style={style.link}>Athena GitHub page</NativeText>
+                  <NativeText style={styles.link}>
+                    Athena GitHub page
+                  </NativeText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => Linking.openURL(PUNKAH_URL)}>
-                  <NativeText style={style.link}>@punkah</NativeText>
+                  <NativeText style={styles.link}>@punkah</NativeText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => Linking.openURL(MAENNCHEN_URL)}
                 >
-                  <NativeText style={style.link}>@maennchen</NativeText>
+                  <NativeText style={styles.link}>@maennchen</NativeText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
                 >
-                  <NativeText style={style.link}>Privacy policy</NativeText>
+                  <NativeText style={styles.link}>Privacy policy</NativeText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
                 >
-                  <NativeText style={style.link}>Terms & Conditions</NativeText>
+                  <NativeText style={styles.link}>
+                    Terms & Conditions
+                  </NativeText>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-          <View style={style.buttons}>
+          <View style={styles.buttons}>
             {isUpdating ? (
               <ActivityIndicator
                 size={'small'}
@@ -127,11 +128,7 @@ const InfoModal = ({
                 title="Check for updates"
               />
             )}
-            <NativeButton
-              style={style.close}
-              onPress={onClose}
-              title={'Close'}
-            />
+            <NativeButton onPress={onClose} title={'Close'} />
           </View>
         </View>
       </View>
@@ -139,56 +136,52 @@ const InfoModal = ({
   );
 };
 
-const styles = ({ isPortrait, isLandscape }: Orientation) =>
-  StyleSheet.create({
-    screen: {},
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
+const styles = StyleSheet.create({
+  screen: {},
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  row: { flexDirection: 'row', flex: 1, flexWrap: 'wrap' },
+  title: { fontSize: 22 },
+  modalView: {
+    width: '80%',
+    height: '80%',
+    margin: 20,
+    backgroundColor: 'white',
+    padding: 35,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    row: { flexDirection: 'row', flex: 1, flexWrap: 'wrap' },
-    title: { fontSize: 22 },
-    modalView: {
-      width: '80%',
-      height: '80%',
-      margin: 20,
-      backgroundColor: 'white',
-      padding: 35,
-      alignItems: 'flex-start',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    body: {
-      flex: 1,
-    },
-    link: {
-      color: 'blue',
-      textDecorationColor: 'blue',
-      textDecorationLine: 'underline',
-      marginTop: 10,
-    },
-    logo: {
-      width: 104,
-      height: 120,
-      marginRight: 20,
-      marginBottom: 20,
-    },
-    close: {
-      alignSelf: 'flex-end',
-    },
-    buttons: {
-      width: '100%',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-  });
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  body: {
+    flex: 1,
+  },
+  link: {
+    color: 'blue',
+    textDecorationColor: 'blue',
+    textDecorationLine: 'underline',
+    marginTop: 10,
+  },
+  logo: {
+    width: 104,
+    height: 120,
+    marginRight: 20,
+    marginBottom: 20,
+  },
+  buttons: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});
 
 export default InfoModal;

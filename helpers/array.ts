@@ -1,7 +1,7 @@
-export const addOrRemoveFromArray = (
-  itemToAdd: { id: string },
-  array: Array<{ id: string }>
-): any[] => {
+export function addOrRemoveFromArray<Entry extends { id: string }>(
+  itemToAdd: Entry,
+  array: Entry[]
+): Entry[] {
   const existingIndex = array.findIndex((item) => item.id === itemToAdd.id);
   if (existingIndex >= 0) {
     const updatedArray = [...array];
@@ -10,4 +10,4 @@ export const addOrRemoveFromArray = (
   } else {
     return [...array, itemToAdd];
   }
-};
+}

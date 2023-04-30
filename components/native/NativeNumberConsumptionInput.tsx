@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { StockEntryStatus } from '../../apollo/schema';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 import NativeInput from './NativeInput';
@@ -16,7 +15,6 @@ import NativeText from './NativeText';
 interface NativeNumberConsumptionInputProps extends TextInputProps {
   onChangeText: (newValue?: string, change?: number) => void;
   loading: boolean;
-  type: StockEntryStatus;
   max?: number;
 }
 
@@ -25,7 +23,6 @@ const NativeNumberConsumptionInput: FC<NativeNumberConsumptionInputProps> = ({
   value,
   editable,
   loading,
-  type,
   max,
   ...rest
 }) => {

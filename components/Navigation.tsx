@@ -4,21 +4,24 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import {
-  createMaterialTopTabNavigator,
   MaterialTopTabNavigationOptions,
+  createMaterialTopTabNavigator,
 } from '@react-navigation/material-top-tabs';
 import {
-  createNativeStackNavigator,
   NativeStackNavigationOptions,
+  createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import i18n from '../helpers/i18n';
 import React from 'react';
 import 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import isAndroid from '../constants/isAndroid';
+import i18n from '../helpers/i18n';
+import { Item } from '../models/Item';
+import { LogisticLocation } from '../models/LogisticLocation';
 import { PermissionEnum } from '../models/PermissionEnum';
+import { StockItem } from '../models/StockItem';
 import EventMissingItems from '../screens/EventMissingItems';
 import ItemDetails from '../screens/ItemDetails';
 import ItemOverview from '../screens/ItemOverview';
@@ -32,12 +35,72 @@ import StockItemDetails from '../screens/StockItemDetails';
 import { RootState } from '../store';
 import NativeText from './native/NativeText';
 
-const Navigation = () => {
-  const getTabBarIcon =
-    ({ name }: { name: any }) =>
-    ({ color }: { color: string }) =>
-      <Ionicons name={name} size={23} color={color} />;
+export type RootParamsList = {
+  'Stock Item Details': {
+    stockItem?: StockItem;
+    eventId?: string;
+  };
+  'Overview all': {
+    eventId?: string;
+  };
+  'Overview Stack': {
+    [key in keyof OverviewStackParamsList]: OverviewStackParamsList[key] extends undefined
+      ? {
+          screen: key;
+          eventId?: string;
+        }
+      : {
+          screen: key;
+          eventId?: string;
+          params: OverviewStackParamsList[key];
+        };
+  }[keyof OverviewStackParamsList];
+  Move: {
+    items?: StockItem[];
+    to?: string;
+  };
+  Scanner: undefined;
+  Map: undefined;
+};
 
+export type OverviewTabsParamsList = {
+  'Overview all': undefined;
+  'By Location': {
+    eventId?: string;
+    location?: LogisticLocation;
+    externalLocationId?: string;
+  };
+  'By Item': {
+    eventId?: string;
+  };
+  'Missing items': {
+    eventId?: string;
+  };
+};
+
+export type OverviewStackParamsList = {
+  Overview: undefined;
+  'Location Details': {
+    location?: LogisticLocation;
+    externalLocationId?: string;
+  };
+  'Item Details': {
+    eventId?: string;
+    item: Item;
+  };
+  'Stock Item Details': {
+    stockItem: StockItem;
+    eventId?: string;
+  };
+};
+
+const getTabBarIcon =
+  ({ name }: { name: React.ComponentProps<typeof Ionicons>['name'] }) =>
+  // eslint-disable-next-line react/display-name
+  ({ color }: { color: string }) =>
+    <Ionicons name={name} size={23} color={color} />;
+
+const Navigation = () => {
   const currentPermission = useSelector(
     (state: RootState) => state.global.currentPermission
   );
@@ -89,7 +152,7 @@ const Navigation = () => {
     },
   };
 
-  const OverviewTab = createMaterialTopTabNavigator();
+  const OverviewTab = createMaterialTopTabNavigator<OverviewTabsParamsList>();
   const OverviewTabs: React.FC = () => {
     return (
       <OverviewTab.Navigator screenOptions={defaultScreenOptionsTopTab}>
@@ -178,7 +241,7 @@ const Navigation = () => {
     );
   };
 
-  const OverviewStack = createNativeStackNavigator();
+  const OverviewStack = createNativeStackNavigator<OverviewStackParamsList>();
   const OverviewStackNavigator = () => (
     <OverviewStack.Navigator screenOptions={defaultScreenOptionsStack}>
       {isEventAdmin() ? (
@@ -201,7 +264,6 @@ const Navigation = () => {
         name="Stock Item Details"
         component={StockItemDetails}
         options={(props) => ({
-          // @ts-ignore
           title: props.route.params?.stockItem?.name,
         })}
       />
@@ -209,7 +271,6 @@ const Navigation = () => {
         name="Location Details"
         component={LocationDetails}
         options={(props) => ({
-          // @ts-ignore
           title: props.route.params?.location?.name,
         })}
       />
@@ -218,19 +279,18 @@ const Navigation = () => {
           name="Item Details"
           component={ItemDetails}
           options={(props) => ({
-            // @ts-ignore
-            title: props.route.params?.item?.name,
+            title: props.route.params.item.name,
           })}
         />
       ) : null}
     </OverviewStack.Navigator>
   );
 
-  const AppTabs = createBottomTabNavigator();
+  const AppTabs = createBottomTabNavigator<RootParamsList>();
   const AppTabNavigator = () => (
     <AppTabs.Navigator
       screenOptions={defaultScreenOptionsBottomTab}
-      initialRouteName="Overview"
+      initialRouteName="Overview Stack"
     >
       {isEventAdmin() || isLocationUser() ? (
         <AppTabs.Screen

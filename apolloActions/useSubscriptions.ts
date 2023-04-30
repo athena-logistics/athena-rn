@@ -1,4 +1,4 @@
-import { BaseSubscriptionOptions, OnDataOptions, OperationVariables, useSubscription } from '@apollo/client';
+import { OnDataOptions, useSubscription } from '@apollo/client';
 import { RootSubscriptionTypeMovementCreatedArgs } from '../apollo/schema';
 import { MOVEMENT_SUBSCRIPTION } from '../apollo/subscription';
 
@@ -9,7 +9,9 @@ export const useMovementSubscription = ({
 }: {
   eventId?: string;
   locationId?: string;
-  onData: (options: OnDataOptions<RootSubscriptionTypeMovementCreatedArgs>) => any;
+  onData: (
+    options: OnDataOptions<RootSubscriptionTypeMovementCreatedArgs>
+  ) => void;
 }) => {
   return useSubscription<RootSubscriptionTypeMovementCreatedArgs>(
     MOVEMENT_SUBSCRIPTION,

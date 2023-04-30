@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { FC } from 'react';
-import { StyleSheet } from 'react-native';
 
 interface IonIconProps {
-  name: any;
+  name: React.ComponentProps<typeof Ionicons>['name'];
   size?: number;
   color: string;
 }
@@ -11,7 +10,5 @@ interface IonIconProps {
 const IonIcon: FC<IonIconProps> = ({ name, size, color }) => {
   return <Ionicons name={name} size={size} color={color} />;
 };
-
-const styles = StyleSheet.create({});
 
 export default IonIcon;

@@ -11,7 +11,7 @@ import {
   reloadAsync,
 } from 'expo-updates';
 import React, { useEffect } from 'react';
-import { Alert, LogBox, StyleSheet } from 'react-native';
+import { Alert, LogBox } from 'react-native';
 import { Provider } from 'react-redux';
 import AppContent from './AppContent';
 import store from './store';
@@ -81,7 +81,5 @@ const App = () => {
     </Provider>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default App;
