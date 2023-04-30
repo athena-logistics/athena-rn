@@ -5,7 +5,7 @@
     "slug": "athena-rn",
     "scheme": "athena-rn",
     "owner": "athena-logistics",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "githubUrl": "https://github.com/athena-logistics/athena-rn",
     "orientation": "default",
     "primaryColor": "#32ad9a",
@@ -27,10 +27,10 @@
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan a QR code",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
       },
-      "buildNumber": "1.2"
+      "buildNumber": "1.3"
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
