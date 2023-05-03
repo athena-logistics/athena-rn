@@ -19,11 +19,23 @@ jobs:
 
     uses: ./.github/workflows/part_dependabot.yml
 
-  publish:
+  publish_pr:
     name: 'Publish'
+
+    if: '${{ github.event_name == 'pull_request' }}'
 
     uses: ./.github/workflows/part_publish.yml
     with:
-      commentDeployment: "${{ github.event_name == 'pull_request' }}"
+      commentUpdate: true
+      command: 'eas update --branch="${{ github.head_ref }}" --message="${{ github.sha }}" --non-interactive'
+    secrets:
+      EXPO_TOKEN: '${{ secrets.EXPO_TOKEN }}'
+
+  publish_manual:
+    name: 'Publish'
+
+    if: '${{ github.event_name != 'pull_request' }}'
+
+    uses: ./.github/workflows/part_publish.yml
     secrets:
       EXPO_TOKEN: '${{ secrets.EXPO_TOKEN }}'

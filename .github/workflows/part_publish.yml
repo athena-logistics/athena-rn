@@ -1,9 +1,13 @@
 on:
   workflow_call:
     inputs:
-      commentDeployment:
+      commentUpdate:
         type: boolean
         default: false
+      command:
+        type: string
+        required: false
+        default: 'eas update --auto --non-interactive'
     secrets:
       EXPO_TOKEN:
         required: true
@@ -38,11 +42,11 @@ jobs:
         run: npm ci
 
       - name: 🚀 Publish app
-        if: '${{ !inputs.commentDeployment }}'
-        run: eas update --auto --non-interactive
+        if: '${{ !inputs.commentUpdate }}'
+        run: '${{ inputs.command }}'
 
       - name: 🚀 Publish app
-        if: '${{ inputs.commentDeployment }}'
+        if: '${{ inputs.commentUpdate }}'
         uses: expo/expo-github-action/preview@v8
         with:
-          command: 'eas update --branch="${{ github.ref }}" --message="${{ github.sha }}" --non-interactive'
+          command: '${{ inputs.command }}'
