@@ -28,7 +28,7 @@
   },
   "overrides": [
     {
-      "files": ["babel.config.js", "metro.config.js"],
+      "files": ["bin/*.js", "babel.config.js", "metro.config.js"],
       "env": {
         "node": true
       },

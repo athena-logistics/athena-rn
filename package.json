@@ -14,7 +14,8 @@
     "test:types": "tsc --noEmit",
     "test:lint": "eslint .",
     "test:format": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "version": "./bin/sync-expo-version.mjs"
   },
   "dependencies": {
     "@apollo/client": "^3.7.13",
