@@ -86,96 +86,100 @@ const StockByStock = () => {
   };
 
   return (
-    <ScrollView horizontal={true} contentContainerStyle={styles.container}>
-      <View style={styles.row}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.cornerCell}
-            onPress={() => {
-              if (!loading) {
-                fetch();
-                fetchAllItems();
-              }
-            }}
-          >
-            {loading ? (
-              <ActivityIndicator size={'small'} color={colors.primary} />
-            ) : (
-              <Ionicons
-                size={19}
-                name={'ios-refresh-circle-outline'}
-                color={colors.primary}
-              />
-            )}
-            <NativeText style={{ fontSize: 10 }}>
-              {loading ? 'Refreshing' : 'Refresh'}
-            </NativeText>
-          </TouchableOpacity>
+    <ScrollView horizontal={true}>
+      <View style={styles.container}>
+        <View style={styles.row}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.cornerCell}
+              onPress={() => {
+                if (!loading) {
+                  fetch();
+                  fetchAllItems();
+                }
+              }}
+            >
+              {loading ? (
+                <ActivityIndicator size={'small'} color={colors.primary} />
+              ) : (
+                <Ionicons
+                  size={19}
+                  name={'ios-refresh-circle-outline'}
+                  color={colors.primary}
+                />
+              )}
+              <NativeText style={{ fontSize: 10 }}>
+                {loading ? 'Refreshing' : 'Refresh'}
+              </NativeText>
+            </TouchableOpacity>
+          </View>
+          {locationData.map((location) => (
+            <TouchableOpacity
+              style={styles.topCell}
+              key={location.id}
+              onPress={handleLocationPress(location)}
+            >
+              <NativeText style={styles.topCellText}>
+                {location.name}
+              </NativeText>
+            </TouchableOpacity>
+          ))}
         </View>
-        {locationData.map((location) => (
-          <TouchableOpacity
-            style={styles.topCell}
-            key={location.id}
-            onPress={handleLocationPress(location)}
-          >
-            <NativeText style={styles.topCellText}>{location.name}</NativeText>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <ScrollView>
-        {availableItems.map((item) => (
-          <Fragment key={item.id}>
-            <View style={styles.row}>
-              <View style={styles.topGroupCell}>
-                <View key={item.id}>
-                  <NativeText style={styles.topGroupCellText}>
-                    {item.name}
-                  </NativeText>
-                </View>
-              </View>
-              {locationData.map((d, index) => (
-                <View style={styles.groupCell} key={index}></View>
-              ))}
-            </View>
-            {item.children.map((child) => (
-              <View style={styles.row} key={child.id}>
-                <View style={styles.header}>
-                  <TouchableOpacity
-                    style={styles.headerCell}
-                    onPress={handleItemPress(child)}
-                  >
-                    <NativeText style={styles.titleText}>
-                      {child.name}
+        <ScrollView>
+          {availableItems.map((item) => (
+            <Fragment key={item.id}>
+              <View style={styles.row}>
+                <View style={styles.topGroupCell}>
+                  <View key={item.id}>
+                    <NativeText style={styles.topGroupCellText}>
+                      {item.name}
                     </NativeText>
-                  </TouchableOpacity>
+                  </View>
                 </View>
-                {locationData.map((location) => {
-                  const stockAtLocation = location.stockItems.find(
-                    (stockItem) => stockItem.id === child.id
-                  );
-                  const status = stockAtLocation?.status;
-                  return (
+                {locationData.map((d, index) => (
+                  <View style={styles.groupCell} key={index}></View>
+                ))}
+              </View>
+              {item.children.map((child) => (
+                <View style={styles.row} key={child.id}>
+                  <View style={styles.header}>
                     <TouchableOpacity
-                      style={[styles.cell, status ? styles[status] : null]}
-                      key={child.id + location.id}
-                      onPress={handleStockItemPress(stockAtLocation)}
+                      style={styles.headerCell}
+                      onPress={handleItemPress(child)}
                     >
-                      <NativeText
-                        style={[
-                          styles.cellText,
-                          status ? styles[`${status}text`] : null,
-                        ]}
-                      >
-                        {stockAtLocation?.stock}
+                      <NativeText style={styles.titleText}>
+                        {child.name}
                       </NativeText>
                     </TouchableOpacity>
-                  );
-                })}
-              </View>
-            ))}
-          </Fragment>
-        ))}
-      </ScrollView>
+                  </View>
+                  {locationData.map((location) => {
+                    const stockAtLocation = location.stockItems.find(
+                      (stockItem) => stockItem.id === child.id
+                    );
+                    const status = stockAtLocation?.status;
+                    return (
+                      <TouchableOpacity
+                        style={[styles.cell, status ? styles[status] : null]}
+                        key={child.id + location.id}
+                        onPress={handleStockItemPress(stockAtLocation)}
+                      >
+                        <NativeText
+                          style={[
+                            styles.cellText,
+                            status ? styles[`${status}text`] : null,
+                          ]}
+                        >
+                          {stockAtLocation?.stock}
+                        </NativeText>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              ))}
+            </Fragment>
+          ))}
+        </ScrollView>
+      </View>
     </ScrollView>
   );
 };
@@ -197,8 +201,8 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   cell: {
-    minWidth: 40,
-    minHeight: 40,
+    minWidth: 50,
+    minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: colors.primary,
@@ -219,7 +223,7 @@ const styles = StyleSheet.create({
   },
   groupCell: {
     backgroundColor: colors.primaryLight,
-    minWidth: 40,
+    minWidth: 50,
     minHeight: 25,
   },
   topGroupCell: {
@@ -233,7 +237,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   topCell: {
-    width: 40,
+    width: 50,
     minHeight: 60,
     padding: 5,
     borderColor: colors.primary,
