@@ -11,6 +11,7 @@ import {
   Image,
   Linking,
   Modal,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -69,7 +70,7 @@ const InfoModal = ({
     <Modal animationType={'slide'} onRequestClose={onClose} transparent={true}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <View style={styles.body}>
+          <ScrollView style={styles.body}>
             <View style={styles.row}>
               <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
                 <Image
@@ -77,42 +78,36 @@ const InfoModal = ({
                   source={require('../assets/logo.png')}
                 />
               </TouchableOpacity>
-              <View>
-                <NativeText style={styles.title} type="bold">
-                  Athena Event Logistics
-                </NativeText>
-                <NativeText>
-                  Athena was built for logistics management of the Aufgetischt
-                  and Buskers Chur Festivals by @punkah and @maennchen.
-                </NativeText>
-                <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
-                  <NativeText style={styles.link}>
-                    Athena GitHub page
-                  </NativeText>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => Linking.openURL(PUNKAH_URL)}>
-                  <NativeText style={styles.link}>@punkah</NativeText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(MAENNCHEN_URL)}
-                >
-                  <NativeText style={styles.link}>@maennchen</NativeText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
-                >
-                  <NativeText style={styles.link}>Privacy policy</NativeText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
-                >
-                  <NativeText style={styles.link}>
-                    Terms & Conditions
-                  </NativeText>
-                </TouchableOpacity>
-              </View>
             </View>
-          </View>
+            <View style={styles.row}>
+              <NativeText style={styles.title} type="bold">
+                Athena Event Logistics
+              </NativeText>
+              <NativeText>
+                Athena was built for logistics management of the Aufgetischt and
+                Buskers Chur Festivals by @punkah and @maennchen.
+              </NativeText>
+              <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
+                <NativeText style={styles.link}>Athena GitHub page</NativeText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL(PUNKAH_URL)}>
+                <NativeText style={styles.link}>@punkah</NativeText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => Linking.openURL(MAENNCHEN_URL)}>
+                <NativeText style={styles.link}>@maennchen</NativeText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+              >
+                <NativeText style={styles.link}>Privacy policy</NativeText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(TERMS_AND_CONDITIONS_URL)}
+              >
+                <NativeText style={styles.link}>Terms & Conditions</NativeText>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
           <View style={styles.buttons}>
             {isUpdating ? (
               <ActivityIndicator
@@ -152,7 +147,6 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
     padding: 35,
-    alignItems: 'flex-start',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -161,6 +155,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    alignItems: 'flex-start',
+    gap: 10,
   },
   body: {
     flex: 1,
@@ -178,9 +174,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttons: {
+    flexShrink: 0,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
   },
 });
 
