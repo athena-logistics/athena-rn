@@ -12,10 +12,8 @@ on:
 name: 'Release'
 
 jobs:
-  create_prerelease:
-    name: Create Prerelease
-
-    if: ${{ !inputs.stable }}
+  create_release:
+    name: Create Release
 
     runs-on: ubuntu-latest
 
@@ -23,7 +21,8 @@ jobs:
       contents: write
 
     steps:
-      - name: Create draft prerelease
+      - name: Create prerelease
+        if: ${{ !inputs.stable }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -33,19 +32,8 @@ jobs:
             --prerelease \
             --generate-notes \
             ${{ inputs.releaseName }}
-
-  create_stable:
-    name: Create Stable
-
-    if: ${{ inputs.stable }}
-
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
-    steps:
-      - name: Create draft release
+      - name: Create release
+        if: ${{ inputs.stable }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
