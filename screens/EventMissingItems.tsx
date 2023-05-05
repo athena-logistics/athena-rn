@@ -1,20 +1,14 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import {
-  NavigationProp,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import i18n from '../helpers/i18n';
-import React, { useEffect, useState } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import {
-  useAllItemsQuery,
-  useAllStockQuery,
-  useLocationQuery,
-} from '../apolloActions/useQueries';
-import { useMovementSubscription } from '../apolloActions/useSubscriptions';
+  ItemFragment,
+  LocationFragment,
+  LogisticEventConfigurationFragment,
+  StockFragment,
+} from '../apollo/schema';
+import { LogisticsParamsList } from '../components/LogisticNavigation';
 import MissingItemRow from '../components/MissingItemRow';
 import NativeButton from '../components/native/NativeButton';
 import NativePicker from '../components/native/NativePicker';
@@ -22,166 +16,189 @@ import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import { getNodes } from '../helpers/apollo';
-import { getGroupedData } from '../helpers/getGroupedData';
-import { RootState } from '../store';
-import { setLocations } from '../store/actions/global.actions';
-import { StockItem } from '../models/StockItem';
-import {
-  OverviewTabsParamsList,
-  RootParamsList,
-} from '../components/Navigation';
 
-const EventMissingItems: React.FC = () => {
-  const route = useRoute<RouteProp<OverviewTabsParamsList, 'Missing items'>>();
+export default function EventMissingItems({
+  event,
+  refetch,
+  stateReloading,
+}: {
+  event: LogisticEventConfigurationFragment;
+  refetch: () => void;
+  stateReloading: boolean;
+}) {
+  const intl = useIntl();
 
-  const eventId =
-    route.params?.eventId ??
-    useSelector((state: RootState) => state.global.eventId);
+  const items = getNodes(event.items);
+  const stock = getNodes(event.stock);
+  const locations = getNodes(event.locations);
 
-  const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
-  const { data, loading, error } = useLocationQuery(eventId);
-  const reduxDispatch = useDispatch();
-  const allStock = useSelector((state: RootState) => state.global.allStock);
-  const locations = useSelector((state: RootState) => state.global.locations);
-  useEffect(() => {
-    if (!error && !loading) {
-      if (data && data.event?.__typename === 'Event') {
-        const locations = [
-          {
-            name: i18n.t('locations'),
-            id: '0',
-            children: getNodes(data.event.locations).map((location) => ({
-              name: location.name,
-              id: location.id,
-            })),
-          },
-        ];
-        reduxDispatch(setLocations(locations));
-      }
-    }
-  }, [data, error, loading]);
+  const groupedItems = Object.entries(
+    items
+      .map((item) => ({ ...item, name: `${item.name} (${item.unit})` }))
+      .reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.itemGroup.id]: [...(acc[item.itemGroup.id] ?? []), item],
+        }),
+        {} as Record<string, ItemFragment[]>
+      )
+  ).map(([itemGroupId, items]) => {
+    const itemGroup = getNodes(event.itemGroups).find(
+      (itemGroup) => itemGroup.id === itemGroupId
+    );
 
-  const [itemFilter, setItemFilter] = useState<string | null>();
-  const [locationFilter, setLocationFilter] = useState<string | null>();
-  const [fetchAllItems] = useAllItemsQuery(eventId);
-  const allItems = useSelector((state: RootState) => state.global.allItems);
-
-  useEffect(() => {
-    fetchAllItems();
-  }, []);
-
-  const availableItems = getGroupedData(allItems);
-  const availableItemsWithUnit = availableItems.map((group) => ({
-    ...group,
-    children: group.children.map((item) => ({
-      ...item,
-      name: `${item.name} (${item.unit})`,
-    })),
-  }));
-
-  useMovementSubscription({
-    onData: () => {
-      fetchStock();
-      fetchAllItems();
-    },
+    return {
+      ...itemGroup,
+      children: items,
+    };
   });
 
-  const renderRow = ({ item }: { item: StockItem }) => {
-    return <MissingItemRow row={item} onPress={handleRowClick(item)} />;
-  };
+  const [locationFilter, setLocationFilter] = useState<LocationFragment[]>([]);
+  const [itemFilter, setItemFilter] = useState<ItemFragment[]>([]);
 
-  const filteredStock = allStock.filter(
-    (stock) =>
-      stock.missingCount != 0 &&
-      (locationFilter ? stock.locationId == locationFilter : true) &&
-      (itemFilter ? stock.id == itemFilter : true)
-  );
+  const filteredStock = stock.filter((stockItem) => {
+    if (stockItem.missingCount < 1) return false;
+    if (locationFilter.length > 0) {
+      const locationMatches = locationFilter.some(
+        (location) => location.id === stockItem.location.id
+      );
+      if (!locationMatches) return false;
+    }
+    if (itemFilter.length > 0) {
+      const itemMatches = itemFilter.some(
+        (item) => item.id === stockItem.item.id
+      );
+      if (!itemMatches) return false;
+    }
 
-  const handleSetLocationFilter = (value: string | null) => {
-    setLocationFilter(value);
-  };
-  const handleSetItemFilter = (value: string | null) => {
-    setItemFilter(value);
-  };
+    return true;
+  });
 
-  const handleReset = () => {
-    setLocationFilter(null);
-    setItemFilter(null);
-  };
-
-  const navigation = useNavigation<NavigationProp<RootParamsList>>();
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
   const handleMoveAll = () => {
-    navigation.navigate('Move', {
-      items: filteredStock,
-      to: locationFilter ?? undefined,
+    navigation.navigate('move', {
+      to: locationFilter[0],
+      items: filteredStock.map((stockEntry) => ({
+        amount: stockEntry.missingCount,
+        item: items.find((item) => item.id === stockEntry.item.id) ?? null,
+      })),
     });
   };
-
-  const handleRowClick = (item: StockItem) => () => {
-    navigation.navigate('Move', {
-      items: [item],
-      to: item.locationId,
+  const handleRowClick = (stockEntry: StockFragment) => () => {
+    navigation.navigate('move', {
+      items: [
+        {
+          amount: stockEntry.missingCount,
+          item: items.find((item) => item.id === stockEntry.item.id) ?? null,
+        },
+      ],
+      to: locations.find((location) => location.id === stockEntry.location.id),
     });
   };
-
   return (
     <NativeScreen style={styles.screen}>
       <View style={styles.top}>
         <NativePicker
+          uniqueKey="id"
           items={locations}
-          selectedValue={locationFilter}
-          setSelectedValue={handleSetLocationFilter}
-          placeholderText={i18n.t('byLocation')}
+          selectedItems={locationFilter.map((location) => location.id)}
+          onSelectedItemsChange={() => null}
+          onSelectedItemObjectsChange={(locations) =>
+            setLocationFilter(locations as LocationFragment[])
+          }
+          readOnlyHeadings={false}
+          selectText={intl.formatMessage({
+            id: 'model.location',
+            defaultMessage: 'Location',
+          })}
+          renderSelectText={({ selectText }) => {
+            return <NativeText>{selectText}</NativeText>;
+          }}
         />
         <NativeText> </NativeText>
         <NativePicker
-          items={availableItemsWithUnit}
-          selectedValue={itemFilter}
-          setSelectedValue={handleSetItemFilter}
-          placeholderText={i18n.t('byItem')}
-        />
-        <NativeText> </NativeText>
-        <MaterialIcons
-          name="highlight-remove"
-          size={25}
-          color={colors.primary}
-          onPress={handleReset}
+          uniqueKey="id"
+          items={groupedItems}
+          subKey="children"
+          selectedItems={itemFilter.map((item) => item.id)}
+          onSelectedItemsChange={() => null}
+          onSelectedItemObjectsChange={(items) =>
+            setItemFilter(items as ItemFragment[])
+          }
+          readOnlyHeadings={true}
+          selectText={intl.formatMessage({
+            id: 'model.item',
+            defaultMessage: 'Item',
+          })}
+          renderSelectText={({ selectText }) => {
+            return <NativeText>{selectText}</NativeText>;
+          }}
         />
       </View>
-      {locationFilter && (
-        <View style={styles.buttons}>
-          <NativeButton
-            title="Supply all"
-            onPress={handleMoveAll}
-          ></NativeButton>
-        </View>
+      {(filteredStock.length > 0 && (
+        <>
+          {locationFilter.length === 1 && (
+            <View style={styles.buttons}>
+              <NativeButton
+                title={intl.formatMessage({
+                  id: 'missingItem.supplyAll',
+                  defaultMessage: 'Supply all',
+                })}
+                onPress={handleMoveAll}
+              ></NativeButton>
+            </View>
+          )}
+          <View>
+            <FlatList
+              data={filteredStock}
+              onRefresh={refetch}
+              refreshing={stateReloading}
+              renderItem={({ item: stockEntry }) => {
+                const item = items.find(
+                  (item) => item.id === stockEntry.item.id
+                );
+                const location = locations.find(
+                  (location) => location.id === stockEntry.location.id
+                );
+                if (!location || !item)
+                  throw new Error('Inconsistent Internal State');
+                return (
+                  <MissingItemRow
+                    stockEntry={stockEntry}
+                    item={item}
+                    location={location}
+                    onPress={handleRowClick(stockEntry)}
+                  />
+                );
+              }}
+              keyExtractor={(row) => row.item.id + row.location.id}
+              style={styles.list}
+              contentContainerStyle={styles.listContent}
+            />
+          </View>
+        </>
+      )) || (
+        <NativeText>
+          <FormattedMessage
+            id="missingItem.nothingMissing"
+            defaultMessage="Congratulations, nothing is missing."
+          />
+        </NativeText>
       )}
-      <View>
-        <FlatList
-          data={filteredStock}
-          onRefresh={fetchStock}
-          refreshing={loadingStock}
-          renderItem={renderRow}
-          keyExtractor={(row) => row.id + row.locationId}
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
     </NativeScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   screen: {
-    // alignItems: 'center',
-    // marginVertical: 20,
     flex: 1,
     justifyContent: 'flex-start',
   },
   top: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'stretch',
+    flexWrap: 'wrap',
     marginVertical: 10,
     marginHorizontal: 10,
   },
@@ -200,5 +217,3 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 });
-
-export default EventMissingItems;

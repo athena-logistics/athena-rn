@@ -1,30 +1,30 @@
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native';
 import colors from '../../constants/colors';
 import fonts from '../../constants/fonts';
 
-interface NativeTextProps {
-  children: ReactNode;
-  style?: StyleProp<TextStyle>;
-  type?: 'bold';
-  numberOfLines?: number;
-}
-
-const NativeText: FC<NativeTextProps> = ({
+export default function NativeText({
   type,
   style,
   numberOfLines,
   children,
-}) => {
+  ...rest
+}: {
+  children: ReactNode;
+  style?: StyleProp<TextStyle>;
+  type?: 'bold';
+  numberOfLines?: number;
+} & React.ComponentProps<typeof Text>) {
   return (
     <Text
       style={[styles.text, style, type === 'bold' ? styles.textBold : null]}
       numberOfLines={numberOfLines}
+      {...rest}
     >
       {children}
     </Text>
   );
-};
+}
 
 const styles = StyleSheet.create({
   text: {
@@ -36,4 +36,3 @@ const styles = StyleSheet.create({
     fontFamily: fonts.defaultFontFamilyBold,
   },
 });
-export default NativeText;

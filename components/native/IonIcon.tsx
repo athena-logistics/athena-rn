@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { FC } from 'react';
 
 interface IonIconProps {
   name: React.ComponentProps<typeof Ionicons>['name'];
@@ -7,8 +6,6 @@ interface IonIconProps {
   color: string;
 }
 
-const IonIcon: FC<IonIconProps> = ({ name, size, color }) => {
+export default function IonIcon({ name, size, color }: IonIconProps) {
   return <Ionicons name={name} size={size} color={color} />;
-};
-
-export default IonIcon;
+}

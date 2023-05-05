@@ -1,78 +1,53 @@
-import { FetchResult, MutationFunctionOptions } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
-  DoConsumeMutation,
-  DoConsumeMutationVariables,
+  ItemFragment,
+  LocationFragment,
   StockEntryStatus,
+  StockFragment,
 } from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { StockItem } from '../models/StockItem';
-import { OverviewStackParamsList } from './Navigation';
-import NativeNumberConsumptionInput from './native/NativeNumberConsumptionInput';
+import LiveStockEntry from './LiveStockEntry';
 import NativeText from './native/NativeText';
 
-const ItemRow = ({
-  row,
-  loading,
-  createConsumeMutation,
+export enum Variant {
+  NameAndUnit,
+  Location,
+}
+
+export default function ItemRow({
+  item,
+  stockEntry,
+  handlePress,
   variant,
+  ...restProps
 }: {
-  row: StockItem;
-  loading: boolean;
-  createConsumeMutation: (
-    options?: MutationFunctionOptions<
-      DoConsumeMutation,
-      DoConsumeMutationVariables
-    >
-  ) => Promise<FetchResult<DoConsumeMutation>>;
-  variant: 'nameAndUnit' | 'location';
-}) => {
-  const [localRow, setLocalRow] = useState(row);
-
-  useEffect(() => {
-    setLocalRow(row);
-  }, [row]);
-
-  const isInverse = row.inverse;
+  item: ItemFragment;
+  stockEntry: StockFragment;
+  handlePress?: () => void;
+  variant: Variant;
+} & (
+  | { variant: Variant.NameAndUnit }
+  | { variant: Variant.Location; location: LocationFragment }
+)) {
   const style = styles({
-    isInverse: variant === 'nameAndUnit' ? isInverse : false,
+    isInverse: variant === Variant.NameAndUnit ? item.inverse : false,
   });
 
-  const navigation = useNavigation<NavigationProp<OverviewStackParamsList>>();
-  const handlePress = () => {
-    navigation.navigate('Stock Item Details', { stockItem: row });
-  };
-
-  const consume = async (newValue?: string, change?: number) => {
-    const amount = change ? -change : Number(localRow.stock) - Number(newValue);
-    const locationId = row.locationId;
-    const itemId = row.id;
-    if (!Number.isNaN(amount) && locationId && itemId) {
-      const variables: DoConsumeMutationVariables = {
-        amount,
-        locationId,
-        itemId,
-      };
-      await createConsumeMutation({ variables });
-      setLocalRow((row) => ({
-        ...row,
-        stock: row.stock - amount,
-      }));
-    }
-  };
-
-  const color =
-    row.status === StockEntryStatus.Important
-      ? colors.red
-      : row.status === StockEntryStatus.Warning
-      ? colors.orange
-      : row.status === StockEntryStatus.Normal
-      ? colors.green
-      : '';
+  let color: string;
+  switch (stockEntry.status) {
+    case StockEntryStatus.Important:
+      color = colors.red;
+      break;
+    case StockEntryStatus.Warning:
+      color = colors.orange;
+      break;
+    case StockEntryStatus.Normal:
+      color = colors.green;
+      break;
+  }
 
   return (
     <View style={style.row}>
@@ -81,29 +56,25 @@ const ItemRow = ({
       </View>
       <View style={style.title}>
         <TouchableOpacity onPress={handlePress}>
-          {variant === 'nameAndUnit' && (
+          {variant === Variant.NameAndUnit && (
             <>
-              <NativeText style={style.titleText}>{row.name}</NativeText>
-              <NativeText style={style.subtitleText}>{row.unit}</NativeText>
+              <NativeText style={style.titleText}>{item.name}</NativeText>
+              <NativeText style={style.subtitleText}>{item.unit}</NativeText>
             </>
           )}
-          {variant === 'location' && (
-            <NativeText style={style.titleText}>{row.locationName}</NativeText>
+          {variant === Variant.Location && 'location' in restProps && (
+            <NativeText style={style.titleText}>
+              {restProps.location.name}
+            </NativeText>
           )}
         </TouchableOpacity>
       </View>
       <View style={style.leftContainer}>
-        <NativeNumberConsumptionInput
-          value={localRow.stock + ''}
-          max={localRow.inverse ? 0 : localRow.stock + localRow.missingCount}
-          onChangeText={consume}
-          loading={loading}
-          editable={true}
-        />
+        <LiveStockEntry stockEntry={stockEntry} />
       </View>
     </View>
   );
-};
+}
 
 const styles = ({ isInverse }: { isInverse: boolean }) =>
   StyleSheet.create({
@@ -138,5 +109,3 @@ const styles = ({ isInverse }: { isInverse: boolean }) =>
       fontSize: 12,
     },
   });
-
-export default ItemRow;

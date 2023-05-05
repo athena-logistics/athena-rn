@@ -1,7 +1,8 @@
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { Ionicons } from '@expo/vector-icons';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
   ActivityIndicator,
   Dimensions,
@@ -11,361 +12,242 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
-import { useDispatch, useSelector } from 'react-redux';
-import { DO_RELOCATE, DO_SUPPLY } from '../apollo/mutations';
 import {
   DoRelocateMutation,
   DoRelocateMutationVariables,
   DoSupplyMutation,
   DoSupplyMutationVariables,
+  ItemFragment,
+  LocationFragment,
+  LogisticEventConfigurationFragment,
 } from '../apollo/schema';
-import {
-  useAllItemsQuery,
-  useLocationQuery,
-  useLocationStockQuery,
-} from '../apolloActions/useQueries';
-import { useMovementSubscription } from '../apolloActions/useSubscriptions';
 import NativeNumberOnlyInput from '../components/native/NativeNumberOnlyInput';
 import NativePicker from '../components/native/NativePicker';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
-import isAndroid from '../constants/isAndroid';
-import { getNodes } from '../helpers/apollo';
-import { getGroupedData } from '../helpers/getGroupedData';
-import i18n from '../helpers/i18n';
+import getMutationResult, {
+  MutationFailedMessageError,
+  getNodes,
+} from '../helpers/apollo';
 import { Orientation, useOrientation } from '../hooks/useOrientation';
-import { StockItem } from '../models/StockItem';
-import { RootState } from '../store';
-import { setLocations } from '../store/actions/global.actions';
-import { RootParamsList } from '../components/Navigation';
-import { Location } from '../models/Location';
+import {
+  ItemState,
+  MoveActionType,
+  defaultItem,
+  useItemStore,
+} from './Move/store';
 
-export interface ItemState {
-  stock: string;
-  item: string;
-}
+export default function Move({
+  event,
+  from: initialFrom,
+  to: initialTo,
+  items: initialItems,
+}: {
+  event: LogisticEventConfigurationFragment;
+  from?: LocationFragment;
+  to?: LocationFragment;
+  items?: ItemState[];
+}) {
+  const intl = useIntl();
 
-interface MoveState {
-  stuff: ItemState[];
-}
-
-export enum MoveActionType {
-  Add,
-  Change,
-  Delete,
-  Initialize,
-}
-
-export type AddStuffAction = {
-  type: MoveActionType.Add;
-};
-
-export type ChangeStuffAction = {
-  type: MoveActionType.Change;
-  payload: {
-    item: ItemState;
-    index: number;
-  };
-};
-
-export type DeleteStuffAction = {
-  type: MoveActionType.Delete;
-  payload: {
-    index: number;
-  };
-};
-export type InitializeAction = {
-  type: MoveActionType.Initialize;
-};
-
-export type MoveAction =
-  | AddStuffAction
-  | ChangeStuffAction
-  | DeleteStuffAction
-  | InitializeAction;
-
-export const defaultItem = { item: '', stock: '1' };
-
-export const moveReducer = (
-  state: MoveState,
-  action: MoveAction
-): MoveState => {
-  switch (action.type) {
-    case MoveActionType.Add:
-      return {
-        ...state,
-        stuff: state.stuff.concat(defaultItem),
-      };
-
-    case MoveActionType.Change:
-      // eslint-disable-next-line no-case-declarations
-      const stuffs1 = [...state.stuff];
-      stuffs1.splice(action.payload.index, 1, action.payload.item);
-      return {
-        ...state,
-        stuff: stuffs1,
-      };
-    case MoveActionType.Delete:
-      // eslint-disable-next-line no-case-declarations
-      const stuffs2 = [...state.stuff];
-      stuffs2.splice(action.payload.index, 1);
-      return {
-        ...state,
-        stuff: stuffs2,
-      };
-    case MoveActionType.Initialize:
-      return {
-        ...state,
-        stuff: [defaultItem],
-      };
-
-    default:
-      return state;
-  }
-};
-
-export interface ItemGroup {
-  id: string;
-  name: string;
-}
-
-const Move = () => {
-  const emptyLocation = {
-    name: i18n.t('initialSupply'),
+  const initialSupplyLocation = {
     id: '-1',
-    children: [{ name: i18n.t('initialSupply'), id: '-1' }],
+    name: intl.formatMessage({
+      id: 'location.initialSupply',
+      defaultMessage: 'Initial Supply',
+    }),
   };
+  const locations = getNodes(event.locations);
 
-  const reduxDispatch = useDispatch();
   const { isPortrait, isLandscape } = useOrientation();
   const isLargeScreen = Dimensions.get('screen').width > 800;
-
   const style = styles({ isPortrait, isLandscape, isLargeScreen });
-  const [from, setFrom] = useState<string>('');
-  const [to, setTo] = useState<string>('');
 
-  const [moveState, dispatch] = useReducer(moveReducer, {
-    stuff: [defaultItem],
+  const [from, setFrom] = useState<LocationFragment>(
+    initialFrom ?? initialSupplyLocation
+  );
+  const [to, setTo] = useState<LocationFragment | null>(initialTo ?? null);
+
+  const allItems = getNodes(event.items);
+  const availableItems =
+    from.id === '-1'
+      ? allItems
+      : allItems.filter((item) => {
+          return getNodes(event.stock).some(
+            (stock) =>
+              stock.item.id === item.id && stock.location.id === from.id
+          );
+        });
+
+  const maxAvailablePerItem = Object.fromEntries(
+    allItems.map((item) => {
+      const stock = getNodes(event.stock).find(
+        (stock) => stock.item.id === item.id && stock.location.id === from.id
+      );
+      return [item.id, stock?.stock ?? (from.id === '-1' ? 1000 : 0)];
+    })
+  );
+
+  const groupedAvailableItems = Object.entries(
+    availableItems
+      .map((item) => ({ ...item, name: `${item.name} (${item.unit})` }))
+      .reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.itemGroup.id]: [...(acc[item.itemGroup.id] ?? []), item],
+        }),
+        {} as Record<string, ItemFragment[]>
+      )
+  ).map(([itemGroupId, items]) => {
+    const itemGroup = getNodes(event.itemGroups).find(
+      (itemGroup) => itemGroup.id === itemGroupId
+    );
+
+    return {
+      ...itemGroup,
+      children: items,
+    };
   });
 
-  const eventId = useSelector((state: RootState) => state.global.eventId);
-  const locations = useSelector((state: RootState) => state.global.locations);
-  const locationStock = useSelector(
-    (state: RootState) => state.global.locationStock[from]
-  );
+  const [moveState, dispatch] = useItemStore({
+    stuff: initialItems ?? [{ ...defaultItem }],
+  });
+
+  function handleMutationError(error: unknown) {
+    if (error instanceof MutationFailedMessageError) {
+      return Toast.show({
+        type: 'error',
+        text1: intl.formatMessage({
+          id: 'error.unknown.title',
+          defaultMessage: 'Oh No!',
+        }),
+        text2:
+          error.mutationMessage.field + ' ' + error.mutationMessage.message,
+      });
+    }
+
+    console.error(error);
+
+    return Toast.show({
+      type: 'error',
+      text1: intl.formatMessage({
+        id: 'error.unknown.title',
+        defaultMessage: 'Oh No!',
+      }),
+      text2: intl.formatMessage({
+        id: 'error.unknown.description',
+        defaultMessage: 'Something went wrong.',
+      }),
+    });
+  }
 
   const [createSupplyMutation, { loading: supplyLoading }] = useMutation<
     DoSupplyMutation,
     DoSupplyMutationVariables
   >(DO_SUPPLY, {
     onCompleted: (data) => {
-      if (
-        data.supply &&
-        data.supply.messages &&
-        data.supply.messages.length > 0
-      ) {
-        data.supply.messages.forEach((message) => {
-          if (!message) return;
-          Toast.show({
-            type: 'error',
-            text1: i18n.t('ohNo'),
-            text2: message.field + ' ' + message.message,
-          });
-        });
-      } else {
+      try {
+        if (!data?.supply) throw new Error('Not Found');
+        getMutationResult(data.supply);
         Toast.show({
-          text1: i18n.t('yay'),
-          text2: i18n.t('successfulSupply'),
+          text1: intl.formatMessage({
+            id: 'confirmation.unknown.title',
+            defaultMessage: 'Yay!',
+          }),
+          text2: intl.formatMessage({
+            id: 'move.success.supply',
+            defaultMessage: 'Successfuly supplied stuff.',
+          }),
         });
         dispatch({ type: MoveActionType.Initialize });
+      } catch (error) {
+        handleMutationError(error);
       }
     },
+    onError: handleMutationError,
+    errorPolicy: 'none',
   });
+
   const [createRelocateMutation, { loading: moveLoading }] = useMutation<
     DoRelocateMutation,
     DoRelocateMutationVariables
   >(DO_RELOCATE, {
     onCompleted: (data) => {
-      if (
-        data.relocate &&
-        data.relocate.messages &&
-        data.relocate.messages.length > 0
-      ) {
-        data.relocate.messages.forEach((message) => {
-          if (!message) return;
-          Toast.show({
-            type: 'error',
-            text1: i18n.t('ohNo'),
-            text2: message.field + ' ' + message.message,
-          });
-        });
-      } else {
+      try {
+        if (!data?.relocate) throw new Error('Not Found');
+        getMutationResult(data.relocate);
         Toast.show({
-          text1: i18n.t('yay'),
-          text2: i18n.t('successfulMove'),
+          text1: intl.formatMessage({
+            id: 'confirmation.unknown.title',
+            defaultMessage: 'Yay!',
+          }),
+          text2: intl.formatMessage({
+            id: 'move.success.move',
+            defaultMessage: 'Successfuly moved stuff.',
+          }),
         });
         dispatch({ type: MoveActionType.Initialize });
+      } catch (error) {
+        handleMutationError(error);
       }
     },
-  });
-
-  useMovementSubscription({
-    locationId: from,
-    onData: () => fetchLocationStock(),
+    onError: handleMutationError,
+    errorPolicy: 'none',
   });
 
   const navigation = useNavigation();
-  const { data, loading, error } = useLocationQuery(eventId);
-  const [fetchLocationStock] = useLocationStockQuery(from);
-
-  useEffect(() => {
-    fetchAllItems();
-    fetchLocationStock();
-  }, []);
-
-  useEffect(() => {
-    if (!error && !loading) {
-      if (data && data.event?.__typename === 'Event') {
-        const locations = [
-          {
-            name: i18n.t('locations'),
-            id: '0',
-            children: getNodes(data.event.locations).map((location) => ({
-              name: location.name,
-              id: location.id,
-            })),
-          },
-        ];
-        reduxDispatch(setLocations(locations));
-      }
-    }
-  }, [data, error, loading]);
-
-  const [fetchAllItems] = useAllItemsQuery(eventId);
-  const allItems = useSelector((state: RootState) => state.global.allItems);
-  let availableItems = getGroupedData(allItems);
-  let availableItemsWithUnit = availableItems.map((group) => ({
-    ...group,
-    children: group.children.map((item) => ({
-      ...item,
-      name: `${item.name} (${item.unit})`,
-    })),
-  }));
-
-  type GroupedItemType = Omit<
-    (typeof availableItemsWithUnit)[number],
-    'children'
-  > & {
-    children?: (typeof availableItemsWithUnit)[number]['children'];
-    stock?: number;
-  };
-
-  let itemById: Record<string, GroupedItemType> = Object.fromEntries(
-    availableItemsWithUnit.map((item) => [item.id, item])
-  );
-
-  const locationsById: { [key: string]: Location } = {};
-  locations.forEach((item) => {
-    item.children &&
-      item.children.forEach((location) => {
-        locationsById[location.id] = location;
-      });
-    locationsById['-1'] = emptyLocation;
-  });
-
-  if (locationStock) {
-    itemById = locationStock.itemById;
-    availableItems = getGroupedData(
-      Object.values(locationStock.itemById).filter((item) => item.stock > 0)
-    );
-    availableItemsWithUnit = availableItems.map((group) => ({
-      ...group,
-      children: group.children.map((item) => ({
-        ...item,
-        name: `${item.name} (${item.unit}) [${item.stock}]`,
-      })),
-    }));
-  }
-
-  const route = useRoute<RouteProp<RootParamsList, 'Move'>>();
-  const moveItems = route.params?.items;
-  const moveTo = route.params?.to;
-
-  useEffect(() => {
-    // coming from missing items screen
-    if (moveItems && moveTo && locations) {
-      setTo(moveTo);
-      dispatch({ type: MoveActionType.Initialize });
-      moveItems.forEach((item: StockItem, index: number) => {
-        dispatch({
-          type: MoveActionType.Change,
-          payload: {
-            index: index,
-            item: { stock: item.missingCount.toString(), item: item.id },
-          },
-        });
-      });
-    }
-  }, [moveItems, moveTo, locations]);
 
   const save = useCallback(() => {
+    if (!to) {
+      return Toast.show({
+        type: 'error',
+        text1: intl.formatMessage({
+          id: 'error.unknown.title',
+          defaultMessage: 'Oh No!',
+        }),
+        text2: intl.formatMessage({
+          id: 'error.destinationLocationRequired.description',
+          defaultMessage: 'Please select destination location',
+        }),
+      });
+    }
+
+    if (from.id == to.id) {
+      return Toast.show({
+        type: 'error',
+        text1: intl.formatMessage({
+          id: 'error.unknown.title',
+          defaultMessage: 'Oh No!',
+        }),
+        text2: intl.formatMessage({
+          id: 'error.sourceAndDestinationEqual.description',
+          defaultMessage: 'Source and destination cannot be the same',
+        }),
+      });
+    }
+
     Promise.all(
       moveState.stuff.map(async (stuff) => {
-        const amount = Number(stuff.stock);
-        const sourceLocationId = from;
-        const destinationLocationId = to;
-        const itemId = stuff.item;
-        if (!amount) {
-          return Toast.show({
-            type: 'error',
-            text2: 'Please select amount',
-          });
-        }
-        if (!from) {
-          return Toast.show({
-            type: 'error',
-            text2: 'Please select source location',
-          });
-        }
-        if (!to) {
-          return Toast.show({
-            type: 'error',
-            text2: 'Please select destination location',
-          });
-        }
-        if (!stuff.item) {
-          return Toast.show({
-            type: 'error',
-            text2: 'Please select an item',
+        if (!stuff.item) return;
+
+        if (from.id == '-1') {
+          return await createSupplyMutation({
+            variables: {
+              amount: stuff.amount,
+              locationId: to.id,
+              itemId: stuff.item.id,
+            },
           });
         }
 
-        if (amount && sourceLocationId && destinationLocationId && itemId) {
-          if (sourceLocationId == '-1') {
-            const variables: DoSupplyMutationVariables = {
-              amount,
-              locationId: destinationLocationId,
-              itemId,
-            };
-            await createSupplyMutation({ variables });
-          } else {
-            if (sourceLocationId == destinationLocationId) {
-              return Toast.show({
-                type: 'error',
-                text1: i18n.t('ohNo'),
-                text2: 'Source and destination cannot be the same',
-              });
-            }
-            const variables: DoRelocateMutationVariables = {
-              amount,
-              sourceLocationId,
-              destinationLocationId,
-              itemId,
-            };
-            await createRelocateMutation({ variables });
-          }
-        }
+        const variables: DoRelocateMutationVariables = {
+          amount: stuff.amount,
+          sourceLocationId: from.id,
+          destinationLocationId: to.id,
+          itemId: stuff.item.id,
+        };
+        await createRelocateMutation({ variables });
       })
     );
   }, [moveState, from, to]);
@@ -377,34 +259,19 @@ const Move = () => {
           {(moveLoading || supplyLoading) && (
             <ActivityIndicator
               size={'small'}
-              color={isAndroid ? colors.white : colors.primary}
-              style={{
-                paddingRight: 20,
-              }}
+              color={colors.white}
+              style={{ paddingRight: 20 }}
             />
           )}
           {!moveLoading && !supplyLoading && (
-            <NativeText
-              style={{
-                paddingRight: 20,
-                color: isAndroid ? colors.white : colors.primary,
-              }}
-            >
-              {i18n.t('save')}
+            <NativeText style={{ paddingRight: 20, color: colors.white }}>
+              <FormattedMessage id="save" defaultMessage="Save" />
             </NativeText>
           )}
         </Pressable>
       ),
     });
   }, [navigation, save, moveLoading, supplyLoading]);
-
-  const handleSetTo = (value: string) => {
-    setTo(value);
-  };
-
-  const handleSetFrom = (value: string) => {
-    setFrom(value);
-  };
 
   const handleDelete = (index: number) => () => {
     dispatch({
@@ -413,41 +280,73 @@ const Move = () => {
     });
   };
 
-  const setStuffItem = (stuff: ItemState, index: number) => (item: string) => {
+  const setStuffItem = (
+    stuff: ItemState,
+    index: number,
+    item: ItemFragment | null
+  ) => {
     dispatch({
       type: MoveActionType.Change,
-      payload: { item: { ...stuff, item }, index },
+      payload: { ...stuff, item, index },
     });
     if (index === moveState.stuff.length - 1) {
       dispatch({ type: MoveActionType.Add });
     }
   };
 
-  const setStuffStock =
-    (stuff: ItemState, index: number) => (stock: string) => {
+  const setItemAmount =
+    (stuff: ItemState, index: number) => (amount: number) => {
       dispatch({
         type: MoveActionType.Change,
-        payload: { item: { ...stuff, stock }, index },
+        payload: { ...stuff, amount, index },
       });
       if (index === moveState.stuff.length - 1) {
         dispatch({ type: MoveActionType.Add });
       }
     };
 
-  const fromLocations = [emptyLocation, ...locations];
-
   return (
     <ScrollView style={{ flex: 1 }}>
       <NativeScreen style={style.screen}>
         <View style={style.fromToContainer}>
-          <NativePicker
-            items={fromLocations}
-            selectedValue={from}
-            setSelectedValue={handleSetFrom}
-            placeholderText={i18n.t('from')}
-            width="100%"
-            itemById={locationsById}
-          />
+          <View style={{ width: '100%', flex: 1 }}>
+            <NativePicker
+              items={[
+                {
+                  id: 'initialSupply',
+                  name: intl.formatMessage({
+                    id: 'location.initialSupply',
+                    defaultMessage: 'Initial Supply',
+                  }),
+                  children: [initialSupplyLocation],
+                },
+                {
+                  id: 'locations',
+                  name: intl.formatMessage({
+                    id: 'model.location',
+                    defaultMessage: 'Location',
+                  }),
+                  children: locations,
+                },
+              ]}
+              subKey="children"
+              selectedItems={[from.id]}
+              onSelectedItemsChange={() => undefined}
+              onSelectedItemObjectsChange={([location]) =>
+                setFrom((location as LocationFragment) ?? initialSupplyLocation)
+              }
+              renderSelectText={({ selectText }) => {
+                return <NativeText>{from?.name ?? selectText}</NativeText>;
+              }}
+              placeholder={intl.formatMessage({
+                id: 'move.location.from',
+                defaultMessage: 'From',
+              })}
+              readOnlyHeadings={true}
+              single={true}
+              uniqueKey="id"
+            />
+          </View>
           <Ionicons
             size={33}
             name={
@@ -458,14 +357,25 @@ const Move = () => {
             style={style.arrowDown}
             color={colors.primary}
           />
-          <NativePicker
-            items={locations}
-            selectedValue={to}
-            setSelectedValue={handleSetTo}
-            placeholderText={i18n.t('to')}
-            width="100%"
-            itemById={locationsById}
-          />
+          <View style={{ width: '100%', flex: 1 }}>
+            <NativePicker
+              items={locations}
+              selectedItems={[to?.id]}
+              onSelectedItemsChange={() => undefined}
+              onSelectedItemObjectsChange={([location]) =>
+                setTo(location as LocationFragment)
+              }
+              renderSelectText={({ selectText }) => {
+                return <NativeText>{to?.name ?? selectText}</NativeText>;
+              }}
+              placeholder={intl.formatMessage({
+                id: 'move.location.to',
+                defaultMessage: 'To',
+              })}
+              single={true}
+              uniqueKey="id"
+            />
+          </View>
         </View>
         {moveState.stuff.map((stuff, index) => (
           <View key={index} style={style.itemContainer}>
@@ -476,17 +386,30 @@ const Move = () => {
               ]}
               key={index}
             >
-              <NativePicker
-                items={availableItemsWithUnit}
-                selectedValue={stuff.item}
-                setSelectedValue={setStuffItem(stuff, index)}
-                placeholderText={i18n.t('select')}
-                alreadySelectedItems={moveState.stuff.map(
-                  (stuff) => stuff.item
-                )}
-                itemById={itemById}
-              />
-              {!!stuff.item && (
+              <View style={{ width: '100%', flex: 1 }}>
+                <NativePicker
+                  items={groupedAvailableItems}
+                  subKey="children"
+                  selectedItems={[stuff.item?.id]}
+                  onSelectedItemsChange={() => undefined}
+                  onSelectedItemObjectsChange={([item]) =>
+                    setStuffItem(stuff, index, item as ItemFragment)
+                  }
+                  renderSelectText={({ selectText }) => {
+                    return (
+                      <NativeText>{stuff?.item?.name ?? selectText}</NativeText>
+                    );
+                  }}
+                  placeholder={intl.formatMessage({
+                    id: 'model.item',
+                    defaultMessage: 'Item',
+                  })}
+                  readOnlyHeadings={true}
+                  single={true}
+                  uniqueKey="id"
+                />
+              </View>
+              {!!stuff.item && index > 0 && (
                 <Ionicons
                   size={25}
                   name={'ios-trash'}
@@ -499,9 +422,10 @@ const Move = () => {
             {!!stuff.item && (
               <View style={style.actionContainer}>
                 <NativeNumberOnlyInput
-                  value={stuff.stock}
-                  onChangeText={setStuffStock(stuff, index)}
-                  max={itemById[stuff.item]?.stock}
+                  value={stuff.amount}
+                  onChange={setItemAmount(stuff, index)}
+                  minValue={0}
+                  maxValue={maxAvailablePerItem[stuff.item.id]}
                 />
               </View>
             )}
@@ -510,7 +434,7 @@ const Move = () => {
       </NativeScreen>
     </ScrollView>
   );
-};
+}
 
 const styles = ({ isLargeScreen }: Orientation) =>
   StyleSheet.create({
@@ -557,4 +481,48 @@ const styles = ({ isLargeScreen }: Orientation) =>
     },
   });
 
-export default Move;
+export const DO_RELOCATE = gql`
+  mutation DoRelocate(
+    $amount: Int!
+    $itemId: ID!
+    $sourceLocationId: ID!
+    $destinationLocationId: ID!
+  ) {
+    relocate(
+      input: {
+        amount: $amount
+        itemId: $itemId
+        sourceLocationId: $sourceLocationId
+        destinationLocationId: $destinationLocationId
+      }
+    ) {
+      messages {
+        code
+        field
+        message
+      }
+      successful
+      result {
+        id
+      }
+    }
+  }
+`;
+
+export const DO_SUPPLY = gql`
+  mutation DoSupply($amount: Int!, $itemId: ID!, $locationId: ID!) {
+    supply(
+      input: { amount: $amount, itemId: $itemId, locationId: $locationId }
+    ) {
+      messages {
+        code
+        field
+        message
+      }
+      successful
+      result {
+        id
+      }
+    }
+  }
+`;

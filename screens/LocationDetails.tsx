@@ -1,142 +1,82 @@
-import { useMutation } from '@apollo/client';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
-import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
-import { DO_CONSUME } from '../apollo/mutations';
 import {
-  DoConsumeMutation,
-  DoConsumeMutationVariables,
+  EventConfigurationFragment,
+  ItemFragment,
+  LocationFragment,
+  StockEntriesFragment,
+  StockFragment,
 } from '../apollo/schema';
-import {
-  useInternalLocationId,
-  useLocationStockQuery,
-} from '../apolloActions/useQueries';
-import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import ItemRow from '../components/ItemRow';
-import { OverviewStackParamsList } from '../components/Navigation';
+import ItemRow, { Variant } from '../components/ItemRow';
+import { LogisticsParamsList } from '../components/LogisticNavigation';
 import NativeScreen from '../components/native/NativeScreen';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
-import isAndroid from '../constants/isAndroid';
-import { getGroupedData } from '../helpers/getGroupedData';
-import { PermissionEnum } from '../models/PermissionEnum';
-import { StockItem } from '../models/StockItem';
-import { RootState } from '../store';
+import { getNodes } from '../helpers/apollo';
 
-const LocationDetails = () => {
-  const route =
-    useRoute<RouteProp<OverviewStackParamsList, 'Location Details'>>();
+export default function LocationDetails({
+  location,
+  refetch,
+  stateReloading,
+  event: { items: itemsConnection, itemGroups: itemGroupConnection },
+  stockEntriesConnection,
+  enableLogisticsLinks = false,
+}: {
+  location: LocationFragment;
+  event: EventConfigurationFragment;
+  stockEntriesConnection?: StockEntriesFragment | null;
+  stateReloading: boolean;
+  refetch: () => void;
+  enableLogisticsLinks?: boolean;
+}) {
+  const itemGroups = getNodes(itemGroupConnection);
+  const items = getNodes(itemsConnection);
+  const stockEntries = getNodes(stockEntriesConnection);
 
-  const location = route.params?.location;
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
 
-  const externalLocationId = route.params?.externalLocationId;
-
-  const locationPermissionOnly =
-    useSelector((state: RootState) => state.global.currentPermission) ===
-    PermissionEnum.LocationUser;
-  const eventName = useSelector((state: RootState) => state.global.eventName);
-
-  const { data } = useInternalLocationId(externalLocationId ?? '');
-  const internalLocationId = data?.location?.id;
-  const locationName = data?.location?.name;
-  const currentLocationId = internalLocationId ?? location?.id;
-
-  if (!currentLocationId) throw new Error('Location not found');
-
-  const [fetch, { loading }] = useLocationStockQuery(currentLocationId);
-
-  const fetchTimer = useRef<NodeJS.Timeout>();
-  useMovementSubscription({
-    onData: () => {
-      if (fetchTimer.current) {
-        clearTimeout(fetchTimer.current);
-      }
-      fetchTimer.current = setTimeout(fetch, 1000);
-    },
-  });
-
-  useEffect(() => {
-    fetch();
-  }, [internalLocationId]);
-
-  const navigation = useNavigation();
-  React.useLayoutEffect(() => {
-    if (locationPermissionOnly) {
-      navigation.setOptions({
-        headerBackVisible: false,
-      });
-    }
-
-    if (eventName && locationPermissionOnly) {
-      navigation.setOptions({
-        title: `${locationName}`,
-        headerRight: () => (
-          <NativeText
-            style={{ color: isAndroid ? colors.white : colors.primary }}
-          >
-            {eventName}
-          </NativeText>
-        ),
-      });
-    }
-  }, [navigation, locationName, eventName, locationPermissionOnly]);
-
-  const locationData = useSelector(
-    (state: RootState) => state.global.locationStock[currentLocationId]
-  );
-  let itemList: StockItem[] = [];
-  if (locationData) {
-    const items: StockItem[] = Object.values(locationData.itemById);
-    itemList = items.sort((row1, row2) => row1.stock - row2.stock);
-  }
-  const [createConsumeMutation] = useMutation<
-    DoConsumeMutation,
-    DoConsumeMutationVariables
-  >(DO_CONSUME, {
-    onError: (error) => {
-      console.log('error', error);
-      fetch();
-    },
-    onCompleted: (data) => {
-      if (
-        data.consume &&
-        data.consume.messages &&
-        data.consume.messages.length > 0
-      ) {
-        data.consume.messages.forEach((message) => {
-          if (!message) return;
-          console.log('error', message.field + ' ' + message.message);
-          Toast.show({
-            type: 'error',
-            text1: 'error',
-            text2: message.field + ' ' + message.message,
-          });
-        });
-        // refetch after an error
-        fetch();
-      }
-    },
-  });
+  const handlePress = (stock: StockFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'stock-item',
+      params: { stock },
+    });
+  };
 
   return (
     <NativeScreen style={styles.screen}>
       <SectionList
-        sections={getGroupedData(itemList).map((x) => ({
-          id: x.id,
-          name: x.name,
-          data: x.children,
+        sections={itemGroups.map((itemGroup) => ({
+          id: itemGroup.id,
+          name: itemGroup.name,
+          data: items
+            .filter((item) => item.itemGroup.id === itemGroup.id)
+            .map((item) => ({
+              item,
+              stockEntry: stockEntries.find(
+                (stockEntries) =>
+                  stockEntries.item.id === item.id &&
+                  stockEntries.location.id === location.id
+              ),
+            }))
+            .filter(function (row): row is {
+              item: ItemFragment;
+              stockEntry: StockFragment;
+            } {
+              return !!row.stockEntry;
+            }),
         }))}
-        refreshing={loading}
-        onRefresh={fetch}
-        keyExtractor={(item) => item.id + item.locationId}
-        renderItem={({ item }) => (
+        refreshing={stateReloading}
+        onRefresh={refetch}
+        keyExtractor={(row) => row.item.id}
+        renderItem={({ item: { item, stockEntry } }) => (
           <ItemRow
-            row={item as StockItem}
-            loading={loading}
-            createConsumeMutation={createConsumeMutation}
-            variant={'nameAndUnit'}
+            item={item}
+            stockEntry={stockEntry}
+            variant={Variant.NameAndUnit}
+            handlePress={
+              enableLogisticsLinks ? handlePress(stockEntry) : () => null
+            }
           />
         )}
         renderSectionHeader={({ section: { name, id } }) => (
@@ -147,7 +87,7 @@ const LocationDetails = () => {
       />
     </NativeScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   screen: { alignItems: 'stretch' },
@@ -165,5 +105,3 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
 });
-
-export default LocationDetails;

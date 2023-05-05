@@ -1,175 +1,143 @@
-import { useMutation } from '@apollo/client';
 import { Octicons } from '@expo/vector-icons';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import i18n from '../helpers/i18n';
 import React from 'react';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import { StyleSheet, View } from 'react-native';
-import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
-import { DO_CONSUME } from '../apollo/mutations';
+import { ScrollView } from 'react-native-gesture-handler';
 import {
-  DoConsumeMutation,
-  DoConsumeMutationVariables,
+  LogisticEventConfigurationFragment,
   StockEntryStatus,
+  StockFragment,
 } from '../apollo/schema';
-import { useAllStockQuery } from '../apolloActions/useQueries';
-import NativeNumberConsumptionInput from '../components/native/NativeNumberConsumptionInput';
-import NativeScreen from '../components/native/NativeScreen';
+import LiveStockEntry from '../components/LiveStockEntry';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { RootState } from '../store';
-import { RootParamsList } from '../components/Navigation';
+import { getNodes } from '../helpers/apollo';
 
-const StockItemDetails = () => {
-  const route = useRoute<RouteProp<RootParamsList, 'Stock Item Details'>>();
-  const item = route.params?.stockItem;
-  if (!item) {
-    return null;
-  }
-
-  const getStatusIcon = (): { iconColor: string } => {
-    switch (item.status as StockEntryStatus) {
-      case StockEntryStatus.Normal:
-        return { iconColor: colors.green };
-      case StockEntryStatus.Important:
-        return { iconColor: colors.red };
-      case StockEntryStatus.Warning:
-      default:
-        return { iconColor: colors.orange };
-    }
-  };
-
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  let eventId: string;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
-
-  const { iconColor } = getStatusIcon();
-  const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
-
-  const [createConsumeMutation] = useMutation<
-    DoConsumeMutation,
-    DoConsumeMutationVariables
-  >(DO_CONSUME, {
-    onError: (error) => {
-      console.log('error', error);
-    },
-    onCompleted: (data) => {
-      if (
-        data.consume &&
-        data.consume.messages &&
-        data.consume.messages.length > 0
-      ) {
-        data.consume.messages.forEach((message) => {
-          if (!message) return;
-          if (message.__typename === 'ValidationMessage') {
-            console.log('error', message.field + ' ' + message.message);
-            Toast.show({
-              type: 'error',
-              text1: 'error',
-              text2: message.field + ' ' + message.message,
-            });
-          }
-        });
-        // refetch after an error
-        fetchStock();
-      }
-    },
-  });
-  const consume = async (newValue?: string, change?: number) => {
-    const amount = change ? -change : Number(item.stock) - Number(newValue);
-    const locationId = item.locationId;
-    const itemId = item.id;
-    if (!Number.isNaN(amount) && locationId && itemId) {
-      const variables: DoConsumeMutationVariables = {
-        amount,
-        locationId,
-        itemId,
-      };
-      await createConsumeMutation({ variables });
-    }
-  };
+export default function StockItemDetails({
+  stockEntry,
+  event,
+}: {
+  stockEntry: StockFragment;
+  event: LogisticEventConfigurationFragment;
+}) {
+  const item = getNodes(event.items).find(
+    (item) => item.id === stockEntry.item.id
+  );
+  if (!item) throw new Error('Inconsistent State');
+  const itemGroup = getNodes(event.itemGroups).find(
+    (itemGroup) => itemGroup.id === item.itemGroup.id
+  );
+  if (!itemGroup) throw new Error('Inconsistent State');
+  const location = getNodes(event.locations).find(
+    (location) => location.id === stockEntry.location.id
+  );
+  if (!location) throw new Error('Inconsistent State');
 
   return (
-    <NativeScreen style={styles.screen}>
+    <ScrollView>
       <View style={styles.item}>
         <View style={styles.title}>
           <View style={styles.status}>
-            <Octicons name="dot-fill" size={30} color={iconColor} />
+            <Octicons
+              name="dot-fill"
+              size={30}
+              color={getIconColor(stockEntry.status)}
+            />
           </View>
           <View>
-            <NativeText style={styles.titleText}>
-              {item.locationName}
-            </NativeText>
+            <NativeText style={styles.titleText}>{location.name}</NativeText>
             <NativeText>{item.name}</NativeText>
           </View>
         </View>
         <View style={styles.leftContainer}>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.itemGroupName}</NativeText>
+            <NativeText style={styles.number}>{itemGroup.name}</NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('itemGroup')}
+              <FormattedMessage
+                id="model.itemGroup"
+                defaultMessage="Item Group"
+              />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.unit}</NativeText>
-            <NativeText style={styles.numberText}>{i18n.t('unit')}</NativeText>
-          </View>
-          <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.stock}</NativeText>
+            <NativeText style={styles.number}>{item.unit} </NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('inStock')}
+              <FormattedMessage id="model.item.unit" defaultMessage="Unit" />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.consumption}</NativeText>
+            <NativeText style={styles.number}>
+              <FormattedNumber value={stockEntry.stock} />
+            </NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('consumption')}
+              <FormattedMessage
+                id="model.stockEntry.stock"
+                defaultMessage="Stock"
+              />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.movementIn}</NativeText>
+            <NativeText style={styles.number}>
+              <FormattedNumber value={stockEntry.consumption} />
+            </NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('movementIn')}
+              <FormattedMessage
+                id="model.stockEntry.consumption"
+                defaultMessage="Consumption"
+              />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.movementOut}</NativeText>
+            <NativeText style={styles.number}>
+              <FormattedNumber value={stockEntry.movementIn} />
+            </NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('movementOut')}
+              <FormattedMessage
+                id="model.stockEntry.movementIn"
+                defaultMessage="Movement In"
+              />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.supply}</NativeText>
+            <NativeText style={styles.number}>
+              <FormattedNumber value={stockEntry.movementOut} />
+            </NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('supply')}
+              <FormattedMessage
+                id="model.stockEntry.movementOut"
+                defaultMessage="Movement Out"
+              />
             </NativeText>
           </View>
           <View style={styles.numberContainer}>
-            <NativeText style={styles.number}>{item.missingCount}</NativeText>
+            <NativeText style={styles.number}>{stockEntry.supply}</NativeText>
             <NativeText style={styles.numberText}>
-              {i18n.t('missing')}
+              <FormattedMessage
+                id="model.stockEntry.supply"
+                defaultMessage="Supply"
+              />
+            </NativeText>
+          </View>
+          <View style={styles.numberContainer}>
+            <NativeText style={styles.number}>
+              <FormattedNumber value={stockEntry.missingCount} />
+            </NativeText>
+            <NativeText style={styles.numberText}>
+              <FormattedMessage
+                id="model.stockEntry.missingCount"
+                defaultMessage="Missing"
+              />
             </NativeText>
           </View>
         </View>
         <View style={styles.bottomContainer}>
-          <NativeNumberConsumptionInput
-            value={item.stock + ''}
-            max={item.inverse ? 0 : item.stock + item.missingCount}
-            onChangeText={consume}
-            loading={loadingStock}
-            editable={true}
-            style={styles.numberInputStyle}
-          />
+          <LiveStockEntry stockEntry={stockEntry} />
         </View>
       </View>
-    </NativeScreen>
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   screen: { alignItems: 'stretch', justifyContent: 'flex-start' },
@@ -219,4 +187,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StockItemDetails;
+function getIconColor(status: StockEntryStatus): string {
+  switch (status) {
+    case StockEntryStatus.Normal:
+      return colors.green;
+    case StockEntryStatus.Important:
+      return colors.red;
+    case StockEntryStatus.Warning:
+    default:
+      return colors.orange;
+  }
+}

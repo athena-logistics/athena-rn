@@ -12,15 +12,31 @@ import {
 } from 'expo-updates';
 import React, { useEffect } from 'react';
 import { Alert, LogBox } from 'react-native';
-import { Provider } from 'react-redux';
-import AppContent from './AppContent';
-import store from './store';
+import Toast from 'react-native-toast-message';
+import AuthorizationNavigation from './components/AuthorizationNavigation';
+import { locale, getLocales } from 'expo-localization';
+import { IntlProvider } from 'react-intl';
+import en from './compiled-lang/en.json';
+import de from './compiled-lang/de.json';
 
 if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
 }
 
-const App = () => {
+const allTranslations: Record<string, unknown> = { en, de };
+
+const matchedLanguageTag: keyof typeof allTranslations | undefined =
+  getLocales()
+    .map((locale) => locale.languageTag)
+    .find((tag) => tag in allTranslations);
+const matchedLanguageCode: keyof typeof allTranslations | undefined =
+  getLocales()
+    .map((locale) => locale.languageCode)
+    .find((code) => code in allTranslations);
+const messages =
+  allTranslations[matchedLanguageTag ?? matchedLanguageCode ?? 'en'];
+
+export default function App() {
   const [fontsLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_700Bold,
@@ -64,7 +80,6 @@ const App = () => {
   useEffect(() => {
     const loadAsync = async () => {
       if (fontsLoaded) {
-        // await new Promise((resolve) => setTimeout(resolve, 2000));
         await SplashScreen.hideAsync();
       }
     };
@@ -76,10 +91,15 @@ const App = () => {
   }
 
   return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
+    <>
+      <IntlProvider
+        locale={locale}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        messages={messages as any}
+      >
+        <AuthorizationNavigation />
+        <Toast />
+      </IntlProvider>
+    </>
   );
-};
-
-export default App;
+}

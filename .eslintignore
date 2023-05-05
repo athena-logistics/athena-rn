@@ -2,3 +2,5 @@
 /node_modules/
 /apollo/schema.ts
 /dist/
+/compiled-lang/
+/web-build/

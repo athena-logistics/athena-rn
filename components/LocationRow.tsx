@@ -2,28 +2,45 @@ import { Entypo } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { StockEntryStatus } from '../apollo/schema';
+import {
+  LocationFragment,
+  LogisticEventConfigurationFragment,
+  StockEntryStatus,
+} from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { LogisticLocation } from '../models/LogisticLocation';
+import { getNodes } from '../helpers/apollo';
+import { LogisticsParamsList } from './LogisticNavigation';
 import NativeText from './native/NativeText';
-import { OverviewStackParamsList } from './Navigation';
 
-const LocationRow = ({ row }: { row: LogisticLocation }) => {
+export default function LocationRow({
+  location,
+  event,
+}: {
+  location: LocationFragment;
+  event: LogisticEventConfigurationFragment;
+}) {
+  const locationStock = getNodes(event.stock).filter(
+    (stock) => stock.location.id === location.id
+  );
+
   const getNumberOfItemsPerStatus = (status: StockEntryStatus) => {
-    return row.stockItems.filter((item) => item.status === status).length;
+    return locationStock.filter((stock) => stock.status === status).length;
   };
 
-  const navigation = useNavigation<NavigationProp<OverviewStackParamsList>>();
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
   const handlePress = () => {
-    navigation.navigate('Location Details', { location: row });
+    navigation.navigate('stack', {
+      screen: 'location',
+      params: { location },
+    });
   };
 
   return (
     <Pressable onPress={handlePress}>
       <View style={styles.row}>
         <View style={styles.title}>
-          <NativeText style={styles.titleText}>{row.name}</NativeText>
+          <NativeText style={styles.titleText}>{location.name}</NativeText>
         </View>
         <View style={styles.leftContainer}>
           <View style={styles.status}>
@@ -65,7 +82,7 @@ const LocationRow = ({ row }: { row: LogisticLocation }) => {
       </View>
     </Pressable>
   );
-};
+}
 
 const styles = StyleSheet.create({
   row: {
@@ -107,5 +124,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default LocationRow;

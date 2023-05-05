@@ -1,0 +1,134 @@
+{
+  "app.update.error.description": {
+    "defaultMessage": "An error occurred while checking for updates."
+  },
+  "app.update.error.title": {
+    "defaultMessage": "Update Error"
+  },
+  "app.updated.description": {
+    "defaultMessage": "The app has been updated to the latest version. The app will now restart."
+  },
+  "app.updated.title": {
+    "defaultMessage": "App has been successfully updated"
+  },
+  "app.uptodate.description": {
+    "defaultMessage": "You already have the latest version of the app."
+  },
+  "app.uptodate.title": {
+    "defaultMessage": "Up to date"
+  },
+  "confirmation.unknown.title": {
+    "defaultMessage": "Yay!"
+  },
+  "error.destinationLocationRequired.description": {
+    "defaultMessage": "Please select destination location"
+  },
+  "error.itemRequired.description": {
+    "defaultMessage": "Please select an item"
+  },
+  "error.sourceAndDestinationEqual.description": {
+    "defaultMessage": "Source and destination cannot be the same"
+  },
+  "error.unknown.description": {
+    "defaultMessage": "Something went wrong."
+  },
+  "error.unknown.title": {
+    "defaultMessage": "Oh No!"
+  },
+  "location.initialSupply": {
+    "defaultMessage": "Initial Supply"
+  },
+  "missingItem.nothingMissing": {
+    "defaultMessage": "Congratulations, nothing is missing."
+  },
+  "missingItem.outOf": {
+    "defaultMessage": "out of"
+  },
+  "missingItem.supplyAll": {
+    "defaultMessage": "Supply all"
+  },
+  "missingItem.total": {
+    "defaultMessage": "total"
+  },
+  "model.item": {
+    "defaultMessage": "Item"
+  },
+  "model.item.unit": {
+    "defaultMessage": "Unit"
+  },
+  "model.itemGroup": {
+    "defaultMessage": "Item Group"
+  },
+  "model.location": {
+    "defaultMessage": "Location"
+  },
+  "model.stockEntry.consumption": {
+    "defaultMessage": "Consumption"
+  },
+  "model.stockEntry.missingCount": {
+    "defaultMessage": "Missing"
+  },
+  "model.stockEntry.movementIn": {
+    "defaultMessage": "Movement In"
+  },
+  "model.stockEntry.movementOut": {
+    "defaultMessage": "Movement Out"
+  },
+  "model.stockEntry.stock": {
+    "defaultMessage": "Stock"
+  },
+  "model.stockEntry.supply": {
+    "defaultMessage": "Supply"
+  },
+  "move.location.from": {
+    "defaultMessage": "From"
+  },
+  "move.location.to": {
+    "defaultMessage": "To"
+  },
+  "move.success.move": {
+    "defaultMessage": "Successfuly moved stuff."
+  },
+  "move.success.supply": {
+    "defaultMessage": "Successfuly supplied stuff."
+  },
+  "ok": {
+    "defaultMessage": "OK"
+  },
+  "refresh": {
+    "defaultMessage": "Refresh"
+  },
+  "refreshing": {
+    "defaultMessage": "Refreshing..."
+  },
+  "save": {
+    "defaultMessage": "Save"
+  },
+  "screen.appInfo": {
+    "defaultMessage": "Info"
+  },
+  "screen.logout": {
+    "defaultMessage": "Logout"
+  },
+  "screen.map": {
+    "defaultMessage": "Map"
+  },
+  "screen.move": {
+    "defaultMessage": "Move"
+  },
+  "screen.overview": {
+    "defaultMessage": "Overview"
+  },
+  "screen.overview.item": {
+    "defaultMessage": "By Item"
+  },
+  "screen.overview.location": {
+    "defaultMessage": "By Location"
+  },
+  "screen.overview.missingItems": {
+    "defaultMessage": "Missing Items"
+  },
+  "screen.scanner": {
+    "defaultMessage": "Scanner"
+  }
+}
