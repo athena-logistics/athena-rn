@@ -1,20 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import {
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
   useWindowDimensions,
 } from 'react-native';
+import { Cell } from 'react-native-reanimated-table';
 import {
   ItemFragment,
+  ItemGroupFragment,
   LocationFragment,
   LogisticEventConfigurationFragment,
   StockFragment,
 } from '../apollo/schema';
+import DoubleStickyTable, {
+  DynamicCellType,
+} from '../components/DoubleStickyTable';
 import { LogisticsParamsList } from '../components/LogisticNavigation';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
@@ -39,10 +42,6 @@ export default function StockByStock({
   const items = getNodes(event.items);
   const stock = getNodes(event.stock);
 
-  const columnWidth = Math.max(width / (locations.length + 1), 50);
-
-  const style = styles(columnWidth);
-
   const handleLocationPress = (location: LocationFragment) => () => {
     navigation.navigate('stack', {
       screen: 'location',
@@ -64,178 +63,249 @@ export default function StockByStock({
     });
   };
 
-  return (
-    <ScrollView horizontal={true}>
-      <View style={style.container}>
-        <View style={style.row}>
-          <View style={style.header}>
-            <TouchableOpacity style={style.cornerCell} onPress={refetch}>
-              <Ionicons
-                size={19}
-                name={'ios-refresh-circle-outline'}
-                color={colors.primary}
-              />
+  const table = tableData(locations, itemGroups, items, stock);
+  const printableTable: DynamicCellType[][] = table.map((row) =>
+    row.map((cell) => {
+      switch (cell.type) {
+        case CellType.Refresh:
+          return {
+            style: styles.cornerCell,
+            data: (
+              <TouchableOpacity
+                onPress={refetch}
+                style={{ alignItems: 'center' }}
+              >
+                <Ionicons
+                  size={19}
+                  name={'ios-refresh-circle-outline'}
+                  color={colors.primary}
+                />
 
-              <NativeText style={{ fontSize: 10 }}>
-                {stateReloading ? (
-                  <FormattedMessage
-                    id="refreshing"
-                    defaultMessage="Refreshing..."
-                  />
-                ) : (
-                  <FormattedMessage id="refresh" defaultMessage="Refresh" />
-                )}
+                <NativeText style={{ fontSize: 10 }}>
+                  {stateReloading ? (
+                    <FormattedMessage
+                      id="refreshing"
+                      defaultMessage="Refreshing..."
+                    />
+                  ) : (
+                    <FormattedMessage id="refresh" defaultMessage="Refresh" />
+                  )}
+                </NativeText>
+              </TouchableOpacity>
+            ),
+          };
+        case CellType.Location:
+          return {
+            style: [styles.topCell],
+            data: (
+              <TouchableOpacity onPress={handleLocationPress(cell.location)}>
+                <NativeText
+                  style={styles.topCellText}
+                  ellipsizeMode="tail"
+                  numberOfLines={3}
+                >
+                  {cell.location.name}
+                </NativeText>
+              </TouchableOpacity>
+            ),
+          };
+        case CellType.ItemGroup:
+          return ({ transposed }) => ({
+            style: styles.topGroupCell,
+            data: (
+              <NativeText
+                style={styles.topGroupCellText}
+                ellipsizeMode="tail"
+                numberOfLines={transposed ? 5 : 3}
+              >
+                {cell.itemGroup.name}
               </NativeText>
-            </TouchableOpacity>
-          </View>
-          {locations.map((location) => (
-            <TouchableOpacity
-              style={style.topCell}
-              key={location.id}
-              onPress={handleLocationPress(location)}
-            >
-              <NativeText style={style.topCellText}>{location.name}</NativeText>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <ScrollView>
-          {itemGroups.map((itemGroup) => (
-            <Fragment key={itemGroup.id}>
-              <View style={style.row}>
-                <View style={style.topGroupCell}>
-                  <View key={itemGroup.id}>
-                    <NativeText style={style.topGroupCellText}>
-                      {itemGroup.name}
-                    </NativeText>
-                  </View>
-                </View>
-                {locations.map((d, index) => (
-                  <View style={style.groupCell} key={index}></View>
-                ))}
-              </View>
-              {items
-                .filter((item) => item.itemGroup.id === itemGroup.id)
-                .map((item) => (
-                  <View style={style.row} key={item.id}>
-                    <View style={style.header}>
-                      <TouchableOpacity onPress={handleItemPress(item)}>
-                        <NativeText style={style.titleText}>
-                          {item.name}
-                        </NativeText>
-                      </TouchableOpacity>
-                    </View>
-                    {locations.map((location) => {
-                      const stockAtLocation = stock.find(
-                        (stock) =>
-                          stock.item.id === item.id &&
-                          stock.location.id === location.id
-                      );
+            ),
+          });
+        case CellType.ItemGroupSpacer:
+          return { style: styles.groupCell, data: null };
+        case CellType.Item:
+          return ({ transposed }) => ({
+            style: [styles.topCell],
+            data: (
+              <TouchableOpacity onPress={handleItemPress(cell.item)}>
+                <NativeText
+                  style={styles.topCellText}
+                  ellipsizeMode="tail"
+                  numberOfLines={transposed ? 5 : 3}
+                >
+                  {cell.item.name} ({cell.item.unit})
+                </NativeText>
+              </TouchableOpacity>
+            ),
+          });
+        case CellType.Stock:
+          if (!cell.stock) {
+            return {
+              style: [styles.cell],
+              data: (
+                <NativeText style={styles.cellText}>
+                  <FormattedNumber value={0} />
+                </NativeText>
+              ),
+            };
+          }
 
-                      if (!stockAtLocation) {
-                        return (
-                          <View style={style.cell} key={item.id + location.id}>
-                            <NativeText style={[style.cellText]}>0</NativeText>
-                          </View>
-                        );
-                      }
+          return {
+            style: [styles.cell, styles[cell.stock.status]],
+            data: (
+              <TouchableOpacity onPress={handleStockItemPress(cell.stock)}>
+                <NativeText
+                  style={[styles.cellText, styles[`${cell.stock.status}text`]]}
+                >
+                  <FormattedNumber value={cell.stock.stock} />
+                </NativeText>
+              </TouchableOpacity>
+            ),
+          };
+      }
+    })
+  );
 
-                      return (
-                        <TouchableOpacity
-                          style={[style.cell, style[stockAtLocation.status]]}
-                          key={item.id + location.id}
-                          onPress={handleStockItemPress(stockAtLocation)}
-                        >
-                          <NativeText
-                            style={[
-                              style.cellText,
-                              style[`${stockAtLocation.status}text`],
-                            ]}
-                          >
-                            <FormattedNumber value={stockAtLocation?.stock} />
-                          </NativeText>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                ))}
-            </Fragment>
-          ))}
-        </ScrollView>
-      </View>
-    </ScrollView>
+  const horizontalColumnEquivalentCount = locations.length + 2;
+  const transposedHorizontalColumnEquivalentCount =
+    items.length + itemGroups.length + 1;
+
+  const columnWidth = Math.max(width / horizontalColumnEquivalentCount, 60);
+  const transposedColumnWidth = Math.max(
+    width / transposedHorizontalColumnEquivalentCount,
+    70
+  );
+
+  return (
+    <DoubleStickyTable
+      table={printableTable}
+      widthArr={[2 * columnWidth, ...Array(locations.length).fill(columnWidth)]}
+      transposedWidthArr={[
+        columnWidth,
+        ...Array(items.length + itemGroups.length).fill(transposedColumnWidth),
+      ]}
+      heightArr={[
+        50,
+        ...itemGroups.flatMap((itemGroup) => [
+          25,
+          ...items
+            .filter((item) => item.itemGroup.id === itemGroup.id)
+            .map(() => 50),
+        ]),
+      ]}
+      transposedHeightArr={[75, ...Array(locations.length).fill(50)]}
+      refreshing={stateReloading}
+      onRefresh={refetch}
+    />
   );
 }
 
-const styles = (columnWidth: number) =>
-  StyleSheet.create({
-    screen: { flexDirection: 'row' },
-    container: {
-      flexDirection: 'column',
-      marginLeft: 5,
-      alignItems: 'center',
-      justifyContent: 'center',
-      flex: 1,
-    },
+enum CellType {
+  Refresh,
+  Location,
+  ItemGroup,
+  ItemGroupSpacer,
+  Item,
+  Stock,
+}
 
-    row: {
-      flexDirection: 'row',
-      borderColor: colors.primary,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderStyle: 'solid',
-    },
-    cell: {
-      width: columnWidth,
-      minHeight: 50,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderColor: colors.primary,
-      borderLeftWidth: StyleSheet.hairlineWidth,
-      borderStyle: 'solid',
-    },
-    cellText: {
-      fontSize: 16,
-      fontFamily: fonts.defaultFontFamilyBold,
-    },
-    cornerCell: {
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    groupCell: {
-      backgroundColor: colors.primaryLight,
-      width: columnWidth,
-      minHeight: 25,
-    },
-    topGroupCell: {
-      minWidth: 80,
-      minHeight: 25,
-      padding: 5,
-      backgroundColor: colors.primaryLight,
-    },
-    topGroupCellText: {
-      fontSize: 12,
-      color: colors.white,
-    },
-    topCell: {
-      width: columnWidth,
-      minHeight: 60,
-      padding: 5,
-      borderColor: colors.primary,
-      borderLeftWidth: StyleSheet.hairlineWidth,
-      borderStyle: 'solid',
-    },
-    topCellText: { fontSize: 12 },
-    header: { width: 80, justifyContent: 'center' },
-    list: {
-      alignSelf: 'flex-start',
-    },
-    titleText: {
-      fontSize: 12,
-      fontFamily: fonts.defaultFontFamilyBold,
-    },
-    NORMAL: { backgroundColor: colors.green },
-    IMPORTANT: { backgroundColor: colors.red },
-    WARNING: { backgroundColor: colors.orange },
-    NORMALtext: { color: colors.black },
-    IMPORTANTtext: { color: colors.black },
-    WARNINGtext: { color: colors.black },
-  });
+type Cell =
+  | { type: CellType.Refresh }
+  | { type: CellType.Location; location: LocationFragment }
+  | { type: CellType.ItemGroup; itemGroup: ItemGroupFragment }
+  | { type: CellType.ItemGroupSpacer }
+  | { type: CellType.Item; item: ItemFragment }
+  | {
+      type: CellType.Stock;
+      item: ItemFragment;
+      location: LocationFragment;
+      stock: StockFragment | null;
+    };
+
+function tableData(
+  locations: LocationFragment[],
+  itemGroups: ItemGroupFragment[],
+  items: ItemFragment[],
+  stock: StockFragment[]
+): Cell[][] {
+  return [
+    [
+      { type: CellType.Refresh },
+      ...locations.map(
+        (location): Cell => ({
+          type: CellType.Location,
+          location,
+        })
+      ),
+    ],
+    ...itemGroups.flatMap((itemGroup): Cell[][] => [
+      [
+        { type: CellType.ItemGroup, itemGroup },
+        ...locations.map((): Cell => ({ type: CellType.ItemGroupSpacer })),
+      ],
+      ...items
+        .filter((item) => item.itemGroup.id === itemGroup.id)
+        .map((item): Cell[] => [
+          { type: CellType.Item, item },
+          ...locations.map(
+            (location): Cell => ({
+              type: CellType.Stock,
+              item,
+              location,
+              stock:
+                stock.find(
+                  (stock) =>
+                    stock.item.id === item.id &&
+                    stock.location.id === location.id
+                ) ?? null,
+            })
+          ),
+        ]),
+    ]),
+  ];
+}
+
+const styles = StyleSheet.create({
+  cell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: colors.primary,
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+  },
+  cellText: {
+    fontSize: 16,
+    fontFamily: fonts.defaultFontFamilyBold,
+  },
+  cornerCell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  groupCell: {
+    backgroundColor: colors.primaryLight,
+  },
+  topGroupCell: {
+    padding: 5,
+    backgroundColor: colors.primaryLight,
+  },
+  topGroupCellText: {
+    fontSize: 12,
+    color: colors.white,
+  },
+  topCell: {
+    padding: 5,
+    borderColor: colors.primary,
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+  },
+  topCellText: { fontSize: 12 },
+  NORMAL: { backgroundColor: colors.green },
+  IMPORTANT: { backgroundColor: colors.red },
+  WARNING: { backgroundColor: colors.orange },
+  NORMALtext: { color: colors.black },
+  IMPORTANTtext: { color: colors.black },
+  WARNINGtext: { color: colors.black },
+});
