@@ -55,6 +55,17 @@ export const ITEM_GROUP_FRAGMENT = gql`
   }
 `;
 
+export const STOCK_EXPECTATION_FRAGMENT = gql`
+  fragment StockExpectation on StockExpectation {
+    id
+    importantThreshold
+    warningThreshold
+    item {
+      id
+    }
+  }
+`;
+
 export const EVENT_CONFIGURATION_FRAGMENT = gql`
   ${ITEM_FRAGMENT}
   ${ITEM_GROUP_FRAGMENT}
@@ -79,6 +90,7 @@ export const EVENT_CONFIGURATION_FRAGMENT = gql`
 
 export const LOGISTIC_EVENT_CONFIGURATION_FRAGMENT = gql`
   ${EVENT_CONFIGURATION_FRAGMENT}
+  ${STOCK_EXPECTATION_FRAGMENT}
   fragment LogisticEventConfiguration on Event {
     ...EventConfiguration
     id
@@ -86,6 +98,13 @@ export const LOGISTIC_EVENT_CONFIGURATION_FRAGMENT = gql`
       edges {
         node {
           ...Location
+          stockExpectations(first: 1000) {
+            edges {
+              node {
+                ...StockExpectation
+              }
+            }
+          }
         }
       }
     }

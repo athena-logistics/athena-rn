@@ -23,8 +23,11 @@
   "error.destinationLocationRequired.description": {
     "defaultMessage": "Ausgehenden Standort auswählen."
   },
-  "error.itemRequired.description": {
-    "defaultMessage": "Artikel auswählen."
+  "error.eventNotFound.description": {
+    "defaultMessage": "Der Anlass konnte nicht gefunden werden."
+  },
+  "error.locationNotFound.description": {
+    "defaultMessage": "Der Standort konnte nicht gefunden werden."
   },
   "error.sourceAndDestinationEqual.description": {
     "defaultMessage": "Quell- & Zielstandort können nicht gleich sein."
@@ -56,9 +59,6 @@
   "model.item.unit": {
     "defaultMessage": "Einheit"
   },
-  "model.itemGroup": {
-    "defaultMessage": "Artikelgruppe"
-  },
   "model.location": {
     "defaultMessage": "Standort"
   },
@@ -68,11 +68,8 @@
   "model.stockEntry.missingCount": {
     "defaultMessage": "Fehlende Artikel"
   },
-  "model.stockEntry.movementIn": {
-    "defaultMessage": "Eingehende Verschiebungen"
-  },
-  "model.stockEntry.movementOut": {
-    "defaultMessage": "Ausgehende Verschiebungen"
+  "model.stockEntry.movements": {
+    "defaultMessage": "TBD: Movements"
   },
   "model.stockEntry.stock": {
     "defaultMessage": "Bestand"
@@ -100,6 +97,9 @@
   },
   "refreshing": {
     "defaultMessage": "Wird geladen..."
+  },
+  "retry": {
+    "defaultMessage": "Erneut versuchen"
   },
   "save": {
     "defaultMessage": "Speichern"
@@ -130,5 +130,29 @@
   },
   "screen.scanner": {
     "defaultMessage": "Scanner"
+  },
+  "screen.stockItemDetails.baseData": {
+    "defaultMessage": "Basis Daten"
+  },
+  "screen.stockItemDetails.stock": {
+    "defaultMessage": "Bestand"
+  },
+  "screen.stockItemDetails.stockExpectation": {
+    "defaultMessage": "Bestandserwartungen"
+  },
+  "stockExpectation.success.save": {
+    "defaultMessage": "Bestandserwartungen erfolgreich gespeichert."
+  },
+  "error.itemRequired.description": {
+    "defaultMessage": "Artikel auswählen."
+  },
+  "model.itemGroup": {
+    "defaultMessage": "Artikelgruppe"
+  },
+  "model.stockEntry.movementIn": {
+    "defaultMessage": "Eingehende Verschiebungen"
+  },
+  "model.stockEntry.movementOut": {
+    "defaultMessage": "Ausgehende Verschiebungen"
   }
 }

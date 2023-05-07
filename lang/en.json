@@ -23,8 +23,11 @@
   "error.destinationLocationRequired.description": {
     "defaultMessage": "Please select destination location"
   },
-  "error.itemRequired.description": {
-    "defaultMessage": "Please select an item"
+  "error.eventNotFound.description": {
+    "defaultMessage": "The event could not be found."
+  },
+  "error.locationNotFound.description": {
+    "defaultMessage": "The location could not be found."
   },
   "error.sourceAndDestinationEqual.description": {
     "defaultMessage": "Source and destination cannot be the same"
@@ -56,9 +59,6 @@
   "model.item.unit": {
     "defaultMessage": "Unit"
   },
-  "model.itemGroup": {
-    "defaultMessage": "Item Group"
-  },
   "model.location": {
     "defaultMessage": "Location"
   },
@@ -68,11 +68,8 @@
   "model.stockEntry.missingCount": {
     "defaultMessage": "Missing"
   },
-  "model.stockEntry.movementIn": {
-    "defaultMessage": "Movement In"
-  },
-  "model.stockEntry.movementOut": {
-    "defaultMessage": "Movement Out"
+  "model.stockEntry.movements": {
+    "defaultMessage": "Movements"
   },
   "model.stockEntry.stock": {
     "defaultMessage": "Stock"
@@ -100,6 +97,9 @@
   },
   "refreshing": {
     "defaultMessage": "Refreshing..."
+  },
+  "retry": {
+    "defaultMessage": "Retry"
   },
   "save": {
     "defaultMessage": "Save"
@@ -130,5 +130,17 @@
   },
   "screen.scanner": {
     "defaultMessage": "Scanner"
+  },
+  "screen.stockItemDetails.baseData": {
+    "defaultMessage": "Base Data"
+  },
+  "screen.stockItemDetails.stock": {
+    "defaultMessage": "Stock"
+  },
+  "screen.stockItemDetails.stockExpectation": {
+    "defaultMessage": "Stock Expectation"
+  },
+  "stockExpectation.success.save": {
+    "defaultMessage": "Successfuly saved stock expectation."
   }
 }
