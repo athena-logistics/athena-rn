@@ -8,7 +8,6 @@ import fonts from '../../constants/fonts';
 export default function NativeNumberOnlyInput(
   props: Omit<
     React.ComponentProps<typeof NumericInput>,
-    | 'textColor'
     | 'inputStyle'
     | 'containerStyle'
     | 'type'
@@ -21,10 +20,11 @@ export default function NativeNumberOnlyInput(
     | 'rightButtonBackgroundColor'
   >
 ) {
+  const textColor = props.textColor ?? colors.primary;
   return (
     <>
       <NumericInput
-        textColor={colors.primary}
+        textColor={textColor}
         inputStyle={{ fontFamily: fonts.defaultFontFamilyBold } as ViewStyle}
         containerStyle={{ flexShrink: 0, width: 150 }}
         {...props}
@@ -33,14 +33,10 @@ export default function NativeNumberOnlyInput(
         totalWidth={150}
         totalHeight={70}
         customDecIcon={
-          <Ionicons
-            size={44}
-            name={'ios-remove-circle'}
-            color={colors.primary}
-          />
+          <Ionicons size={44} name={'ios-remove-circle'} color={textColor} />
         }
         customIncIcon={
-          <Ionicons size={44} name={'ios-add-circle'} color={colors.primary} />
+          <Ionicons size={44} name={'ios-add-circle'} color={textColor} />
         }
         leftButtonBackgroundColor={'transparent'}
         rightButtonBackgroundColor={'transparent'}

@@ -276,6 +276,7 @@ export default function LogisticNavigation({
                   <StockItemDetails
                     event={event}
                     stockEntry={props.route.params.stock}
+                    refetch={refetch}
                   />
                 )}
               </OverviewStack.Screen>
