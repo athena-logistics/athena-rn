@@ -1,3 +1,4 @@
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, NavigationProp } from '@react-navigation/native';
 import { useEffect } from 'react';
 import { useIntl } from 'react-intl';
@@ -7,12 +8,9 @@ import { defaultScreenOptionsDrawer } from '../helpers/navigationOptions';
 import LocationDetails from '../screens/LocationDetails';
 import Logout from '../screens/Logout';
 import Map from '../screens/Map';
-import { RootParamsList } from './AuthorizationNavigation';
-import NativeText from './native/NativeText';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import AppInfo from './AppInfo';
-import BrandedDrawerContent from './BrandedDrawerContent';
-import colors from '../constants/colors';
+import { RootParamsList } from './AuthorizationNavigation';
+import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
 
 export type VendorParamsList = {
   'location-details': undefined;
@@ -44,15 +42,10 @@ export default function VendorNavigation({
     <NavigationContainer independent={true}>
       <AppDrawer.Navigator
         initialRouteName="location-details"
-        screenOptions={{
-          ...defaultScreenOptionsDrawer,
-          headerRight: () => (
-            <NativeText style={{ color: colors.white, padding: 10 }}>
-              {location.event.name}
-            </NativeText>
-          ),
-        }}
-        drawerContent={BrandedDrawerContent}
+        screenOptions={defaultScreenOptionsDrawer}
+        drawerContent={(props) => (
+          <BrandedDrawerWithTitle {...props} title={location.event.name} />
+        )}
       >
         <AppDrawer.Screen
           name="location-details"

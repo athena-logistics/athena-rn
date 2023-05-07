@@ -39,7 +39,7 @@ import StockByStock from '../screens/StockByStock';
 import StockItemDetails from '../screens/StockItemDetails';
 import AppInfo from './AppInfo';
 import { RootParamsList } from './AuthorizationNavigation';
-import BrandedDrawerContent from './BrandedDrawerContent';
+import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
 import NativeText from './native/NativeText';
 
 export type LogisticsParamsList = {
@@ -101,20 +101,10 @@ export default function LogisticNavigation({
     <NavigationContainer independent={true}>
       <AppDrawer.Navigator
         initialRouteName="stack"
-        screenOptions={{
-          ...defaultScreenOptionsDrawer,
-          headerRight: () => (
-            <NativeText
-              style={{
-                color: colors.white,
-                padding: 10,
-              }}
-            >
-              {event.name}
-            </NativeText>
-          ),
-        }}
-        drawerContent={BrandedDrawerContent}
+        screenOptions={defaultScreenOptionsDrawer}
+        drawerContent={(props) => (
+          <BrandedDrawerWithTitle {...props} title={event.name} />
+        )}
       >
         <AppDrawer.Screen
           name="stack"
@@ -145,16 +135,6 @@ export default function LogisticNavigation({
                     screenOptions={{
                       ...defaultScreenOptionsBottomTab,
                       headerLeft: (props) => <DrawerToggleButton {...props} />,
-                      headerRight: () => (
-                        <NativeText
-                          style={{
-                            color: colors.white,
-                            padding: 10,
-                          }}
-                        >
-                          {event.name}
-                        </NativeText>
-                      ),
                     }}
                   >
                     <OverviewTab.Screen
