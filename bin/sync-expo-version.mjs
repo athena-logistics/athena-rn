@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { join as pathJoin } from 'node:path';
+import { exec } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { join as pathJoin } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format } from 'prettier';
-import { exec } from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const root = pathJoin(__filename, '..', '..');

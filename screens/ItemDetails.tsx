@@ -1,99 +1,68 @@
-import { useMutation } from '@apollo/client';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useRef } from 'react';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
-import { DO_CONSUME } from '../apollo/mutations';
 import {
-  DoConsumeMutation,
-  DoConsumeMutationVariables,
+  ItemFragment,
+  LogisticEventConfigurationFragment,
+  StockFragment,
 } from '../apollo/schema';
-import { useAllStockQuery } from '../apolloActions/useQueries';
-import { useMovementSubscription } from '../apolloActions/useSubscriptions';
-import ItemRow from '../components/ItemRow';
-import { OverviewStackParamsList } from '../components/Navigation';
+import ItemRow, { Variant } from '../components/ItemRow';
+import { LogisticsParamsList } from '../components/LogisticNavigation';
 import NativeScreen from '../components/native/NativeScreen';
-import { RootState } from '../store';
-import { StockItem } from '../models/StockItem';
+import { getNodes } from '../helpers/apollo';
 
-const ItemDetails = () => {
-  const route = useRoute<RouteProp<OverviewStackParamsList, 'Item Details'>>();
+export default function ItemDetails({
+  item,
+  event,
+  refetch,
+  stateReloading,
+}: {
+  item: ItemFragment;
+  event: LogisticEventConfigurationFragment;
+  stateReloading: boolean;
+  refetch: () => void;
+}) {
+  const locations = getNodes(event.locations);
+  const itemStock = getNodes(event.stock).filter(
+    (stock) => stock.item.id === item.id
+  );
 
-  const eventId =
-    route.params?.eventId ??
-    useSelector((state: RootState) => state.global.eventId);
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
 
-  const [fetchStock, { loading: loadingStock }] = useAllStockQuery(eventId);
-  const item = route.params?.item;
-
-  const allStock = useSelector((state: RootState) => state.global.allStock);
-  const locationStock = allStock.filter((stock) => stock.id === item.id);
-
-  const fetchTimer = useRef<NodeJS.Timeout>();
-  useMovementSubscription({
-    onData: () => {
-      if (fetchTimer.current) {
-        clearTimeout(fetchTimer.current);
-      }
-      fetchTimer.current = setTimeout(fetchStock, 1000);
-    },
-  });
-
-  const [createConsumeMutation] = useMutation<
-    DoConsumeMutation,
-    DoConsumeMutationVariables
-  >(DO_CONSUME, {
-    onError: (error) => {
-      console.log('error', error);
-    },
-    onCompleted: (data) => {
-      if (
-        data.consume &&
-        data.consume.messages &&
-        data.consume.messages.length > 0
-      ) {
-        data.consume.messages.forEach((message) => {
-          if (!message) return;
-          console.log('error', message.field + ' ' + message.message);
-          Toast.show({
-            type: 'error',
-            text1: 'error',
-            text2: message.field + ' ' + message.message,
-          });
-        });
-        // refetch after an error
-        fetchStock();
-      }
-    },
-  });
-
-  const renderRow = ({ item }: { item: StockItem }) => {
-    return (
-      <ItemRow
-        row={item}
-        loading={loadingStock}
-        createConsumeMutation={createConsumeMutation}
-        variant={'location'}
-      />
-    );
+  const handlePress = (stock: StockFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'stock-item',
+      params: { stock },
+    });
   };
 
   return (
     <NativeScreen style={styles.screen}>
       <FlatList
-        data={locationStock}
-        onRefresh={fetchStock}
-        refreshing={loadingStock}
-        renderItem={renderRow}
-        keyExtractor={(row) => row.locationId}
+        data={itemStock}
+        onRefresh={refetch}
+        refreshing={stateReloading}
+        renderItem={({ item: stockEntry }) => {
+          const location = locations.find(
+            (location) => location.id === stockEntry.location.id
+          );
+          if (!location) return null;
+          return (
+            <ItemRow
+              stockEntry={stockEntry}
+              item={item}
+              location={location}
+              variant={Variant.Location}
+              handlePress={handlePress(stockEntry)}
+            />
+          );
+        }}
+        keyExtractor={(row) => row.location.id}
       />
     </NativeScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   screen: { alignItems: 'stretch' },
 });
-
-export default ItemDetails;

@@ -1,9 +1,13 @@
 overwrite: true
 schema: 'https://logistik.aufgetischt.sg/api'
 documents:
-  - './apollo/mutations.ts'
-  - './apollo/queries.ts'
-  - './apollo/subscription.ts'
+  - './apollo/*.ts'
+  - './components/**/*.ts'
+  - './components/**/*.tsx'
+  - './context/**/*.ts'
+  - './context/**/*.tsx'
+  - './screens/**/*.ts'
+  - './screens/**/*.tsx'
 generates:
   apollo/schema.ts:
     plugins:

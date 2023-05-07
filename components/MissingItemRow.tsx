@@ -1,68 +1,75 @@
-import i18n from '../helpers/i18n';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import {
   GestureResponderEvent,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { StockEntryStatus } from '../apollo/schema';
+import {
+  ItemFragment,
+  LocationFragment,
+  StockEntryStatus,
+  StockFragment,
+} from '../apollo/schema';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
 import NativeText from './native/NativeText';
-import { StockItem } from '../models/StockItem';
 
-const MissingItemRow = ({
-  row,
+export default function MissingItemRow({
+  stockEntry,
+  item,
+  location,
   onPress,
 }: {
-  row: StockItem;
+  stockEntry: StockFragment;
+  item: ItemFragment;
+  location: LocationFragment;
   onPress: (event: GestureResponderEvent) => void;
-}) => {
+}) {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.row}>
         <View style={styles.title}>
           <View style={styles.titleRow}>
-            <NativeText style={styles.titleText}>{row.name}</NativeText>
+            <NativeText style={styles.titleText}>{item.name}</NativeText>
           </View>
-          <NativeText style={styles.subtitleText}>
-            {row.locationName}
-          </NativeText>
+          <NativeText style={styles.subtitleText}>{location.name}</NativeText>
         </View>
         <View style={styles.leftContainer}>
-          {!row.inverse && (
-            <NativeText style={styles.unitText}>{i18n.t('missing')}</NativeText>
-          )}
           <View style={styles.status}>
             <NativeText
               style={{
                 ...styles.statusTextMissing,
                 color:
-                  row.status === StockEntryStatus.Important
+                  stockEntry.status === StockEntryStatus.Important
                     ? colors.red
-                    : row.status === StockEntryStatus.Warning
+                    : stockEntry.status === StockEntryStatus.Warning
                     ? colors.orange
                     : colors.primary,
               }}
               type="bold"
             >
-              {row.missingCount}
+              {stockEntry.missingCount}
             </NativeText>
-            <NativeText style={styles.unitText}>{row.unit}</NativeText>
+            <NativeText style={styles.unitText}>{item.unit}</NativeText>
           </View>
-          <NativeText style={styles.unitText}>{i18n.t('outOf')}</NativeText>
+          <NativeText style={styles.unitText}>
+            <FormattedMessage id="missingItem.outOf" defaultMessage="out of" />
+          </NativeText>
           <View style={styles.status}>
             <NativeText style={styles.statusTextTotal} type="bold">
-              {row.inverse ? 0 : row.stock + row.missingCount}
+              {item.inverse ? 0 : stockEntry.stock + stockEntry.missingCount}
             </NativeText>
-            <NativeText style={styles.unitText}>TOTAL</NativeText>
+            <NativeText style={styles.unitText}>
+              <FormattedMessage id="missingItem.total" defaultMessage="total" />
+            </NativeText>
           </View>
         </View>
       </View>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   row: {
@@ -111,5 +118,3 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
-
-export default MissingItemRow;

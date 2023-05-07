@@ -3,7 +3,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
 
-export default function client(host?: string) {
+export default function client(host: string) {
   const wsLink = new GraphQLWsLink(
     createClient({
       url: `wss://${host}/api/graphql-ws`,
@@ -28,7 +28,13 @@ export default function client(host?: string) {
 
   const baseClient = new ApolloClient({
     link: splitLink,
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        StockEntry: {
+          keyFields: ['item', ['id'], 'location', ['id']],
+        },
+      },
+    }),
     connectToDevTools: true,
   });
 

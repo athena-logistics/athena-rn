@@ -1,264 +1,241 @@
 import { Ionicons } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import React, { Fragment } from 'react';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import {
-  NavigationProp,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
-import React, { Fragment, useEffect } from 'react';
-import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
-import { useSelector } from 'react-redux';
 import {
-  useAllItemsQuery,
-  useAllStockQuery,
-} from '../apolloActions/useQueries';
-import { useMovementSubscription } from '../apolloActions/useSubscriptions';
+  ItemFragment,
+  LocationFragment,
+  LogisticEventConfigurationFragment,
+  StockFragment,
+} from '../apollo/schema';
+import { LogisticsParamsList } from '../components/LogisticNavigation';
 import NativeText from '../components/native/NativeText';
 import colors from '../constants/colors';
 import fonts from '../constants/fonts';
-import { getGroupedData } from '../helpers/getGroupedData';
-import { getLocationData } from '../helpers/getLocationData';
-import { LogisticLocation } from '../models/LogisticLocation';
-import { RootState } from '../store';
-import { RootParamsList } from '../components/Navigation';
-import { Item } from '../models/Item';
-import { StockItem } from '../models/StockItem';
+import { getNodes } from '../helpers/apollo';
 
-const StockByStock = () => {
-  let eventId: string;
+export default function StockByStock({
+  event,
+  refetch,
+  stateReloading,
+}: {
+  event: LogisticEventConfigurationFragment;
+  refetch: () => void;
+  stateReloading: boolean;
+}) {
+  const { width } = useWindowDimensions();
 
-  const route = useRoute<RouteProp<RootParamsList, 'Overview all'>>();
-  const navigation = useNavigation<NavigationProp<RootParamsList>>();
-  const eventIdFromParams: string | undefined = route.params?.eventId;
-  if (eventIdFromParams) {
-    eventId = eventIdFromParams;
-  } else {
-    eventId = useSelector((state: RootState) => state.global.eventId);
-  }
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
 
-  const [fetch, { loading }] = useAllStockQuery(eventId);
-  const [fetchAllItems] = useAllItemsQuery(eventId);
+  const locations = getNodes(event.locations);
+  const itemGroups = getNodes(event.itemGroups);
+  const items = getNodes(event.items);
+  const stock = getNodes(event.stock);
 
-  const allItems = useSelector((state: RootState) => state.global.allItems);
-  const availableItems = getGroupedData(allItems);
+  const columnWidth = Math.max(width / (locations.length + 1), 50);
 
-  const allStock = useSelector((state: RootState) => state.global.allStock);
-  const locationData = getLocationData(allStock);
+  const style = styles(columnWidth);
 
-  useMovementSubscription({
-    onData: () => fetch(),
-  });
-
-  useEffect(() => {
-    fetch();
-    fetchAllItems();
-  }, [eventId]);
-
-  const handleLocationPress = (location: LogisticLocation) => () => {
-    // navigation.navigate('Location Stock By Item', { location });
-    navigation.navigate('Overview Stack', {
-      screen: 'Location Details',
+  const handleLocationPress = (location: LocationFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'location',
       params: { location },
     });
   };
 
-  const handleItemPress = (item: Item) => () => {
-    // navigation.navigate('Location Stock By Item', { location });
-    navigation.navigate('Overview Stack', {
-      screen: 'Item Details',
+  const handleItemPress = (item: ItemFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'item',
       params: { item },
     });
   };
 
-  const handleStockItemPress = (row?: StockItem) => () => {
-    if (row) {
-      navigation.navigate('Overview Stack', {
-        screen: 'Stock Item Details',
-        params: { stockItem: row },
-      });
-    }
+  const handleStockItemPress = (stock: StockFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'stock-item',
+      params: { stock },
+    });
   };
 
   return (
     <ScrollView horizontal={true}>
-      <View style={styles.container}>
-        <View style={styles.row}>
-          <View style={styles.header}>
-            <TouchableOpacity
-              style={styles.cornerCell}
-              onPress={() => {
-                if (!loading) {
-                  fetch();
-                  fetchAllItems();
-                }
-              }}
-            >
-              {loading ? (
-                <ActivityIndicator size={'small'} color={colors.primary} />
-              ) : (
-                <Ionicons
-                  size={19}
-                  name={'ios-refresh-circle-outline'}
-                  color={colors.primary}
-                />
-              )}
+      <View style={style.container}>
+        <View style={style.row}>
+          <View style={style.header}>
+            <TouchableOpacity style={style.cornerCell} onPress={refetch}>
+              <Ionicons
+                size={19}
+                name={'ios-refresh-circle-outline'}
+                color={colors.primary}
+              />
+
               <NativeText style={{ fontSize: 10 }}>
-                {loading ? 'Refreshing' : 'Refresh'}
+                {stateReloading ? (
+                  <FormattedMessage
+                    id="refreshing"
+                    defaultMessage="Refreshing..."
+                  />
+                ) : (
+                  <FormattedMessage id="refresh" defaultMessage="Refresh" />
+                )}
               </NativeText>
             </TouchableOpacity>
           </View>
-          {locationData.map((location) => (
+          {locations.map((location) => (
             <TouchableOpacity
-              style={styles.topCell}
+              style={style.topCell}
               key={location.id}
               onPress={handleLocationPress(location)}
             >
-              <NativeText style={styles.topCellText}>
-                {location.name}
-              </NativeText>
+              <NativeText style={style.topCellText}>{location.name}</NativeText>
             </TouchableOpacity>
           ))}
         </View>
         <ScrollView>
-          {availableItems.map((item) => (
-            <Fragment key={item.id}>
-              <View style={styles.row}>
-                <View style={styles.topGroupCell}>
-                  <View key={item.id}>
-                    <NativeText style={styles.topGroupCellText}>
-                      {item.name}
+          {itemGroups.map((itemGroup) => (
+            <Fragment key={itemGroup.id}>
+              <View style={style.row}>
+                <View style={style.topGroupCell}>
+                  <View key={itemGroup.id}>
+                    <NativeText style={style.topGroupCellText}>
+                      {itemGroup.name}
                     </NativeText>
                   </View>
                 </View>
-                {locationData.map((d, index) => (
-                  <View style={styles.groupCell} key={index}></View>
+                {locations.map((d, index) => (
+                  <View style={style.groupCell} key={index}></View>
                 ))}
               </View>
-              {item.children.map((child) => (
-                <View style={styles.row} key={child.id}>
-                  <View style={styles.header}>
-                    <TouchableOpacity
-                      style={styles.headerCell}
-                      onPress={handleItemPress(child)}
-                    >
-                      <NativeText style={styles.titleText}>
-                        {child.name}
-                      </NativeText>
-                    </TouchableOpacity>
-                  </View>
-                  {locationData.map((location) => {
-                    const stockAtLocation = location.stockItems.find(
-                      (stockItem) => stockItem.id === child.id
-                    );
-                    const status = stockAtLocation?.status;
-                    return (
-                      <TouchableOpacity
-                        style={[styles.cell, status ? styles[status] : null]}
-                        key={child.id + location.id}
-                        onPress={handleStockItemPress(stockAtLocation)}
-                      >
-                        <NativeText
-                          style={[
-                            styles.cellText,
-                            status ? styles[`${status}text`] : null,
-                          ]}
-                        >
-                          {stockAtLocation?.stock}
+              {items
+                .filter((item) => item.itemGroup.id === itemGroup.id)
+                .map((item) => (
+                  <View style={style.row} key={item.id}>
+                    <View style={style.header}>
+                      <TouchableOpacity onPress={handleItemPress(item)}>
+                        <NativeText style={style.titleText}>
+                          {item.name}
                         </NativeText>
                       </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              ))}
+                    </View>
+                    {locations.map((location) => {
+                      const stockAtLocation = stock.find(
+                        (stock) =>
+                          stock.item.id === item.id &&
+                          stock.location.id === location.id
+                      );
+
+                      if (!stockAtLocation) {
+                        return (
+                          <View style={style.cell} key={item.id + location.id}>
+                            <NativeText style={[style.cellText]}>0</NativeText>
+                          </View>
+                        );
+                      }
+
+                      return (
+                        <TouchableOpacity
+                          style={[style.cell, style[stockAtLocation.status]]}
+                          key={item.id + location.id}
+                          onPress={handleStockItemPress(stockAtLocation)}
+                        >
+                          <NativeText
+                            style={[
+                              style.cellText,
+                              style[`${stockAtLocation.status}text`],
+                            ]}
+                          >
+                            <FormattedNumber value={stockAtLocation?.stock} />
+                          </NativeText>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ))}
             </Fragment>
           ))}
         </ScrollView>
       </View>
     </ScrollView>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  screen: { flexDirection: 'row' },
-  container: {
-    flexDirection: 'column',
-    marginLeft: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
+const styles = (columnWidth: number) =>
+  StyleSheet.create({
+    screen: { flexDirection: 'row' },
+    container: {
+      flexDirection: 'column',
+      marginLeft: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flex: 1,
+    },
 
-  row: {
-    flexDirection: 'row',
-    borderColor: colors.primary,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderStyle: 'solid',
-  },
-  cell: {
-    minWidth: 50,
-    minHeight: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: colors.primary,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderStyle: 'solid',
-  },
-  cellText: {
-    fontSize: 16,
-    fontFamily: fonts.defaultFontFamilyBold,
-  },
-  headerCell: {
-    // paddingHorizontal: 20,
-    // paddingVertical: 10,
-  },
-  cornerCell: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  groupCell: {
-    backgroundColor: colors.primaryLight,
-    minWidth: 50,
-    minHeight: 25,
-  },
-  topGroupCell: {
-    minWidth: 80,
-    minHeight: 25,
-    padding: 5,
-    backgroundColor: colors.primaryLight,
-  },
-  topGroupCellText: {
-    fontSize: 12,
-    color: colors.white,
-  },
-  topCell: {
-    width: 50,
-    minHeight: 60,
-    padding: 5,
-    borderColor: colors.primary,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderStyle: 'solid',
-  },
-  topCellText: { fontSize: 12 },
-  header: { width: 80, justifyContent: 'center' },
-  list: {
-    alignSelf: 'flex-start',
-  },
-  titleText: {
-    fontSize: 12,
-    fontFamily: fonts.defaultFontFamilyBold,
-  },
-  NORMAL: { backgroundColor: colors.green },
-  IMPORTANT: { backgroundColor: colors.red },
-  WARNING: { backgroundColor: colors.orange },
-  NORMALtext: { color: colors.black },
-  IMPORTANTtext: { color: colors.black },
-  WARNINGtext: { color: colors.black },
-});
-
-export default StockByStock;
+    row: {
+      flexDirection: 'row',
+      borderColor: colors.primary,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderStyle: 'solid',
+    },
+    cell: {
+      width: columnWidth,
+      minHeight: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderColor: colors.primary,
+      borderLeftWidth: StyleSheet.hairlineWidth,
+      borderStyle: 'solid',
+    },
+    cellText: {
+      fontSize: 16,
+      fontFamily: fonts.defaultFontFamilyBold,
+    },
+    cornerCell: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    groupCell: {
+      backgroundColor: colors.primaryLight,
+      width: columnWidth,
+      minHeight: 25,
+    },
+    topGroupCell: {
+      minWidth: 80,
+      minHeight: 25,
+      padding: 5,
+      backgroundColor: colors.primaryLight,
+    },
+    topGroupCellText: {
+      fontSize: 12,
+      color: colors.white,
+    },
+    topCell: {
+      width: columnWidth,
+      minHeight: 60,
+      padding: 5,
+      borderColor: colors.primary,
+      borderLeftWidth: StyleSheet.hairlineWidth,
+      borderStyle: 'solid',
+    },
+    topCellText: { fontSize: 12 },
+    header: { width: 80, justifyContent: 'center' },
+    list: {
+      alignSelf: 'flex-start',
+    },
+    titleText: {
+      fontSize: 12,
+      fontFamily: fonts.defaultFontFamilyBold,
+    },
+    NORMAL: { backgroundColor: colors.green },
+    IMPORTANT: { backgroundColor: colors.red },
+    WARNING: { backgroundColor: colors.orange },
+    NORMALtext: { color: colors.black },
+    IMPORTANTtext: { color: colors.black },
+    WARNINGtext: { color: colors.black },
+  });

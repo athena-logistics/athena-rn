@@ -10,18 +10,20 @@
 
 ## Development
 
+### Setup
+
 - Run a backend - See https://github.com/athena-logistics/athena-backend
 - Install Node using [`asdf`](https://asdf-vm.com/) as specified in `.tool-versions`
 - `npm install`
 - `npm start`
 
-## Contributing
+### Contributing
 
 - Make sure your branch passes the tests - `npm test`
 - Open a PR
 - Check the PR comments to find a link to the expo preview build
 
-## Production Release
+### Production Release
 
 - Bump Version using `npm version [major|minor|patch]`
 - Both the `package.json` and `app.json` versions will be automatically updated
@@ -35,3 +37,10 @@
 - Submit iOS Release for review on
   [App Store Connect](https://appstoreconnect.apple.com/)
   - Contact @punkah for access
+
+### Translations
+
+- Extract Translations with `npm run translations:extract`
+- Merge English Translations to othe rLanguages with `npm run translations:merge`
+- Edit Translations for non-English languages
+- Compile with `npm run translations:compile`

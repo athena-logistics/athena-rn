@@ -1,0 +1,134 @@
+{
+  "app.update.error.description": {
+    "defaultMessage": "Beim Suchen nach Updates ist ein Fehler aufgetreten."
+  },
+  "app.update.error.title": {
+    "defaultMessage": "Update Fehler"
+  },
+  "app.updated.description": {
+    "defaultMessage": "Die App wurde auf die neueste Version aktualisiert. Die App wird nun neu gestartet."
+  },
+  "app.updated.title": {
+    "defaultMessage": "App erfolgreich aktualisiert"
+  },
+  "app.uptodate.description": {
+    "defaultMessage": "Sie haben bereits die neueste Version der App."
+  },
+  "app.uptodate.title": {
+    "defaultMessage": "App ist auf dem neusten Stand"
+  },
+  "confirmation.unknown.title": {
+    "defaultMessage": "Juhu"
+  },
+  "error.destinationLocationRequired.description": {
+    "defaultMessage": "Ausgehenden Standort auswählen."
+  },
+  "error.itemRequired.description": {
+    "defaultMessage": "Artikel auswählen."
+  },
+  "error.sourceAndDestinationEqual.description": {
+    "defaultMessage": "Quell- & Zielstandort können nicht gleich sein."
+  },
+  "error.unknown.description": {
+    "defaultMessage": "Etwas ist schief gelaufen."
+  },
+  "error.unknown.title": {
+    "defaultMessage": "Oh Nein!"
+  },
+  "location.initialSupply": {
+    "defaultMessage": "Anlieferung"
+  },
+  "missingItem.nothingMissing": {
+    "defaultMessage": "Super, nichts fehlt!"
+  },
+  "missingItem.outOf": {
+    "defaultMessage": "von"
+  },
+  "missingItem.supplyAll": {
+    "defaultMessage": "Alle verschieben"
+  },
+  "missingItem.total": {
+    "defaultMessage": "Total"
+  },
+  "model.item": {
+    "defaultMessage": "Artikel"
+  },
+  "model.item.unit": {
+    "defaultMessage": "Einheit"
+  },
+  "model.itemGroup": {
+    "defaultMessage": "Artikelgruppe"
+  },
+  "model.location": {
+    "defaultMessage": "Standort"
+  },
+  "model.stockEntry.consumption": {
+    "defaultMessage": "Verbrauch"
+  },
+  "model.stockEntry.missingCount": {
+    "defaultMessage": "Fehlende Artikel"
+  },
+  "model.stockEntry.movementIn": {
+    "defaultMessage": "Eingehende Verschiebungen"
+  },
+  "model.stockEntry.movementOut": {
+    "defaultMessage": "Ausgehende Verschiebungen"
+  },
+  "model.stockEntry.stock": {
+    "defaultMessage": "Bestand"
+  },
+  "model.stockEntry.supply": {
+    "defaultMessage": "Anlieferung"
+  },
+  "move.location.from": {
+    "defaultMessage": "Quelle"
+  },
+  "move.location.to": {
+    "defaultMessage": "Ziel"
+  },
+  "move.success.move": {
+    "defaultMessage": "Erfolgreich verschoben"
+  },
+  "move.success.supply": {
+    "defaultMessage": "Erfolgreich angeliefert"
+  },
+  "ok": {
+    "defaultMessage": "Ok"
+  },
+  "refresh": {
+    "defaultMessage": "Neu Laden"
+  },
+  "refreshing": {
+    "defaultMessage": "Wird geladen..."
+  },
+  "save": {
+    "defaultMessage": "Speichern"
+  },
+  "screen.appInfo": {
+    "defaultMessage": "Info"
+  },
+  "screen.logout": {
+    "defaultMessage": "Abmelden"
+  },
+  "screen.map": {
+    "defaultMessage": "Karte"
+  },
+  "screen.move": {
+    "defaultMessage": "Verschieben"
+  },
+  "screen.overview": {
+    "defaultMessage": "Übersicht"
+  },
+  "screen.overview.item": {
+    "defaultMessage": "Nach Artikel"
+  },
+  "screen.overview.location": {
+    "defaultMessage": "Nach Standort"
+  },
+  "screen.overview.missingItems": {
+    "defaultMessage": "Fehlende Artikel"
+  },
+  "screen.scanner": {
+    "defaultMessage": "Scanner"
+  }
+}

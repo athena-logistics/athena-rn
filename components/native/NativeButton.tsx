@@ -3,7 +3,7 @@ import { Button } from 'react-native';
 import { GestureResponderEvent } from 'react-native-modal';
 import colors from '../../constants/colors';
 
-const NativeButton = ({
+export default function NativeButton({
   onPress,
   type = 'primary',
   title,
@@ -13,7 +13,7 @@ const NativeButton = ({
   title: string;
   type?: 'primary' | 'secondary';
   disabled?: boolean;
-}) => {
+}) {
   return (
     <Button
       title={title}
@@ -22,6 +22,4 @@ const NativeButton = ({
       disabled={disabled}
     />
   );
-};
-
-export default NativeButton;
+}

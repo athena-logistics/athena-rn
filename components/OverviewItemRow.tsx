@@ -7,87 +7,56 @@ import {
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import { StockEntryStatus } from '../apollo/schema';
+import {
+  ItemFragment,
+  ItemGroupFragment,
+  LogisticEventConfigurationFragment,
+  StockEntryStatus,
+} from '../apollo/schema';
 import colors from '../constants/colors';
-import { AvailableItemGroup } from '../models/AvailableItemGroup';
-import { RootState } from '../store';
+import { getNodes } from '../helpers/apollo';
+import { LogisticsParamsList } from './LogisticNavigation';
 import NativeText from './native/NativeText';
-import { Item } from '../models/Item';
-import { OverviewStackParamsList } from './Navigation';
 
-const OverviewItemRow = ({ group }: { group: AvailableItemGroup<Item> }) => {
-  const getGroupNameIcon = (name: string) => {
-    switch (name) {
-      case 'Becher':
-        return (
-          <Entypo
-            name={'cup'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Bier':
-        return (
-          <Ionicons
-            name={'beer'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Diverses':
-        return (
-          <Feather
-            name={'box'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Softdrinks':
-        return (
-          <MaterialCommunityIcons
-            name={'bottle-soda'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-      case 'Wein':
-        return (
-          <MaterialCommunityIcons
-            name={'glass-wine'}
-            size={20}
-            color={colors.primary}
-            style={{ marginRight: 5 }}
-          />
-        );
-    }
-  };
-  const allStock = useSelector((state: RootState) => state.global.allStock);
-  const getNumberOfItemsPerStatus = (item: Item, status: StockEntryStatus) => {
-    return allStock.filter(
-      (stock) => stock.id === item.id && stock.status === status
+export default function OverviewItemRow({
+  event,
+  itemGroup,
+}: {
+  event: LogisticEventConfigurationFragment;
+  itemGroup: ItemGroupFragment;
+}) {
+  const items = getNodes(event.items).filter(
+    (item) => item.itemGroup.id === itemGroup.id
+  );
+  const eventStock = getNodes(event.stock);
+
+  const getNumberOfItemsPerStatus = (
+    item: ItemFragment,
+    status: StockEntryStatus
+  ) => {
+    return eventStock.filter(
+      (stock) => stock.item.id === item.id && stock.status === status
     ).length;
   };
 
-  const navigation = useNavigation<NavigationProp<OverviewStackParamsList>>();
-  const handlePress = (item: Item) => () => {
-    navigation.navigate('Item Details', { item });
+  const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
+  const handlePress = (item: ItemFragment) => () => {
+    navigation.navigate('stack', {
+      screen: 'item',
+      params: { item },
+    });
   };
 
   return (
     <View style={styles.itemContainer}>
       <View style={styles.headerItem}>
-        {getGroupNameIcon(group.name)}
+        {getGroupNameIcon(itemGroup.name)}
         <NativeText type="bold" style={styles.headerText}>
-          {group.name}
+          {itemGroup.name}
         </NativeText>
       </View>
       <View style={styles.items}>
-        {group.children.map((item) => (
+        {items.map((item) => (
           <Pressable
             onPress={handlePress(item)}
             key={item.id}
@@ -102,10 +71,10 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup<Item> }) => {
             </View>
             <View style={styles.numberContainer}>
               {/* <MaterialCommunityIcons
-              name="home-group"
-              size={18}
-              color={colors.primary}
-            /> */}
+                    name="home-group"
+                    size={18}
+                    color={colors.primary}
+                  /> */}
               {/* <Entypo name={'cup'} size={20} color={colors.red} /> */}
               <NativeText
                 style={{
@@ -141,7 +110,7 @@ const OverviewItemRow = ({ group }: { group: AvailableItemGroup<Item> }) => {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   itemContainer: {
@@ -185,4 +154,52 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OverviewItemRow;
+function getGroupNameIcon(name: string) {
+  switch (name) {
+    case 'Becher':
+      return (
+        <Entypo
+          name={'cup'}
+          size={20}
+          color={colors.primary}
+          style={{ marginRight: 5 }}
+        />
+      );
+    case 'Bier':
+      return (
+        <Ionicons
+          name={'beer'}
+          size={20}
+          color={colors.primary}
+          style={{ marginRight: 5 }}
+        />
+      );
+    case 'Diverses':
+      return (
+        <Feather
+          name={'box'}
+          size={20}
+          color={colors.primary}
+          style={{ marginRight: 5 }}
+        />
+      );
+    case 'Softdrinks':
+      return (
+        <MaterialCommunityIcons
+          name={'bottle-soda'}
+          size={20}
+          color={colors.primary}
+          style={{ marginRight: 5 }}
+        />
+      );
+    case 'Wein':
+      return (
+        <MaterialCommunityIcons
+          name={'glass-wine'}
+          size={20}
+          color={colors.primary}
+          style={{ marginRight: 5 }}
+        />
+      );
+  }
+}
