@@ -37,29 +37,29 @@ export default function AppInfo() {
       setIsUpdating(true);
       const update = await checkForUpdateAsync();
 
-      Alert.alert(
-        intl.formatMessage({
-          id: 'app.updated.title',
-          defaultMessage: 'App has been successfully updated',
-        }),
-        intl.formatMessage({
-          id: 'app.updated.description',
-          defaultMessage:
-            'The app has been updated to the latest version. The app will now restart.',
-        }),
-        [
-          {
-            text: intl.formatMessage({
-              id: 'ok',
-              defaultMessage: 'OK',
-            }),
-            onPress: async () => reloadAsync(),
-          },
-        ]
-      );
-
       if (update.isAvailable) {
         await fetchUpdateAsync();
+
+        Alert.alert(
+          intl.formatMessage({
+            id: 'app.updated.title',
+            defaultMessage: 'App has been successfully updated',
+          }),
+          intl.formatMessage({
+            id: 'app.updated.description',
+            defaultMessage:
+              'The app has been updated to the latest version. The app will now restart.',
+          }),
+          [
+            {
+              text: intl.formatMessage({
+                id: 'ok',
+                defaultMessage: 'OK',
+              }),
+              onPress: async () => reloadAsync(),
+            },
+          ]
+        );
       } else {
         Toast.show({
           text1: intl.formatMessage({
