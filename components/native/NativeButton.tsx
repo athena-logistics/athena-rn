@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from 'react-native';
-import { GestureResponderEvent } from 'react-native-modal';
+import { Button, GestureResponderEvent } from 'react-native';
 import colors from '../../constants/colors';
 
 export default function NativeButton({
