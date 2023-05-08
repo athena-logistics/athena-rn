@@ -97,6 +97,10 @@ export default function LogisticNavigation({
 
   const intl = useIntl();
 
+  const missingItemCount = getNodes(event.stock).filter(
+    (stockEntry) => stockEntry.missingCount > 0
+  ).length;
+
   return (
     <NavigationContainer independent={true}>
       <AppDrawer.Navigator
@@ -227,9 +231,8 @@ export default function LogisticNavigation({
                             color={focused ? colors.white : colors.primaryLight}
                           />
                         ),
-                        tabBarBadge: getNodes(event.stock).filter(
-                          (stockEntry) => stockEntry.missingCount > 0
-                        ).length,
+                        tabBarBadge:
+                          missingItemCount === 0 ? undefined : missingItemCount,
                       }}
                     >
                       {(props) => (
