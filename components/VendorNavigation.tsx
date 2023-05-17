@@ -1,6 +1,10 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer, NavigationProp } from '@react-navigation/native';
-import { useEffect } from 'react';
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+  NavigationProp,
+} from '@react-navigation/native';
+import { useContext, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { LocationDetailsQuery } from '../apollo/schema';
 import { getTabBarIcon } from '../helpers/icon';
@@ -11,6 +15,7 @@ import Map from '../screens/Map';
 import AppInfo from './AppInfo';
 import { RootParamsList } from './AuthorizationNavigation';
 import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
+import { SentryRoutingInstrumentationContext } from '../contexts/sentry';
 
 export type VendorParamsList = {
   'location-details': undefined;
@@ -36,10 +41,22 @@ export default function VendorNavigation({
 }) {
   useEffect(() => subscribeToNewMovements(), []);
 
+  const routingInstrumentation = useContext(
+    SentryRoutingInstrumentationContext
+  );
+
   const intl = useIntl();
 
+  const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
+
   return (
-    <NavigationContainer independent={true}>
+    <NavigationContainer
+      independent={true}
+      ref={navigation}
+      onReady={() =>
+        routingInstrumentation?.registerNavigationContainer(navigation)
+      }
+    >
       <AppDrawer.Navigator
         initialRouteName="location-details"
         screenOptions={defaultScreenOptionsDrawer}

@@ -45,7 +45,7 @@
     "graphql-ws": "^5.12.1",
     "react": "18.2.0",
     "react-intl": "^6.4.2",
-    "react-native": "0.71.7",
+    "react-native": "0.71.8",
     "react-native-numeric-input": "https://github.com/athena-logistics/react-native-numeric-input.git",
     "react-native-reanimated": "~2.14.4",
     "react-native-reanimated-table": "^0.0.2",
@@ -54,7 +54,14 @@
     "typescript": "^4.9.4",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-screens": "~3.20.0",
-    "react-native-safe-area-context": "4.5.0"
+    "react-native-safe-area-context": "4.5.0",
+    "react-native-web": "~0.18.11",
+    "react-dom": "18.2.0",
+    "sentry-expo": "~6.1.0",
+    "expo-application": "~5.1.1",
+    "expo-constants": "~14.2.1",
+    "expo-device": "~5.2.1",
+    "@sentry/react-native": "4.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
