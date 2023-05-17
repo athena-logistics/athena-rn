@@ -18,8 +18,8 @@ import {
 } from '../apollo/schema';
 import colors from '../constants/colors';
 import { RootParamsList } from './AuthorizationNavigation';
+import Crash from './Crash';
 import LogisticNavigation from './LogisticNavigation';
-import NativeButton from './native/NativeButton';
 
 export default function LogisticsContext({
   eventId,
@@ -123,24 +123,7 @@ export default function LogisticsContext({
   if (error) {
     console.error(error);
 
-    Toast.show({
-      type: 'error',
-      text1: intl.formatMessage({
-        id: 'error.unknown.title',
-        defaultMessage: 'Oh No!',
-      }),
-      text2: intl.formatMessage({
-        id: 'error.unknown.description',
-        defaultMessage: 'Something went wrong.',
-      }),
-    });
-
-    return (
-      <NativeButton
-        title={intl.formatMessage({ id: 'retry', defaultMessage: 'Retry' })}
-        onPress={() => refetch()}
-      />
-    );
+    return <Crash retry={() => refetch()} />;
   }
 
   if (!data?.event) return null;

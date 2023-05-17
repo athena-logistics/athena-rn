@@ -18,8 +18,8 @@ import {
 } from '../apollo/schema';
 import colors from '../constants/colors';
 import { RootParamsList } from './AuthorizationNavigation';
+import Crash from './Crash';
 import VendorNavigation from './VendorNavigation';
-import NativeButton from './native/NativeButton';
 
 export default function VendorContext({
   locationId,
@@ -108,24 +108,7 @@ export default function VendorContext({
   if (error) {
     console.error(error);
 
-    Toast.show({
-      type: 'error',
-      text1: intl.formatMessage({
-        id: 'error.unknown.title',
-        defaultMessage: 'Oh No!',
-      }),
-      text2: intl.formatMessage({
-        id: 'error.unknown.description',
-        defaultMessage: 'Something went wrong.',
-      }),
-    });
-
-    return (
-      <NativeButton
-        title={intl.formatMessage({ id: 'retry', defaultMessage: 'Retry' })}
-        onPress={() => refetch()}
-      />
-    );
+    return <Crash retry={() => refetch()} />;
   }
 
   if (!data?.location) return null;
