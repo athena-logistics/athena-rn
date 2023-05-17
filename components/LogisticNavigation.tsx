@@ -6,11 +6,12 @@ import {
 } from '@react-navigation/drawer';
 import {
   NavigationContainer,
+  NavigationContainerRef,
   NavigationProp,
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import {
   EventDetailsQuery,
@@ -41,6 +42,7 @@ import AppInfo from './AppInfo';
 import { RootParamsList } from './AuthorizationNavigation';
 import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
 import NativeText from './native/NativeText';
+import { SentryRoutingInstrumentationContext } from '../contexts/sentry';
 
 export type LogisticsParamsList = {
   stack: NavigatorScreenParams<LogisticStackParamsList> | undefined;
@@ -95,14 +97,26 @@ export default function LogisticNavigation({
 }) {
   useEffect(() => subscribeToNewMovements(), []);
 
+  const routingInstrumentation = useContext(
+    SentryRoutingInstrumentationContext
+  );
+
   const intl = useIntl();
+
+  const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
 
   const missingItemCount = getNodes(event.stock).filter(
     (stockEntry) => stockEntry.missingCount > 0
   ).length;
 
   return (
-    <NavigationContainer independent={true}>
+    <NavigationContainer
+      independent={true}
+      ref={navigation}
+      onReady={() =>
+        routingInstrumentation?.registerNavigationContainer(navigation)
+      }
+    >
       <AppDrawer.Navigator
         initialRouteName="stack"
         screenOptions={defaultScreenOptionsDrawer}

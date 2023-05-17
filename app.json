@@ -47,6 +47,17 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "plugins": ["expo-localization"]
+    "plugins": ["expo-localization", "sentry-expo"],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "athena-logistics",
+            "project": "app"
+          }
+        }
+      ]
+    }
   }
 }

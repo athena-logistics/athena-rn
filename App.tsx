@@ -18,6 +18,26 @@ import { locale, getLocales } from 'expo-localization';
 import { IntlProvider } from 'react-intl';
 import en from './compiled-lang/en.json';
 import de from './compiled-lang/de.json';
+import { SENTRY_DSN } from './constants/app';
+import * as Sentry from 'sentry-expo';
+import {
+  ReactNativeTracing,
+  ReactNavigationInstrumentation,
+  wrap as sentryWrap,
+} from '@sentry/react-native';
+import { SentryRoutingInstrumentationContext } from './contexts/sentry';
+
+const routingInstrumentation = new ReactNavigationInstrumentation();
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  tracesSampleRate: 1,
+  integrations: [
+    new ReactNativeTracing({
+      routingInstrumentation,
+    }),
+  ],
+});
 
 if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
@@ -36,7 +56,7 @@ const matchedLanguageCode: keyof typeof allTranslations | undefined =
 const messages =
   allTranslations[matchedLanguageTag ?? matchedLanguageCode ?? 'en'];
 
-export default function App() {
+function App() {
   const [fontsLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_700Bold,
@@ -91,7 +111,9 @@ export default function App() {
   }
 
   return (
-    <>
+    <SentryRoutingInstrumentationContext.Provider
+      value={routingInstrumentation}
+    >
       <IntlProvider
         locale={locale}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,6 +122,8 @@ export default function App() {
         <AuthorizationNavigation />
         <Toast />
       </IntlProvider>
-    </>
+    </SentryRoutingInstrumentationContext.Provider>
   );
 }
+
+export default sentryWrap(App);
