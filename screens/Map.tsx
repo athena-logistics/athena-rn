@@ -14,8 +14,8 @@ export default function Map() {
       // dimensions when it's rendered naturally. Not the intrinsic size.
       // For example, an image with an intrinsic size of 400x200 will be rendered as 300x150 in this case.
       // Therefore, we'll feed the zoomable view the 300x150 size.
-      contentWidth={3307}
-      contentHeight={4677}
+      contentWidth={4960}
+      contentHeight={7015}
     >
       <View>
         <Image source={require('../assets/buskers-map.jpg')} />
