@@ -49,7 +49,6 @@
     },
     "plugins": [
       "expo-localization",
-      "sentry-expo",
       "expo-font",
       [
         "@sentry/react-native/expo",

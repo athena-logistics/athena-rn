@@ -22,6 +22,7 @@
   "dependencies": {
     "@apollo/client": "^3.10.2",
     "@expo-google-fonts/open-sans": "^0.2.3",
+    "@expo/metro-config": "~0.17.1",
     "@expo/vector-icons": "^14.0.1",
     "@graphql-codegen/cli": "^5.0.2",
     "@openspacelabs/react-native-zoomable-view": "^2.2.0",
@@ -60,9 +61,7 @@
     "react-native-sectioned-multi-select": "^0.10.0",
     "react-native-toast-message": "^2.2.0",
     "react-native-web": "~0.19.11",
-    "sentry-expo": "~7.2.0",
-    "typescript": "^5.4.5",
-    "@expo/metro-config": "~0.17.1"
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
