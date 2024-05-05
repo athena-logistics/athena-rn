@@ -25,7 +25,7 @@ const patchedAppJson = JSON.stringify(
   2,
 );
 
-const formattedAppJson = format(patchedAppJson, {
+const formattedAppJson = await format(patchedAppJson, {
   parser: 'json',
   filepath: pathJoin(root, 'app.json'),
 });
