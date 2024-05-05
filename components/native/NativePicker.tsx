@@ -37,17 +37,17 @@ export default function NativePicker({
       confirmText={props.confirmText ?? 'OK'}
       alwaysShowSelectText={props.alwaysShowSelectText ?? true}
       dropDownToggleIconUpComponent={
-        <Ionicons name="ios-chevron-up" color={colors.primary} size={22} />
+        <Ionicons name="chevron-up" color={colors.primary} size={22} />
       }
       dropDownToggleIconDownComponent={
-        <Ionicons name={'ios-chevron-down'} color={colors.primary} size={22} />
+        <Ionicons name={'chevron-down'} color={colors.primary} size={22} />
       }
       modalWithSafeAreaView={true}
       modalWithTouchable={true}
       selectedIconOnLeft={true}
       selectedIconComponent={
         <Ionicons
-          name={'ios-heart-dislike-circle'}
+          name={'heart-dislike-circle'}
           color={colors.primary}
           size={22}
         />
@@ -55,7 +55,7 @@ export default function NativePicker({
       expandDropDowns={true}
       showCancelButton={true}
       selectToggleIconComponent={
-        <Ionicons name={'ios-chevron-down'} color={colors.primary} size={22} />
+        <Ionicons name={'chevron-down'} color={colors.primary} size={22} />
       }
       styles={{
         button: {

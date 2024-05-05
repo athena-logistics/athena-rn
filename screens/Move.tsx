@@ -65,7 +65,7 @@ export default function Move({
   const style = styles({ isPortrait, isLandscape, isLargeScreen });
 
   const [from, setFrom] = useState<LocationFragment>(
-    initialFrom ?? initialSupplyLocation
+    initialFrom ?? initialSupplyLocation,
   );
   const [to, setTo] = useState<LocationFragment | null>(initialTo ?? null);
 
@@ -76,17 +76,17 @@ export default function Move({
       : allItems.filter((item) => {
           return getNodes(event.stock).some(
             (stock) =>
-              stock.item.id === item.id && stock.location.id === from.id
+              stock.item.id === item.id && stock.location.id === from.id,
           );
         });
 
   const maxAvailablePerItem = Object.fromEntries(
     allItems.map((item) => {
       const stock = getNodes(event.stock).find(
-        (stock) => stock.item.id === item.id && stock.location.id === from.id
+        (stock) => stock.item.id === item.id && stock.location.id === from.id,
       );
       return [item.id, stock?.stock ?? (from.id === '-1' ? 1000 : 0)];
-    })
+    }),
   );
 
   const groupedAvailableItems = Object.entries(
@@ -97,11 +97,11 @@ export default function Move({
           ...acc,
           [item.itemGroup.id]: [...(acc[item.itemGroup.id] ?? []), item],
         }),
-        {} as Record<string, ItemFragment[]>
-      )
+        {} as Record<string, ItemFragment[]>,
+      ),
   ).map(([itemGroupId, items]) => {
     const itemGroup = getNodes(event.itemGroups).find(
-      (itemGroup) => itemGroup.id === itemGroupId
+      (itemGroup) => itemGroup.id === itemGroupId,
     );
 
     return {
@@ -248,7 +248,7 @@ export default function Move({
           itemId: stuff.item.id,
         };
         await createRelocateMutation({ variables });
-      })
+      }),
     );
   }, [moveState, from, to]);
 
@@ -283,7 +283,7 @@ export default function Move({
   const setStuffItem = (
     stuff: ItemState,
     index: number,
-    item: ItemFragment | null
+    item: ItemFragment | null,
   ) => {
     dispatch({
       type: MoveActionType.Change,
@@ -349,11 +349,7 @@ export default function Move({
           </View>
           <Ionicons
             size={33}
-            name={
-              isLargeScreen
-                ? 'ios-arrow-forward-circle'
-                : 'ios-arrow-down-circle'
-            }
+            name={isLargeScreen ? 'arrow-forward-circle' : 'arrow-down-circle'}
             style={style.arrowDown}
             color={colors.primary}
           />
@@ -412,7 +408,7 @@ export default function Move({
               {!!stuff.item && index > 0 && (
                 <Ionicons
                   size={25}
-                  name={'ios-trash'}
+                  name={'trash'}
                   color={colors.primary}
                   style={{ marginLeft: 10 }}
                   onPress={handleDelete(index)}

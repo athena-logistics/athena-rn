@@ -21,7 +21,7 @@ export default function LocationRow({
   event: LogisticEventConfigurationFragment;
 }) {
   const locationStock = getNodes(event.stock).filter(
-    (stock) => stock.location.id === location.id
+    (stock) => stock.location.id === location.id,
   );
 
   const getNumberOfItemsPerStatus = (status: StockEntryStatus) => {

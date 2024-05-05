@@ -56,7 +56,7 @@ export default function LocationDetails({
               stockEntry: stockEntries.find(
                 (stockEntries) =>
                   stockEntries.item.id === item.id &&
-                  stockEntries.location.id === location.id
+                  stockEntries.location.id === location.id,
               ),
             }))
             .filter(function (row): row is {

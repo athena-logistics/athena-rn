@@ -45,8 +45,8 @@ export default function MissingItemRow({
                   stockEntry.status === StockEntryStatus.Important
                     ? colors.red
                     : stockEntry.status === StockEntryStatus.Warning
-                    ? colors.orange
-                    : colors.primary,
+                      ? colors.orange
+                      : colors.primary,
               }}
               type="bold"
             >

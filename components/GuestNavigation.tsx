@@ -25,7 +25,7 @@ export default function GuestNavigation() {
       <AppDrawer.Screen
         name="scanner"
         options={{
-          drawerIcon: getTabBarIcon({ name: 'ios-qr-code-outline' }),
+          drawerIcon: getTabBarIcon({ name: 'qr-code-outline' }),
           lazy: true,
           unmountOnBlur: true,
           headerTitle: intl.formatMessage({

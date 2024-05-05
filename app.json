@@ -47,7 +47,19 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "plugins": ["expo-localization", "sentry-expo"],
+    "plugins": [
+      "expo-localization",
+      "sentry-expo",
+      "expo-font",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "app",
+          "organization": "athena-logistics"
+        }
+      ]
+    ],
     "hooks": {
       "postPublish": [
         {

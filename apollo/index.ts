@@ -7,7 +7,7 @@ export default function client(host: string) {
   const wsLink = new GraphQLWsLink(
     createClient({
       url: `wss://${host}/api/graphql-ws`,
-    })
+    }),
   );
 
   const httpLink = new HttpLink({
@@ -23,7 +23,7 @@ export default function client(host: string) {
       );
     },
     wsLink,
-    httpLink
+    httpLink,
   );
 
   const baseClient = new ApolloClient({

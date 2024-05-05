@@ -4,7 +4,7 @@ type Edge<Node> = { node?: Node | null | undefined };
 type Connection<Node> = { edges: Edge<Node>[] };
 
 export function getNodes<Node>(
-  connection: Connection<Node> | undefined | null
+  connection: Connection<Node> | undefined | null,
 ): Node[] {
   if (!connection) return [];
 
@@ -15,14 +15,14 @@ export function getNodes<Node>(
 
 export function isNodeType<TypeName extends string>(
   node: { __typename?: string } | null | undefined,
-  type: TypeName
+  type: TypeName,
 ): node is { __typename: TypeName } {
   return node !== null && node !== undefined && node.__typename === type;
 }
 
 export function assertNodeType<TypeName extends string>(
   node: { __typename?: string } | null | undefined,
-  type: TypeName
+  type: TypeName,
 ): asserts node is { __typename: TypeName } {
   if (!isNodeType(node, type))
     throw new Error(`Expected node of type ${type}, got ${node?.__typename}`);

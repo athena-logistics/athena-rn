@@ -41,15 +41,15 @@ export default function StockItemDetails({
   const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
 
   const item = getNodes(event.items).find(
-    (item) => item.id === stockEntry.item.id
+    (item) => item.id === stockEntry.item.id,
   );
   if (!item) throw new Error('Inconsistent State');
   const itemGroup = getNodes(event.itemGroups).find(
-    (itemGroup) => itemGroup.id === item.itemGroup.id
+    (itemGroup) => itemGroup.id === item.itemGroup.id,
   );
   if (!itemGroup) throw new Error('Inconsistent State');
   const location = getNodes(event.locations).find(
-    (location) => location.id === stockEntry.location.id
+    (location) => location.id === stockEntry.location.id,
   );
   if (!location) throw new Error('Inconsistent State');
 
@@ -60,18 +60,18 @@ export default function StockItemDetails({
   const [localStockExpectation, setLocalStockExpectation] =
     useState<StockExpectationFragment>(
       stockExpectations.find(
-        (stockExpectation) => stockExpectation.item.id === item.id
+        (stockExpectation) => stockExpectation.item.id === item.id,
       ) ?? {
         id: '-1',
         item: { id: item.id },
         importantThreshold: item.inverse ? 100 : 0,
         warningThreshold: item.inverse ? 100 : 0,
-      }
+      },
     );
 
   useEffect(() => {
     const newStockExpectation = stockExpectations.find(
-      (stockExpectation) => stockExpectation.item.id === item.id
+      (stockExpectation) => stockExpectation.item.id === item.id,
     );
 
     if (!newStockExpectation) return;
@@ -81,7 +81,7 @@ export default function StockItemDetails({
   }, [event]);
 
   function updateStockExpectationWarningThreshold(
-    which: 'warningThreshold' | 'importantThreshold'
+    which: 'warningThreshold' | 'importantThreshold',
   ) {
     return (threshold: number) => {
       setLocalStockExpectation((stockExpectation) => ({
@@ -294,7 +294,7 @@ export default function StockItemDetails({
       >
         <NativeNumberOnlyInput
           onChange={updateStockExpectationWarningThreshold(
-            'importantThreshold'
+            'importantThreshold',
           )}
           value={localStockExpectation.importantThreshold}
           textColor={colors.red}

@@ -58,7 +58,7 @@ export default function AppInfo() {
               }),
               onPress: async () => reloadAsync(),
             },
-          ]
+          ],
         );
       } else {
         Toast.show({

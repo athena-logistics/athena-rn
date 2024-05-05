@@ -24,7 +24,7 @@ export default function ItemDetails({
 }) {
   const locations = getNodes(event.locations);
   const itemStock = getNodes(event.stock).filter(
-    (stock) => stock.item.id === item.id
+    (stock) => stock.item.id === item.id,
   );
 
   const navigation = useNavigation<NavigationProp<LogisticsParamsList>>();
@@ -44,7 +44,7 @@ export default function ItemDetails({
         refreshing={stateReloading}
         renderItem={({ item: stockEntry }) => {
           const location = locations.find(
-            (location) => location.id === stockEntry.location.id
+            (location) => location.id === stockEntry.location.id,
           );
           if (!location) return null;
           return (

@@ -19,21 +19,16 @@ import { IntlProvider } from 'react-intl';
 import en from './compiled-lang/en.json';
 import de from './compiled-lang/de.json';
 import { SENTRY_DSN } from './constants/app';
-import * as Sentry from 'sentry-expo';
-import {
-  ReactNativeTracing,
-  ReactNavigationInstrumentation,
-  wrap as sentryWrap,
-} from '@sentry/react-native';
+import * as Sentry from '@sentry/react-native';
 import { SentryRoutingInstrumentationContext } from './contexts/sentry';
 
-const routingInstrumentation = new ReactNavigationInstrumentation();
+const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 
 Sentry.init({
   dsn: SENTRY_DSN,
   tracesSampleRate: 1,
   integrations: [
-    new ReactNativeTracing({
+    new Sentry.ReactNativeTracing({
       routingInstrumentation,
     }),
   ],
@@ -43,7 +38,7 @@ if (__DEV__) {
   LogBox.ignoreLogs(['Overwriting fontFamily style attribute preprocessor']);
 }
 
-const allTranslations: Record<string, unknown> = { en, de };
+const allTranslations: Record<string, typeof en | typeof de> = { en, de };
 
 const matchedLanguageTag: keyof typeof allTranslations | undefined =
   getLocales()
@@ -52,7 +47,7 @@ const matchedLanguageTag: keyof typeof allTranslations | undefined =
 const matchedLanguageCode: keyof typeof allTranslations | undefined =
   getLocales()
     .map((locale) => locale.languageCode)
-    .find((code) => code in allTranslations);
+    .find((code) => code && code in allTranslations) || undefined;
 const messages =
   allTranslations[matchedLanguageTag ?? matchedLanguageCode ?? 'en'];
 
@@ -89,7 +84,7 @@ function App() {
           'App successfully updated',
           'The app has been updated to the latest version. The app will now restart.',
           [{ text: 'OK', onPress: async () => reloadAsync() }],
-          { cancelable: false }
+          { cancelable: false },
         );
       }
     } catch (error) {
@@ -126,4 +121,4 @@ function App() {
   );
 }
 
-export default sentryWrap(App);
+export default Sentry.wrap(App);

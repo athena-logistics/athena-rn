@@ -42,7 +42,7 @@ const RootNavigator = createBottomTabNavigator<RootParamsList>();
 
 export default function AuthorizationNavigation(): JSX.Element | null {
   const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext
+    SentryRoutingInstrumentationContext,
   );
 
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
@@ -130,7 +130,7 @@ function Init() {
 }
 
 function persistRouteChange(
-  route: RouteProp<RootParamsList, keyof RootParamsList>
+  route: RouteProp<RootParamsList, keyof RootParamsList>,
 ) {
   switch (route.name) {
     case 'guest':
