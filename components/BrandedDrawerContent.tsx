@@ -8,7 +8,7 @@ import NativeText from './native/NativeText';
 import fonts from '../constants/fonts';
 
 export default function BrandedDrawerContent(
-  props: DrawerContentComponentProps & { children?: JSX.Element }
+  props: DrawerContentComponentProps & { children?: JSX.Element },
 ) {
   return (
     <DrawerContentScrollView {...props}>

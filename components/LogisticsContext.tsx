@@ -76,7 +76,7 @@ export default function LogisticsContext({
         case 'Consumption':
           newStockEntries.push(
             ...(subscriptionData.data.movementCreated.location.stock?.edges ??
-              [])
+              []),
           );
           break;
         case 'Relocation':
@@ -84,15 +84,15 @@ export default function LogisticsContext({
             ...(subscriptionData.data.movementCreated.sourceLocation.stock
               ?.edges ?? []),
             ...(subscriptionData.data.movementCreated.destinationLocation.stock
-              ?.edges ?? [])
+              ?.edges ?? []),
           );
           break;
       }
 
       const newStockBlocklist = new Set(
         newStockEntries.map(
-          (edge) => `${edge.node?.location.id}-${edge.node?.item.id}`
-        )
+          (edge) => `${edge.node?.location.id}-${edge.node?.item.id}`,
+        ),
       );
 
       return {
@@ -106,8 +106,8 @@ export default function LogisticsContext({
               ...previousResult.event.stock.edges.filter(
                 (edge) =>
                   !newStockBlocklist.has(
-                    `${edge.node?.location.id}-${edge.node?.item.id}`
-                  )
+                    `${edge.node?.location.id}-${edge.node?.item.id}`,
+                  ),
               ),
             ],
           },

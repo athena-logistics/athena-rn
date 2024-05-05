@@ -22,7 +22,7 @@ const isPortrait = () => {
 export const useOrientation = (): Orientation => {
   // State to hold the connection status
   const [orientation, setOrientation] = useState<'PORTRAIT' | 'LANDSCAPE'>(
-    isPortrait() ? 'PORTRAIT' : 'LANDSCAPE'
+    isPortrait() ? 'PORTRAIT' : 'LANDSCAPE',
   );
 
   const callback = () => {

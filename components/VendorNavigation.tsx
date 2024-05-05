@@ -42,7 +42,7 @@ export default function VendorNavigation({
   useEffect(() => subscribeToNewMovements(), []);
 
   const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext
+    SentryRoutingInstrumentationContext,
   );
 
   const intl = useIntl();
@@ -67,7 +67,7 @@ export default function VendorNavigation({
         <AppDrawer.Screen
           name="location-details"
           options={{
-            drawerIcon: getTabBarIcon({ name: 'ios-list-outline' }),
+            drawerIcon: getTabBarIcon({ name: 'list-outline' }),
             headerTitle: location.name,
             drawerLabel: intl.formatMessage({
               id: 'screen.overview',
@@ -95,7 +95,7 @@ export default function VendorNavigation({
               id: 'screen.map',
               defaultMessage: 'Map',
             }),
-            drawerIcon: getTabBarIcon({ name: 'ios-map-outline' }),
+            drawerIcon: getTabBarIcon({ name: 'map-outline' }),
             drawerLabel: intl.formatMessage({
               id: 'screen.map',
               defaultMessage: 'Map',

@@ -96,7 +96,7 @@ function moveReducer(state: MoveState, action: MoveAction): MoveState {
 export function useItemStore(
   initialState: MoveState = {
     stuff: [{ ...defaultItem }],
-  }
+  },
 ) {
   return useReducer(moveReducer, initialState);
 }

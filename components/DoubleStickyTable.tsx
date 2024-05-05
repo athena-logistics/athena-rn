@@ -174,7 +174,7 @@ function sliceTable<T>(table: T[][]) {
 
 function mapCells<A, B>(
   table: A[][],
-  mapper: (cell: A, index: number) => B
+  mapper: (cell: A, index: number) => B,
 ): B[][] {
   return table.map((row) => row.map((cell, index) => mapper(cell, index)));
 }

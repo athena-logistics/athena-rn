@@ -18,7 +18,7 @@ export default function NativeNumberOnlyInput(
     | 'customIncIcon'
     | 'leftButtonBackgroundColor'
     | 'rightButtonBackgroundColor'
-  >
+  >,
 ) {
   const textColor = props.textColor ?? colors.primary;
   return (
@@ -33,10 +33,10 @@ export default function NativeNumberOnlyInput(
         totalWidth={150}
         totalHeight={70}
         customDecIcon={
-          <Ionicons size={44} name={'ios-remove-circle'} color={textColor} />
+          <Ionicons size={44} name={'remove-circle'} color={textColor} />
         }
         customIncIcon={
-          <Ionicons size={44} name={'ios-add-circle'} color={textColor} />
+          <Ionicons size={44} name={'add-circle'} color={textColor} />
         }
         leftButtonBackgroundColor={'transparent'}
         rightButtonBackgroundColor={'transparent'}

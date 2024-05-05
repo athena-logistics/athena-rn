@@ -98,7 +98,7 @@ export default function LogisticNavigation({
   useEffect(() => subscribeToNewMovements(), []);
 
   const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext
+    SentryRoutingInstrumentationContext,
   );
 
   const intl = useIntl();
@@ -106,7 +106,7 @@ export default function LogisticNavigation({
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
 
   const missingItemCount = getNodes(event.stock).filter(
-    (stockEntry) => stockEntry.missingCount > 0
+    (stockEntry) => stockEntry.missingCount > 0,
   ).length;
 
   return (
@@ -127,7 +127,7 @@ export default function LogisticNavigation({
         <AppDrawer.Screen
           name="stack"
           options={{
-            drawerIcon: getTabBarIcon({ name: 'ios-list-outline' }),
+            drawerIcon: getTabBarIcon({ name: 'list-outline' }),
             headerShown: false,
             drawerLabel: intl.formatMessage({
               id: 'screen.overview',
@@ -265,14 +265,14 @@ export default function LogisticNavigation({
                 name="stock-item"
                 options={(props) => {
                   const item = getNodes(event.items).find(
-                    (item) => item.id === props.route.params.stock.item.id
+                    (item) => item.id === props.route.params.stock.item.id,
                   );
                   const itemGroup = getNodes(event.itemGroups).find(
-                    (itemGroup) => itemGroup.id === item?.itemGroup.id
+                    (itemGroup) => itemGroup.id === item?.itemGroup.id,
                   );
                   const location = getNodes(event.locations).find(
                     (location) =>
-                      location.id === props.route.params.stock.location.id
+                      location.id === props.route.params.stock.location.id,
                   );
                   return {
                     title: `${itemGroup?.name} / ${item?.name}`,
@@ -320,7 +320,7 @@ export default function LogisticNavigation({
                 options={(props) => {
                   const itemGroup = getNodes(event.itemGroups).find(
                     (itemGroup) =>
-                      itemGroup.id === props.route.params.item.itemGroup.id
+                      itemGroup.id === props.route.params.item.itemGroup.id,
                   );
                   return {
                     title: props.route.params.item.name,
@@ -383,7 +383,7 @@ export default function LogisticNavigation({
               id: 'screen.map',
               defaultMessage: 'Map',
             }),
-            drawerIcon: getTabBarIcon({ name: 'ios-map-outline' }),
+            drawerIcon: getTabBarIcon({ name: 'map-outline' }),
             drawerLabel: intl.formatMessage({
               id: 'screen.map',
               defaultMessage: 'Map',

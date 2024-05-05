@@ -7,14 +7,14 @@ import NativeButton from '../components/native/NativeButton';
 import NativeScreen from '../components/native/NativeScreen';
 
 const EXTRACT_LOGISTICS_EXPRESSION = new RegExp(
-  `^https://(.+)/logistics/events/((\\d|[a-z]|-)+)/overview$`
+  `^https://(.+)/logistics/events/((\\d|[a-z]|-)+)/overview$`,
 );
 const EXTRACT_VENDOR_EXPRESSION = new RegExp(
-  `^https://(.+)/vendor/locations/((\\d|[a-z]|-)+)$`
+  `^https://(.+)/vendor/locations/((\\d|[a-z]|-)+)$`,
 );
 
 function extractLogisticsAccess(
-  data: string
+  data: string,
 ): false | { apiHost: string; eventId: string } {
   const matches = data.match(EXTRACT_LOGISTICS_EXPRESSION);
   if (!matches) return false;
@@ -26,7 +26,7 @@ function extractLogisticsAccess(
 }
 
 function extractVendorAccess(
-  data: string
+  data: string,
 ): false | { apiHost: string; locationId: string } {
   const matches = data.match(EXTRACT_VENDOR_EXPRESSION);
   if (!matches) return false;

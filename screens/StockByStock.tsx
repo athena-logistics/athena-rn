@@ -77,7 +77,7 @@ export default function StockByStock({
               >
                 <Ionicons
                   size={19}
-                  name={'ios-refresh-circle-outline'}
+                  name={'refresh-circle-outline'}
                   color={colors.primary}
                 />
 
@@ -164,7 +164,7 @@ export default function StockByStock({
             ),
           };
       }
-    })
+    }),
   );
 
   const horizontalColumnEquivalentCount = locations.length + 2;
@@ -174,7 +174,7 @@ export default function StockByStock({
   const columnWidth = Math.max(width / horizontalColumnEquivalentCount, 60);
   const transposedColumnWidth = Math.max(
     width / transposedHorizontalColumnEquivalentCount,
-    70
+    70,
   );
 
   return (
@@ -227,7 +227,7 @@ function tableData(
   locations: LocationFragment[],
   itemGroups: ItemGroupFragment[],
   items: ItemFragment[],
-  stock: StockFragment[]
+  stock: StockFragment[],
 ): Cell[][] {
   return [
     [
@@ -236,7 +236,7 @@ function tableData(
         (location): Cell => ({
           type: CellType.Location,
           location,
-        })
+        }),
       ),
     ],
     ...itemGroups.flatMap((itemGroup): Cell[][] => [
@@ -257,9 +257,9 @@ function tableData(
                 stock.find(
                   (stock) =>
                     stock.item.id === item.id &&
-                    stock.location.id === location.id
+                    stock.location.id === location.id,
                 ) ?? null,
-            })
+            }),
           ),
         ]),
     ]),

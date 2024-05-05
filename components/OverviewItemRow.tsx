@@ -26,16 +26,16 @@ export default function OverviewItemRow({
   itemGroup: ItemGroupFragment;
 }) {
   const items = getNodes(event.items).filter(
-    (item) => item.itemGroup.id === itemGroup.id
+    (item) => item.itemGroup.id === itemGroup.id,
   );
   const eventStock = getNodes(event.stock);
 
   const getNumberOfItemsPerStatus = (
     item: ItemFragment,
-    status: StockEntryStatus
+    status: StockEntryStatus,
   ) => {
     return eventStock.filter(
-      (stock) => stock.item.id === item.id && stock.status === status
+      (stock) => stock.item.id === item.id && stock.status === status,
     ).length;
   };
 

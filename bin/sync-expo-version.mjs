@@ -22,7 +22,7 @@ const patchedAppJson = JSON.stringify(
     },
   },
   undefined,
-  2
+  2,
 );
 
 const formattedAppJson = format(patchedAppJson, {

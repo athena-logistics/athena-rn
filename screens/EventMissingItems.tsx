@@ -40,11 +40,11 @@ export default function EventMissingItems({
           ...acc,
           [item.itemGroup.id]: [...(acc[item.itemGroup.id] ?? []), item],
         }),
-        {} as Record<string, ItemFragment[]>
-      )
+        {} as Record<string, ItemFragment[]>,
+      ),
   ).map(([itemGroupId, items]) => {
     const itemGroup = getNodes(event.itemGroups).find(
-      (itemGroup) => itemGroup.id === itemGroupId
+      (itemGroup) => itemGroup.id === itemGroupId,
     );
 
     return {
@@ -60,13 +60,13 @@ export default function EventMissingItems({
     if (stockItem.missingCount < 1) return false;
     if (locationFilter.length > 0) {
       const locationMatches = locationFilter.some(
-        (location) => location.id === stockItem.location.id
+        (location) => location.id === stockItem.location.id,
       );
       if (!locationMatches) return false;
     }
     if (itemFilter.length > 0) {
       const itemMatches = itemFilter.some(
-        (item) => item.id === stockItem.item.id
+        (item) => item.id === stockItem.item.id,
       );
       if (!itemMatches) return false;
     }
@@ -155,10 +155,10 @@ export default function EventMissingItems({
               refreshing={stateReloading}
               renderItem={({ item: stockEntry }) => {
                 const item = items.find(
-                  (item) => item.id === stockEntry.item.id
+                  (item) => item.id === stockEntry.item.id,
                 );
                 const location = locations.find(
-                  (location) => location.id === stockEntry.location.id
+                  (location) => location.id === stockEntry.location.id,
                 );
                 if (!location || !item)
                   throw new Error('Inconsistent Internal State');
