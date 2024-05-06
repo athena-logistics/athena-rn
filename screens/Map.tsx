@@ -15,7 +15,7 @@ export default function Map() {
       // For example, an image with an intrinsic size of 400x200 will be rendered as 300x150 in this case.
       // Therefore, we'll feed the zoomable view the 300x150 size.
       contentWidth={4000}
-      contentHeight={5658}
+      contentHeight={5657}
     >
       <View>
         <Image source={require('../assets/aufgetischt-map.jpg')} />
