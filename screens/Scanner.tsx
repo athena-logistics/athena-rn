@@ -1,7 +1,11 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
+import {
+  BarcodeScanningResult,
+  CameraView,
+  useCameraPermissions,
+} from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 import { RootParamsList } from '../components/AuthorizationNavigation';
 import NativeButton from '../components/native/NativeButton';
 import NativeScreen from '../components/native/NativeScreen';
@@ -40,24 +44,19 @@ function extractVendorAccess(
 export default function Scanner() {
   const navigation = useNavigation<NavigationProp<RootParamsList>>();
 
-  const [hasPermission, setHasPermission] = useState<boolean>();
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState<boolean>(false);
 
   useEffect(() => {
     async function load() {
-      if (hasPermission) return;
+      if (permission?.granted) return;
 
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      await requestPermission();
     }
     load();
   }, []);
 
-  const handleBarCodeScanned: BarCodeScannedCallback = async ({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type,
-    data,
-  }) => {
+  const handleBarCodeScanned = async ({ data }: BarcodeScanningResult) => {
     setScanned(true);
 
     const vendorAccessResult = extractVendorAccess(data);
@@ -76,14 +75,14 @@ export default function Scanner() {
     }
   };
 
-  if (hasPermission === undefined) {
+  if (!permission) {
     return (
       <NativeScreen>
         <Text>Requesting for camera permission</Text>
       </NativeScreen>
     );
   }
-  if (hasPermission === false) {
+  if (!permission.granted) {
     return (
       <NativeScreen>
         <Text>No access to camera</Text>
@@ -94,10 +93,13 @@ export default function Scanner() {
   return (
     <NativeScreen>
       {!scanned && (
-        <BarCodeScanner
-          onBarCodeScanned={handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        <CameraView
+          facing={'back'}
+          style={{ flex: 1, width: '100%', height: 10 }}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+          onBarcodeScanned={handleBarCodeScanned}
         />
       )}
       {scanned && (

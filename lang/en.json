@@ -110,9 +110,6 @@
   "screen.logout": {
     "defaultMessage": "Logout"
   },
-  "screen.map": {
-    "defaultMessage": "Map"
-  },
   "screen.move": {
     "defaultMessage": "Move"
   },

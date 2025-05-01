@@ -20,18 +20,16 @@ import en from './compiled-lang/en.json';
 import de from './compiled-lang/de.json';
 import { SENTRY_DSN } from './constants/app';
 import * as Sentry from '@sentry/react-native';
-import { SentryRoutingInstrumentationContext } from './contexts/sentry';
-
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+import { navigationIntegration } from './contexts/sentry';
+import { isRunningInExpoGo } from 'expo';
+import AvenirBlack from './assets/fonts/Avenir-Black.otf';
+import AvenirBook from './assets/fonts/Avenir-Black.otf';
 
 Sentry.init({
   dsn: SENTRY_DSN,
   tracesSampleRate: 1,
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      routingInstrumentation,
-    }),
-  ],
+  integrations: [navigationIntegration],
+  enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
 if (__DEV__) {
@@ -55,8 +53,8 @@ function App() {
   const [fontsLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_700Bold,
-    'Avenir-Black': require('./assets/fonts/Avenir-Black.otf'),
-    'Avenir-Book': require('./assets/fonts/Avenir-Book.otf'),
+    'Avenir-Black': AvenirBlack,
+    'Avenir-Book': AvenirBook,
   });
 
   useEffect(() => {
@@ -106,18 +104,14 @@ function App() {
   }
 
   return (
-    <SentryRoutingInstrumentationContext.Provider
-      value={routingInstrumentation}
+    <IntlProvider
+      locale={locale}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      messages={messages as any}
     >
-      <IntlProvider
-        locale={locale}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        messages={messages as any}
-      >
-        <AuthorizationNavigation />
-        <Toast />
-      </IntlProvider>
-    </SentryRoutingInstrumentationContext.Provider>
+      <AuthorizationNavigation />
+      <Toast />
+    </IntlProvider>
   );
 }
 

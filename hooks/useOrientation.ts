@@ -33,7 +33,8 @@ export const useOrientation = (): Orientation => {
     const subscription = Dimensions.addEventListener('change', callback);
 
     return () => {
-      subscription && subscription.remove();
+      if (!subscription) return;
+      subscription.remove();
     };
   }, []);
 

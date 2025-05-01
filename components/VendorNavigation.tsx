@@ -4,18 +4,17 @@ import {
   NavigationContainerRef,
   NavigationProp,
 } from '@react-navigation/native';
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { LocationDetailsQuery } from '../apollo/schema';
+import { navigationIntegration } from '../contexts/sentry';
 import { getTabBarIcon } from '../helpers/icon';
 import { defaultScreenOptionsDrawer } from '../helpers/navigationOptions';
 import LocationDetails from '../screens/LocationDetails';
 import Logout from '../screens/Logout';
-import Map from '../screens/Map';
 import AppInfo from './AppInfo';
 import { RootParamsList } from './AuthorizationNavigation';
 import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
-import { SentryRoutingInstrumentationContext } from '../contexts/sentry';
 
 export type VendorParamsList = {
   'location-details': undefined;
@@ -41,10 +40,6 @@ export default function VendorNavigation({
 }) {
   useEffect(() => subscribeToNewMovements(), []);
 
-  const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext,
-  );
-
   const intl = useIntl();
 
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
@@ -54,7 +49,7 @@ export default function VendorNavigation({
       independent={true}
       ref={navigation}
       onReady={() =>
-        routingInstrumentation?.registerNavigationContainer(navigation)
+        navigationIntegration?.registerNavigationContainer(navigation)
       }
     >
       <AppDrawer.Navigator
@@ -87,22 +82,6 @@ export default function VendorNavigation({
             />
           )}
         </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="map"
-          component={Map}
-          options={{
-            headerTitle: intl.formatMessage({
-              id: 'screen.map',
-              defaultMessage: 'Map',
-            }),
-            drawerIcon: getTabBarIcon({ name: 'map-outline' }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.map',
-              defaultMessage: 'Map',
-            }),
-            lazy: true,
-          }}
-        />
         <AppDrawer.Screen
           name="logout"
           options={{

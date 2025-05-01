@@ -1,5 +1,6 @@
-import { ReactNavigationInstrumentation } from '@sentry/react-native';
-import { createContext } from 'react';
+import * as Sentry from '@sentry/react-native';
+import { isRunningInExpoGo } from 'expo';
 
-export const SentryRoutingInstrumentationContext =
-  createContext<ReactNavigationInstrumentation | null>(null);
+export const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+});

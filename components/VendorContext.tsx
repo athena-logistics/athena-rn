@@ -81,10 +81,10 @@ export default function VendorContext({
           newStockEntries =
             subscriptionData.data.movementCreated.sourceLocation.id ===
             data?.location?.id
-              ? subscriptionData.data.movementCreated.sourceLocation.stock
-                  ?.edges ?? []
-              : subscriptionData.data.movementCreated.destinationLocation.stock
-                  ?.edges ?? [];
+              ? (subscriptionData.data.movementCreated.sourceLocation.stock
+                  ?.edges ?? [])
+              : (subscriptionData.data.movementCreated.destinationLocation.stock
+                  ?.edges ?? []);
           break;
       }
 

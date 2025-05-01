@@ -6,6 +6,7 @@ import {
 import { Image, StyleSheet, View } from 'react-native';
 import NativeText from './native/NativeText';
 import fonts from '../constants/fonts';
+import Logo from '../assets/logo.png';
 
 export default function BrandedDrawerContent(
   props: DrawerContentComponentProps & { children?: JSX.Element },
@@ -13,7 +14,7 @@ export default function BrandedDrawerContent(
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.container}>
-        <Image style={styles.logo} source={require('../assets/logo.png')} />
+        <Image style={styles.logo} source={Logo} />
         {props.children}
       </View>
       <DrawerItemList {...props} />

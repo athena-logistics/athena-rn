@@ -9,11 +9,10 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import { ActivityIndicator } from 'react-native';
 import client from '../apollo';
 import colors from '../constants/colors';
-import { SentryRoutingInstrumentationContext } from '../contexts/sentry';
 import {
   Type,
   loadInitialState,
@@ -41,10 +40,6 @@ export type RootParamsList = {
 const RootNavigator = createBottomTabNavigator<RootParamsList>();
 
 export default function AuthorizationNavigation(): JSX.Element | null {
-  const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext,
-  );
-
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
 
   return (
@@ -62,9 +57,6 @@ export default function AuthorizationNavigation(): JSX.Element | null {
       }}
       fallback={<ActivityIndicator size={'large'} color={colors.primary} />}
       ref={navigation}
-      onReady={() =>
-        routingInstrumentation?.registerNavigationContainer(navigation)
-      }
     >
       <RootNavigator.Navigator
         screenListeners={(navigation) => ({

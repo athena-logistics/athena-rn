@@ -11,7 +11,7 @@ import {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import {
   EventDetailsQuery,
@@ -20,6 +20,7 @@ import {
   StockFragment,
 } from '../apollo/schema';
 import colors from '../constants/colors';
+import { navigationIntegration } from '../contexts/sentry';
 import { getNodes } from '../helpers/apollo';
 import { getTabBarIcon } from '../helpers/icon';
 import {
@@ -33,7 +34,6 @@ import ItemOverview from '../screens/ItemOverview';
 import LocationDetails from '../screens/LocationDetails';
 import LocationOverview from '../screens/LocationOverview';
 import Logout from '../screens/Logout';
-import Map from '../screens/Map';
 import Move from '../screens/Move';
 import { ItemState } from '../screens/Move/store';
 import StockByStock from '../screens/StockByStock';
@@ -42,7 +42,6 @@ import AppInfo from './AppInfo';
 import { RootParamsList } from './AuthorizationNavigation';
 import { BrandedDrawerWithTitle } from './BrandedDrawerContent';
 import NativeText from './native/NativeText';
-import { SentryRoutingInstrumentationContext } from '../contexts/sentry';
 
 export type LogisticsParamsList = {
   stack: NavigatorScreenParams<LogisticStackParamsList> | undefined;
@@ -97,10 +96,6 @@ export default function LogisticNavigation({
 }) {
   useEffect(() => subscribeToNewMovements(), []);
 
-  const routingInstrumentation = useContext(
-    SentryRoutingInstrumentationContext,
-  );
-
   const intl = useIntl();
 
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
@@ -114,7 +109,7 @@ export default function LogisticNavigation({
       independent={true}
       ref={navigation}
       onReady={() =>
-        routingInstrumentation?.registerNavigationContainer(navigation)
+        navigationIntegration?.registerNavigationContainer(navigation)
       }
     >
       <AppDrawer.Navigator
@@ -375,22 +370,6 @@ export default function LogisticNavigation({
             />
           )}
         </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="map"
-          component={Map}
-          options={{
-            headerTitle: intl.formatMessage({
-              id: 'screen.map',
-              defaultMessage: 'Map',
-            }),
-            drawerIcon: getTabBarIcon({ name: 'map-outline' }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.map',
-              defaultMessage: 'Map',
-            }),
-            lazy: true,
-          }}
-        />
         <AppDrawer.Screen
           name="logout"
           options={{

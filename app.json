@@ -11,6 +11,7 @@
     "primaryColor": "#32ad9a",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -20,13 +21,16 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/56dadff6-b710-49de-be96-bd71ba796229"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "io.athena-logistics.athena-rn",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to use the camera to scan a QR code",
-        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -34,7 +38,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "io.athena_logistics.athena_rn"
+      "package": "io.athena_logistics.athena_rn",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -57,18 +64,23 @@
           "project": "app",
           "organization": "athena-logistics"
         }
-      ]
-    ],
-    "hooks": {
-      "postPublish": [
+      ],
+      [
+        "expo-camera",
         {
-          "file": "sentry-expo/upload-sourcemaps",
-          "config": {
-            "organization": "athena-logistics",
-            "project": "app"
-          }
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": false
         }
-      ]
-    }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "athena-logistics",
+          "project": "app"
+        }
+      ],
+      "expo-asset"
+    ]
   }
 }

@@ -26,6 +26,7 @@ import {
 import colors from '../constants/colors';
 import NativeButton from './native/NativeButton';
 import NativeText from './native/NativeText';
+import Logo from '../assets/logo.png';
 
 export default function AppInfo() {
   const intl = useIntl();
@@ -96,7 +97,7 @@ export default function AppInfo() {
       <ScrollView style={styles.body}>
         <View style={styles.row}>
           <TouchableOpacity onPress={() => Linking.openURL(GITHUB_URL)}>
-            <Image style={styles.logo} source={require('../assets/logo.png')} />
+            <Image style={styles.logo} source={Logo} />
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
