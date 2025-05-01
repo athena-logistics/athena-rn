@@ -21,9 +21,7 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/56dadff6-b710-49de-be96-bd71ba796229"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "io.athena-logistics.athena-rn",
@@ -39,9 +37,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "io.athena_logistics.athena_rn",
-      "permissions": [
-        "android.permission.CAMERA"
-      ]
+      "permissions": ["android.permission.CAMERA"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
