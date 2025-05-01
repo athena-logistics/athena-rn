@@ -20,6 +20,7 @@ import colors from '../constants/colors';
 import { RootParamsList } from './AuthorizationNavigation';
 import Crash from './Crash';
 import LogisticNavigation from './LogisticNavigation';
+import { JSX } from 'react';
 
 export default function LogisticsContext({
   eventId,

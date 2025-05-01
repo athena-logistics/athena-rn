@@ -7,6 +7,7 @@ import { Image, StyleSheet, View } from 'react-native';
 import NativeText from './native/NativeText';
 import fonts from '../constants/fonts';
 import Logo from '../assets/logo.png';
+import { JSX } from 'react';
 
 export default function BrandedDrawerContent(
   props: DrawerContentComponentProps & { children?: JSX.Element },

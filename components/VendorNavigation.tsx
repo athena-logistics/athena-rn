@@ -2,6 +2,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
   NavigationContainer,
   NavigationContainerRef,
+  NavigationIndependentTree,
   NavigationProp,
 } from '@react-navigation/native';
 import { useEffect, useRef } from 'react';
@@ -45,79 +46,78 @@ export default function VendorNavigation({
   const navigation = useRef<NavigationContainerRef<RootParamsList>>(null);
 
   return (
-    <NavigationContainer
-      independent={true}
-      ref={navigation}
-      onReady={() =>
-        navigationIntegration?.registerNavigationContainer(navigation)
-      }
-    >
-      <AppDrawer.Navigator
-        initialRouteName="location-details"
-        screenOptions={defaultScreenOptionsDrawer}
-        drawerContent={(props) => (
-          <BrandedDrawerWithTitle {...props} title={location.event.name} />
-        )}
+    <NavigationIndependentTree>
+      <NavigationContainer
+        ref={navigation}
+        onReady={() =>
+          navigationIntegration?.registerNavigationContainer(navigation)
+        }
       >
-        <AppDrawer.Screen
-          name="location-details"
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'list-outline' }),
-            headerTitle: location.name,
-            drawerLabel: intl.formatMessage({
-              id: 'screen.overview',
-              defaultMessage: 'Overview',
-            }),
-            lazy: true,
-          }}
-        >
-          {(props) => (
-            <LocationDetails
-              {...props}
-              location={location}
-              event={location.event}
-              refetch={refetch}
-              stockEntriesConnection={location.stock}
-              stateReloading={stateReloading}
-            />
+        <AppDrawer.Navigator
+          initialRouteName="location-details"
+          screenOptions={defaultScreenOptionsDrawer}
+          drawerContent={(props) => (
+            <BrandedDrawerWithTitle {...props} title={location.event.name} />
           )}
-        </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="logout"
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'log-out-outline' }),
-            lazy: true,
-            unmountOnBlur: true,
-            headerTitle: intl.formatMessage({
-              id: 'screen.logout',
-              defaultMessage: 'Logout',
-            }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.logout',
-              defaultMessage: 'Logout',
-            }),
-          }}
         >
-          {() => <Logout navigation={rootNavigation} />}
-        </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="info"
-          component={AppInfo}
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'information-circle-outline' }),
-            lazy: false,
-            unmountOnBlur: true,
-            headerTitle: intl.formatMessage({
-              id: 'screen.appInfo',
-              defaultMessage: 'Info',
-            }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.appInfo',
-              defaultMessage: 'Info',
-            }),
-          }}
-        />
-      </AppDrawer.Navigator>
-    </NavigationContainer>
+          <AppDrawer.Screen
+            name="location-details"
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'list-outline' }),
+              headerTitle: location.name,
+              drawerLabel: intl.formatMessage({
+                id: 'screen.overview',
+                defaultMessage: 'Overview',
+              }),
+              lazy: true,
+            }}
+          >
+            {(props) => (
+              <LocationDetails
+                {...props}
+                location={location}
+                event={location.event}
+                refetch={refetch}
+                stockEntriesConnection={location.stock}
+                stateReloading={stateReloading}
+              />
+            )}
+          </AppDrawer.Screen>
+          <AppDrawer.Screen
+            name="logout"
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'log-out-outline' }),
+              lazy: true,
+              headerTitle: intl.formatMessage({
+                id: 'screen.logout',
+                defaultMessage: 'Logout',
+              }),
+              drawerLabel: intl.formatMessage({
+                id: 'screen.logout',
+                defaultMessage: 'Logout',
+              }),
+            }}
+          >
+            {() => <Logout navigation={rootNavigation} />}
+          </AppDrawer.Screen>
+          <AppDrawer.Screen
+            name="info"
+            component={AppInfo}
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'information-circle-outline' }),
+              lazy: false,
+              headerTitle: intl.formatMessage({
+                id: 'screen.appInfo',
+                defaultMessage: 'Info',
+              }),
+              drawerLabel: intl.formatMessage({
+                id: 'screen.appInfo',
+                defaultMessage: 'Info',
+              }),
+            }}
+          />
+        </AppDrawer.Navigator>
+      </NavigationContainer>
+    </NavigationIndependentTree>
   );
 }

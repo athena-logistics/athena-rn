@@ -9,7 +9,7 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
-import React, { useRef } from 'react';
+import React, { JSX, useRef } from 'react';
 import { ActivityIndicator } from 'react-native';
 import client from '../apollo';
 import colors from '../constants/colors';
@@ -62,7 +62,7 @@ export default function AuthorizationNavigation(): JSX.Element | null {
         screenListeners={(navigation) => ({
           focus: () => persistRouteChange(navigation.route),
         })}
-        screenOptions={{ headerShown: false, unmountOnBlur: true, lazy: true }}
+        screenOptions={{ headerShown: false, lazy: true }}
         tabBar={() => null}
       >
         <RootNavigator.Screen name="init" component={Init} />

@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import IonIcon from './native/IonIcon';
 import colors from '../constants/colors';
 import NativeText from './native/NativeText';
+import { JSX } from 'react';
 
 export default function Crash({ retry }: { retry: () => void }): JSX.Element {
   const intl = useIntl();

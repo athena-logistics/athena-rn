@@ -29,7 +29,7 @@ jobs:
             npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
 
       - name: Install dependencies
-        run: npm ci --force --prefer-offline
+        run: npm ci --prefer-offline
 
       - name: Run Typescript
         run: npm run test:types
@@ -59,7 +59,7 @@ jobs:
             npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
 
       - name: Install dependencies
-        run: npm ci --force --prefer-offline
+        run: npm ci --prefer-offline
 
       - name: Run Linter
         run: npm run test:lint
@@ -89,7 +89,7 @@ jobs:
             npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
 
       - name: Install dependencies
-        run: npm ci --force --prefer-offline
+        run: npm ci --prefer-offline
 
       - name: Run Formatter
         run: npm run test:format
@@ -119,7 +119,7 @@ jobs:
             npm-${{ runner.os }}-${{ steps.setup-node.outputs.node-version }}-
 
       - name: Install dependencies
-        run: npm ci --force --prefer-offline
+        run: npm ci --prefer-offline
 
       - name: Validate Expo Deps Consistent
         run: npx expo install --check

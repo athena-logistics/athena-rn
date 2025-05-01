@@ -7,6 +7,7 @@ import {
 import {
   NavigationContainer,
   NavigationContainerRef,
+  NavigationIndependentTree,
   NavigationProp,
   NavigatorScreenParams,
 } from '@react-navigation/native';
@@ -105,307 +106,318 @@ export default function LogisticNavigation({
   ).length;
 
   return (
-    <NavigationContainer
-      independent={true}
-      ref={navigation}
-      onReady={() =>
-        navigationIntegration?.registerNavigationContainer(navigation)
-      }
-    >
-      <AppDrawer.Navigator
-        initialRouteName="stack"
-        screenOptions={defaultScreenOptionsDrawer}
-        drawerContent={(props) => (
-          <BrandedDrawerWithTitle {...props} title={event.name} />
-        )}
+    <NavigationIndependentTree>
+      <NavigationContainer
+        ref={navigation}
+        onReady={() =>
+          navigationIntegration?.registerNavigationContainer(navigation)
+        }
       >
-        <AppDrawer.Screen
-          name="stack"
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'list-outline' }),
-            headerShown: false,
-            drawerLabel: intl.formatMessage({
-              id: 'screen.overview',
-              defaultMessage: 'Overview',
-            }),
-            lazy: true,
-          }}
+        <AppDrawer.Navigator
+          initialRouteName="stack"
+          screenOptions={defaultScreenOptionsDrawer}
+          drawerContent={(props) => (
+            <BrandedDrawerWithTitle {...props} title={event.name} />
+          )}
         >
-          {(props) => (
-            <OverviewStack.Navigator
-              {...props}
-              screenOptions={defaultScreenOptionsStack}
-            >
-              <OverviewStack.Screen
-                name="overview"
-                options={() => ({
-                  headerShown: false,
-                })}
+          <AppDrawer.Screen
+            name="stack"
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'list-outline' }),
+              headerShown: false,
+              drawerLabel: intl.formatMessage({
+                id: 'screen.overview',
+                defaultMessage: 'Overview',
+              }),
+              lazy: true,
+            }}
+          >
+            {(props) => (
+              <OverviewStack.Navigator
+                {...props}
+                screenOptions={defaultScreenOptionsStack}
               >
-                {(props) => (
-                  <OverviewTab.Navigator
-                    {...props}
-                    screenOptions={{
-                      ...defaultScreenOptionsBottomTab,
-                      headerLeft: (props) => <DrawerToggleButton {...props} />,
-                    }}
-                  >
-                    <OverviewTab.Screen
-                      name="all"
-                      options={{
-                        tabBarIcon: ({ focused }) => (
-                          <MaterialCommunityIcons
-                            name="view-dashboard"
-                            size={24}
-                            color={focused ? colors.white : colors.primaryLight}
-                          />
-                        ),
-                        title: intl.formatMessage({
-                          id: 'screen.overview',
-                          defaultMessage: 'Overview',
-                        }),
-                      }}
-                    >
-                      {(props) => (
-                        <StockByStock
-                          {...props}
-                          event={event}
-                          refetch={refetch}
-                          stateReloading={stateReloading}
-                        />
-                      )}
-                    </OverviewTab.Screen>
-                    <OverviewTab.Screen
-                      name="location"
-                      options={{
-                        tabBarIcon: ({ focused }) => (
-                          <MaterialCommunityIcons
-                            name="home-group"
-                            size={24}
-                            color={focused ? colors.white : colors.primaryLight}
-                          />
-                        ),
-                        title: intl.formatMessage({
-                          id: 'screen.overview.location',
-                          defaultMessage: 'By Location',
-                        }),
-                      }}
-                    >
-                      {(props) => (
-                        <LocationOverview
-                          {...props}
-                          event={event}
-                          refetch={refetch}
-                          stateReloading={stateReloading}
-                        />
-                      )}
-                    </OverviewTab.Screen>
-
-                    <OverviewTab.Screen
-                      name="item"
-                      options={{
-                        title: intl.formatMessage({
-                          id: 'screen.overview.item',
-                          defaultMessage: 'By Item',
-                        }),
-                        tabBarIcon: ({ focused }) => (
-                          <MaterialCommunityIcons
-                            name="food-fork-drink"
-                            size={24}
-                            color={focused ? colors.white : colors.primaryLight}
-                          />
+                <OverviewStack.Screen
+                  name="overview"
+                  options={() => ({
+                    headerShown: false,
+                  })}
+                >
+                  {(props) => (
+                    <OverviewTab.Navigator
+                      {...props}
+                      screenOptions={{
+                        ...defaultScreenOptionsBottomTab,
+                        headerLeft: (props) => (
+                          <DrawerToggleButton {...props} />
                         ),
                       }}
                     >
-                      {(props) => (
-                        <ItemOverview
-                          {...props}
-                          event={event}
-                          refetch={refetch}
-                          stateReloading={stateReloading}
-                        />
-                      )}
-                    </OverviewTab.Screen>
-                    <OverviewTab.Screen
-                      name="missing-items"
-                      options={{
-                        title: intl.formatMessage({
-                          id: 'screen.overview.missingItems',
-                          defaultMessage: 'Missing Items',
-                        }),
-                        tabBarIcon: ({ focused }) => (
-                          <MaterialCommunityIcons
-                            name="crosshairs-gps"
-                            size={24}
-                            color={focused ? colors.white : colors.primaryLight}
-                          />
-                        ),
-                        tabBarBadge:
-                          missingItemCount === 0 ? undefined : missingItemCount,
-                      }}
-                    >
-                      {(props) => (
-                        <EventMissingItems
-                          {...props}
-                          event={event}
-                          refetch={refetch}
-                          stateReloading={stateReloading}
-                        />
-                      )}
-                    </OverviewTab.Screen>
-                  </OverviewTab.Navigator>
-                )}
-              </OverviewStack.Screen>
-              <OverviewStack.Screen
-                name="stock-item"
-                options={(props) => {
-                  const item = getNodes(event.items).find(
-                    (item) => item.id === props.route.params.stock.item.id,
-                  );
-                  const itemGroup = getNodes(event.itemGroups).find(
-                    (itemGroup) => itemGroup.id === item?.itemGroup.id,
-                  );
-                  const location = getNodes(event.locations).find(
-                    (location) =>
-                      location.id === props.route.params.stock.location.id,
-                  );
-                  return {
-                    title: `${itemGroup?.name} / ${item?.name}`,
-                    headerRight: () => (
-                      <NativeText
-                        style={{
-                          color: colors.white,
-                          padding: 10,
+                      <OverviewTab.Screen
+                        name="all"
+                        options={{
+                          tabBarIcon: ({ focused }) => (
+                            <MaterialCommunityIcons
+                              name="view-dashboard"
+                              size={24}
+                              color={
+                                focused ? colors.white : colors.primaryLight
+                              }
+                            />
+                          ),
+                          title: intl.formatMessage({
+                            id: 'screen.overview',
+                            defaultMessage: 'Overview',
+                          }),
                         }}
                       >
-                        {location?.name}
-                      </NativeText>
-                    ),
-                  };
-                }}
-              >
-                {(props) => (
-                  <StockItemDetails
-                    event={event}
-                    stockEntry={props.route.params.stock}
-                    refetch={refetch}
-                  />
-                )}
-              </OverviewStack.Screen>
-              <OverviewStack.Screen
-                name="location"
-                options={(props) => ({
-                  title: props.route.params.location.name,
-                })}
-              >
-                {(props) => (
-                  <LocationDetails
-                    location={props.route.params.location}
-                    event={event}
-                    refetch={refetch}
-                    stateReloading={stateReloading}
-                    stockEntriesConnection={event.stock}
-                    enableLogisticsLinks={true}
-                  />
-                )}
-              </OverviewStack.Screen>
-
-              <OverviewStack.Screen
-                name="item"
-                options={(props) => {
-                  const itemGroup = getNodes(event.itemGroups).find(
-                    (itemGroup) =>
-                      itemGroup.id === props.route.params.item.itemGroup.id,
-                  );
-                  return {
-                    title: props.route.params.item.name,
-                    headerRight: () => (
-                      <NativeText
-                        style={{
-                          color: colors.white,
-                          padding: 10,
+                        {(props) => (
+                          <StockByStock
+                            {...props}
+                            event={event}
+                            refetch={refetch}
+                            stateReloading={stateReloading}
+                          />
+                        )}
+                      </OverviewTab.Screen>
+                      <OverviewTab.Screen
+                        name="location"
+                        options={{
+                          tabBarIcon: ({ focused }) => (
+                            <MaterialCommunityIcons
+                              name="home-group"
+                              size={24}
+                              color={
+                                focused ? colors.white : colors.primaryLight
+                              }
+                            />
+                          ),
+                          title: intl.formatMessage({
+                            id: 'screen.overview.location',
+                            defaultMessage: 'By Location',
+                          }),
                         }}
                       >
-                        {itemGroup?.name}
-                      </NativeText>
-                    ),
-                  };
-                }}
-              >
-                {(props) => (
-                  <ItemDetails
-                    item={props.route.params.item}
-                    event={event}
-                    refetch={refetch}
-                    stateReloading={stateReloading}
-                  />
-                )}
-              </OverviewStack.Screen>
-            </OverviewStack.Navigator>
-          )}
-        </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="move"
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'arrow-forward-outline' }),
-            lazy: true,
-            headerTitle: intl.formatMessage({
-              id: 'screen.move',
-              defaultMessage: 'Move',
-            }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.move',
-              defaultMessage: 'Move',
-            }),
-          }}
-        >
-          {(props) => (
-            <Move
-              // Force Remount on Param Change
-              key={`${props.route.params?.from?.id}-${props.route.params?.to?.id}-${props.route.params?.items?.length}`}
-              event={event}
-              from={props.route.params?.from}
-              to={props.route.params?.to}
-              items={props.route.params?.items}
-            />
-          )}
-        </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="logout"
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'log-out-outline' }),
-            lazy: true,
-            unmountOnBlur: true,
-            headerTitle: intl.formatMessage({
-              id: 'screen.logout',
-              defaultMessage: 'Logout',
-            }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.logout',
-              defaultMessage: 'Logout',
-            }),
-          }}
-        >
-          {() => <Logout navigation={rootNavigation} />}
-        </AppDrawer.Screen>
-        <AppDrawer.Screen
-          name="info"
-          component={AppInfo}
-          options={{
-            drawerIcon: getTabBarIcon({ name: 'information-circle-outline' }),
-            lazy: false,
-            unmountOnBlur: true,
-            headerTitle: intl.formatMessage({
-              id: 'screen.appInfo',
-              defaultMessage: 'Info',
-            }),
-            drawerLabel: intl.formatMessage({
-              id: 'screen.appInfo',
-              defaultMessage: 'Info',
-            }),
-          }}
-        />
-      </AppDrawer.Navigator>
-    </NavigationContainer>
+                        {(props) => (
+                          <LocationOverview
+                            {...props}
+                            event={event}
+                            refetch={refetch}
+                            stateReloading={stateReloading}
+                          />
+                        )}
+                      </OverviewTab.Screen>
+
+                      <OverviewTab.Screen
+                        name="item"
+                        options={{
+                          title: intl.formatMessage({
+                            id: 'screen.overview.item',
+                            defaultMessage: 'By Item',
+                          }),
+                          tabBarIcon: ({ focused }) => (
+                            <MaterialCommunityIcons
+                              name="food-fork-drink"
+                              size={24}
+                              color={
+                                focused ? colors.white : colors.primaryLight
+                              }
+                            />
+                          ),
+                        }}
+                      >
+                        {(props) => (
+                          <ItemOverview
+                            {...props}
+                            event={event}
+                            refetch={refetch}
+                            stateReloading={stateReloading}
+                          />
+                        )}
+                      </OverviewTab.Screen>
+                      <OverviewTab.Screen
+                        name="missing-items"
+                        options={{
+                          title: intl.formatMessage({
+                            id: 'screen.overview.missingItems',
+                            defaultMessage: 'Missing Items',
+                          }),
+                          tabBarIcon: ({ focused }) => (
+                            <MaterialCommunityIcons
+                              name="crosshairs-gps"
+                              size={24}
+                              color={
+                                focused ? colors.white : colors.primaryLight
+                              }
+                            />
+                          ),
+                          tabBarBadge:
+                            missingItemCount === 0
+                              ? undefined
+                              : missingItemCount,
+                        }}
+                      >
+                        {(props) => (
+                          <EventMissingItems
+                            {...props}
+                            event={event}
+                            refetch={refetch}
+                            stateReloading={stateReloading}
+                          />
+                        )}
+                      </OverviewTab.Screen>
+                    </OverviewTab.Navigator>
+                  )}
+                </OverviewStack.Screen>
+                <OverviewStack.Screen
+                  name="stock-item"
+                  options={(props) => {
+                    const item = getNodes(event.items).find(
+                      (item) => item.id === props.route.params.stock.item.id,
+                    );
+                    const itemGroup = getNodes(event.itemGroups).find(
+                      (itemGroup) => itemGroup.id === item?.itemGroup.id,
+                    );
+                    const location = getNodes(event.locations).find(
+                      (location) =>
+                        location.id === props.route.params.stock.location.id,
+                    );
+                    return {
+                      title: `${itemGroup?.name} / ${item?.name}`,
+                      headerRight: () => (
+                        <NativeText
+                          style={{
+                            color: colors.white,
+                            padding: 10,
+                          }}
+                        >
+                          {location?.name}
+                        </NativeText>
+                      ),
+                    };
+                  }}
+                >
+                  {(props) => (
+                    <StockItemDetails
+                      event={event}
+                      stockEntry={props.route.params.stock}
+                      refetch={refetch}
+                    />
+                  )}
+                </OverviewStack.Screen>
+                <OverviewStack.Screen
+                  name="location"
+                  options={(props) => ({
+                    title: props.route.params.location.name,
+                  })}
+                >
+                  {(props) => (
+                    <LocationDetails
+                      location={props.route.params.location}
+                      event={event}
+                      refetch={refetch}
+                      stateReloading={stateReloading}
+                      stockEntriesConnection={event.stock}
+                      enableLogisticsLinks={true}
+                    />
+                  )}
+                </OverviewStack.Screen>
+
+                <OverviewStack.Screen
+                  name="item"
+                  options={(props) => {
+                    const itemGroup = getNodes(event.itemGroups).find(
+                      (itemGroup) =>
+                        itemGroup.id === props.route.params.item.itemGroup.id,
+                    );
+                    return {
+                      title: props.route.params.item.name,
+                      headerRight: () => (
+                        <NativeText
+                          style={{
+                            color: colors.white,
+                            padding: 10,
+                          }}
+                        >
+                          {itemGroup?.name}
+                        </NativeText>
+                      ),
+                    };
+                  }}
+                >
+                  {(props) => (
+                    <ItemDetails
+                      item={props.route.params.item}
+                      event={event}
+                      refetch={refetch}
+                      stateReloading={stateReloading}
+                    />
+                  )}
+                </OverviewStack.Screen>
+              </OverviewStack.Navigator>
+            )}
+          </AppDrawer.Screen>
+          <AppDrawer.Screen
+            name="move"
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'arrow-forward-outline' }),
+              lazy: true,
+              headerTitle: intl.formatMessage({
+                id: 'screen.move',
+                defaultMessage: 'Move',
+              }),
+              drawerLabel: intl.formatMessage({
+                id: 'screen.move',
+                defaultMessage: 'Move',
+              }),
+            }}
+          >
+            {(props) => (
+              <Move
+                // Force Remount on Param Change
+                key={`${props.route.params?.from?.id}-${props.route.params?.to?.id}-${props.route.params?.items?.length}`}
+                event={event}
+                from={props.route.params?.from}
+                to={props.route.params?.to}
+                items={props.route.params?.items}
+              />
+            )}
+          </AppDrawer.Screen>
+          <AppDrawer.Screen
+            name="logout"
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'log-out-outline' }),
+              lazy: true,
+              headerTitle: intl.formatMessage({
+                id: 'screen.logout',
+                defaultMessage: 'Logout',
+              }),
+              drawerLabel: intl.formatMessage({
+                id: 'screen.logout',
+                defaultMessage: 'Logout',
+              }),
+            }}
+          >
+            {() => <Logout navigation={rootNavigation} />}
+          </AppDrawer.Screen>
+          <AppDrawer.Screen
+            name="info"
+            component={AppInfo}
+            options={{
+              drawerIcon: getTabBarIcon({ name: 'information-circle-outline' }),
+              lazy: false,
+              headerTitle: intl.formatMessage({
+                id: 'screen.appInfo',
+                defaultMessage: 'Info',
+              }),
+              drawerLabel: intl.formatMessage({
+                id: 'screen.appInfo',
+                defaultMessage: 'Info',
+              }),
+            }}
+          />
+        </AppDrawer.Navigator>
+      </NavigationContainer>
+    </NavigationIndependentTree>
   );
 }

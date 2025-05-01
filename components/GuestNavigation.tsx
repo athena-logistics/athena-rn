@@ -27,7 +27,6 @@ export default function GuestNavigation() {
         options={{
           drawerIcon: getTabBarIcon({ name: 'qr-code-outline' }),
           lazy: true,
-          unmountOnBlur: true,
           headerTitle: intl.formatMessage({
             id: 'screen.scanner',
             defaultMessage: 'Scanner',
@@ -46,7 +45,6 @@ export default function GuestNavigation() {
         options={{
           drawerIcon: getTabBarIcon({ name: 'information-circle-outline' }),
           lazy: false,
-          unmountOnBlur: true,
           headerTitle: intl.formatMessage({
             id: 'screen.appInfo',
             defaultMessage: 'Info',
