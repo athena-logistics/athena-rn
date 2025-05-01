@@ -80,5 +80,12 @@
     "prop-types": "^15.8.1",
     "typescript-eslint": "^8.31.1"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+    }
+  }
 }
