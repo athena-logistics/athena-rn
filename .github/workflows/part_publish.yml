@@ -39,7 +39,7 @@ jobs:
           packager: npm
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm ci --force --prefer-offline
 
       - name: 🚀 Publish app
         if: '${{ !inputs.commentUpdate }}'
