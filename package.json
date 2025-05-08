@@ -53,7 +53,6 @@
     "react-intl": "^7.1.11",
     "react-native": "0.79.1",
     "react-native-gesture-handler": "~2.24.0",
-    "react-native-numeric-input": "https://github.com/athena-logistics/react-native-numeric-input.git",
     "react-native-reanimated": "~3.17.5",
     "react-native-reanimated-table": "^0.0.2",
     "react-native-safe-area-context": "5.3.0",
