@@ -28,23 +28,23 @@ export default function NativeNumberOnlyInput(
     maxValue?: number;
   },
 ) {
-  const textColor = props.textColor ?? colors.primary;
-
   const {
     onChange,
-    textColor: _,
+    textColor: propTextColor,
     value,
     minValue,
     maxValue,
     ...restProps
   } = props;
 
-  function onTextChanged(value: string) {
-    if (!props.onChange) return;
-    const numValue = parseInt(value.replace(/[^0-9]/g, ''));
+  const textColor = propTextColor ?? colors.primary;
+
+  function onTextChanged(strValue: string) {
+    if (!onChange) return;
+    const numValue = parseInt(strValue.replace(/[^0-9]/g, ''));
     if (minValue !== undefined && numValue <= minValue) return;
     if (maxValue !== undefined && numValue >= maxValue) return;
-    props.onChange(numValue);
+    onChange(numValue);
   }
 
   return (
@@ -69,7 +69,7 @@ export default function NativeNumberOnlyInput(
         }}
         keyboardType="numeric"
         onChangeText={(value) => onTextChanged(value)}
-        value={props.value.toString()}
+        value={value.toString()}
         {...restProps}
       />
       <TouchableHighlight
